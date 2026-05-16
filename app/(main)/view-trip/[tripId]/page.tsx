@@ -2,15 +2,31 @@
 
 import { useQuery } from "convex/react";
 import { useParams, useRouter } from "next/navigation";
+import { motion, type Variants } from "framer-motion";
 
 import HotelList from "@/components/view-trip/HotelList";
 import Itinerary from "@/components/view-trip/Itinerary";
 import TripHero from "@/components/view-trip/TripHero";
+import TripMapSection from "@/components/map/TripMapSection";
 import TripPageSkeleton from "@/components/view-trip/TripPageSkeleton";
 import TripSummary from "@/components/view-trip/TripSummary";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { TripData } from "@/types/trip";
+
+const sectionReveal: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
+const stagger: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15 } },
+};
 
 export default function ViewTripPage() {
   const router = useRouter();
@@ -27,18 +43,31 @@ export default function ViewTripPage() {
 
   if (!trip) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 px-4 text-center">
-        <span className="text-6xl">🗺️</span>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 px-4 text-center"
+      >
+        <motion.span
+          animate={{ rotate: [0, 10, -10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="text-6xl"
+        >
+          🗺️
+        </motion.span>
         <h2 className="text-2xl font-bold text-gray-700">ไม่พบข้อมูลทริป</h2>
         <p className="text-gray-500">ทริปนี้อาจถูกลบไปแล้วหรือลิงก์ไม่ถูกต้อง</p>
-        <button
+        <motion.button
           type="button"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => router.push("/my-trips")}
           className="rounded-full bg-pink-500 px-6 py-2.5 font-semibold text-white transition-all hover:bg-pink-600"
         >
           ← กลับไปทริปของฉัน
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
     );
   }
 
@@ -47,27 +76,51 @@ export default function ViewTripPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <TripHero tripData={tripData} tripId={tripId ?? ""} />
-      <div className="mx-auto max-w-5xl space-y-14 px-4 py-10">
-        <TripSummary tripData={tripData} />
-        <HotelList hotels={tripData.hotels ?? []} />
-        <Itinerary itinerary={tripData.itinerary ?? []} />
-        <div className="flex flex-col justify-center gap-3 border-t border-gray-200 pt-6 sm:flex-row">
-          <button
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={stagger}
+        className="mx-auto max-w-5xl space-y-14 px-4 py-10"
+      >
+        <motion.div variants={sectionReveal}>
+          <TripSummary tripData={tripData} />
+        </motion.div>
+        <motion.div variants={sectionReveal}>
+          <TripMapSection
+            hotels={tripData.hotels ?? []}
+            itinerary={tripData.itinerary ?? []}
+          />
+        </motion.div>
+        <motion.div variants={sectionReveal}>
+          <HotelList hotels={tripData.hotels ?? []} />
+        </motion.div>
+        <motion.div variants={sectionReveal}>
+          <Itinerary itinerary={tripData.itinerary ?? []} />
+        </motion.div>
+        <motion.div
+          variants={sectionReveal}
+          className="flex flex-col justify-center gap-3 border-t border-gray-200 pt-6 sm:flex-row"
+        >
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => router.push("/create-trip")}
             className="rounded-full bg-pink-500 px-8 py-3 font-semibold text-white transition-all hover:bg-pink-600"
           >
             ✨ สร้างทริปใหม่
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => router.push("/my-trips")}
             className="rounded-full border border-gray-300 px-8 py-3 font-semibold text-gray-700 transition-all hover:border-pink-400 hover:text-pink-500"
           >
             🗺️ ทริปทั้งหมดของฉัน
-          </button>
-        </div>
-      </div>
+          </motion.button>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

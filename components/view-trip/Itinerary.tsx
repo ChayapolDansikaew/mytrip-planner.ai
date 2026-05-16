@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, type Variants } from "framer-motion";
 import { getMapsUrl } from "@/lib/maps";
 import type { TripDay } from "@/types/trip";
 
@@ -15,6 +16,24 @@ const dayColors = [
   "bg-orange-500",
   "bg-teal-500",
 ];
+
+const dayReveal: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
+
+const placeSlide: Variants = {
+  hidden: { opacity: 0, x: -16 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
 
 function Chip({ icon, label }: { icon: string; label?: string | null }) {
   if (!label) return null;
@@ -32,9 +51,13 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
         <h2 className="text-2xl font-bold text-gray-900">
           🗓️ แผนการเดินทางรายวัน
         </h2>
-        <div className="mt-6 rounded-2xl border border-dashed border-gray-200 bg-white p-6 text-gray-500 shadow-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-6 rounded-2xl border border-dashed border-gray-200 bg-white p-6 text-gray-500 shadow-sm"
+        >
           ยังไม่มีข้อมูลแผนการเดินทางรายวันสำหรับทริปนี้
-        </div>
+        </motion.div>
       </section>
     );
   }
@@ -51,31 +74,70 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
           const color = dayColors[(dayNumber - 1) % dayColors.length];
 
           return (
-            <article
+            <motion.article
               key={`${dayNumber}-${day.theme ?? "day"}`}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-40px" }}
+              variants={dayReveal}
               className="rounded-2xl bg-white/70 p-5 shadow-sm backdrop-blur sm:p-6"
             >
-              <div className="mb-6 flex items-center gap-3">
-                <span className={`${color} rounded-full px-4 py-1.5 text-sm font-bold text-white`}>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="mb-6 flex items-center gap-3"
+              >
+                <motion.span
+                  whileHover={{ scale: 1.1 }}
+                  className={`${color} rounded-full px-4 py-1.5 text-sm font-bold text-white`}
+                >
                   วันที่ {dayNumber}
-                </span>
+                </motion.span>
                 <h3 className="text-lg font-semibold text-gray-800">
                   {day.theme || "-"}
                 </h3>
-              </div>
+              </motion.div>
 
-              <div className="relative space-y-6 pl-6">
-                <div className="absolute bottom-0 left-2 top-0 w-0.5 bg-gray-200" />
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
+                className="relative space-y-6 pl-6"
+              >
+                {/* Animated timeline line */}
+                <div className="absolute bottom-0 left-2 top-0 w-0.5 overflow-hidden">
+                  <motion.div
+                    initial={{ height: 0 }}
+                    whileInView={{ height: "100%" }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                    className="w-full bg-gray-200"
+                  />
+                </div>
 
                 {day.places?.length ? (
                   day.places.map((place, placeIndex) => (
-                    <div
+                    <motion.div
                       key={`${place?.name ?? "place"}-${placeIndex}`}
+                      variants={placeSlide}
                       className="relative"
                     >
-                      <div className={`absolute -left-4 top-1.5 h-3 w-3 rounded-full border-2 border-white shadow ${color}`} />
+                      {/* Animated timeline dot */}
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        whileInView={{ scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: placeIndex * 0.1 + 0.3, type: "spring", stiffness: 400 }}
+                        className={`absolute -left-4 top-1.5 h-3 w-3 rounded-full border-2 border-white shadow ${color}`}
+                      />
 
-                      <div className="space-y-2 rounded-xl bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                      <motion.div
+                        whileHover={{ x: 4, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
+                        className="space-y-2 rounded-xl bg-white p-4 shadow-sm transition-all"
+                      >
                         <h4 className="font-semibold text-gray-800">
                           {place?.name || "-"}
                         </h4>
@@ -89,24 +151,25 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
                           <Chip icon="🚗" label={place?.travelTime} />
                         </div>
 
-                        <a
+                        <motion.a
                           href={getMapsUrl(place?.name || "-", place?.coordinates)}
                           target="_blank"
                           rel="noopener noreferrer"
+                          whileHover={{ x: 3 }}
                           className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-blue-500 transition-colors hover:text-blue-700"
                         >
                           🗺️ ดูบน Google Maps →
-                        </a>
-                      </div>
-                    </div>
+                        </motion.a>
+                      </motion.div>
+                    </motion.div>
                   ))
                 ) : (
                   <div className="rounded-xl border border-dashed border-gray-200 bg-white p-4 text-sm text-gray-500">
                     ยังไม่มีสถานที่สำหรับวันนี้
                   </div>
                 )}
-              </div>
-            </article>
+              </motion.div>
+            </motion.article>
           );
         })}
       </div>

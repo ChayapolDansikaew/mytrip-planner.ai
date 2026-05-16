@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, type FormEvent } from "react";
 import { motion, type Variants } from "framer-motion";
@@ -22,6 +22,7 @@ import {
 
 import SiteHeader from "@/components/SiteHeader";
 import { Card } from "@/components/ui/card";
+import FloatingParticles from "@/components/ui/FloatingParticles";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24, filter: "blur(8px)" },
@@ -36,6 +37,26 @@ const fadeUp: Variants = {
 const stagger: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.08 } },
+};
+
+const cardPop: Variants = {
+  hidden: { opacity: 0, y: 32, scale: 0.92, rotate: -1 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    rotate: 0,
+    transition: { type: "spring", stiffness: 260, damping: 20 },
+  },
+};
+
+const previewSlide: Variants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
 };
 
 const quickActions = [
@@ -136,9 +157,13 @@ export default function Home() {
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_10%,rgba(255,255,255,0.92),transparent_28%),radial-gradient(circle_at_84%_16%,rgba(185,245,41,0.38),transparent_24%),radial-gradient(circle_at_18%_84%,rgba(255,63,120,0.18),transparent_24%),linear-gradient(180deg,#c9f7ff_0%,#f7fcff_50%,#fff8ed_100%)]" />
         <div className="absolute inset-x-0 top-0 h-36 bg-[linear-gradient(135deg,rgba(255,255,255,0.5)_25%,transparent_25%),linear-gradient(225deg,rgba(255,255,255,0.38)_25%,transparent_25%)] bg-[size:72px_72px] opacity-35" />
-        <div className="absolute -left-28 top-36 h-80 w-80 rounded-full bg-[#ff3f78]/18 blur-3xl" />
-        <div className="absolute -right-28 bottom-0 h-96 w-96 rounded-full bg-[#b9f529]/38 blur-3xl" />
+        <div className="floating-blob absolute -left-28 top-36 h-80 w-80 rounded-full bg-[#ff3f78]/18 blur-3xl" />
+        <div className="floating-blob-delayed absolute -right-28 bottom-0 h-96 w-96 rounded-full bg-[#b9f529]/38 blur-3xl" />
+        <div className="floating-blob-slow absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#22d3ee]/15 blur-3xl" />
       </div>
+
+      {/* Floating travel emoji particles */}
+      <FloatingParticles count={12} className="fixed z-[1]" />
 
       <SiteHeader />
 
@@ -160,14 +185,19 @@ export default function Home() {
           <motion.div variants={fadeUp} className="mt-8 w-full max-w-3xl rounded-[1.6rem] border border-white/70 bg-white/45 p-3 text-left shadow-[0_34px_100px_rgba(15,58,100,0.16),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-2xl">
             <form onSubmit={handleCreateTrip} className="flex min-h-28 items-start gap-4 rounded-[1.25rem] border border-white/75 bg-white/72 p-4">
               <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} aria-label="บอก AI ว่าต้องการทริปแบบไหน" className="min-h-20 flex-1 resize-none bg-transparent text-sm leading-7 text-[#0f3a64] outline-none placeholder:text-[#0f3a64]/42" placeholder="เช่น สร้างทริปปารีส 5 วัน จากกรุงเทพฯ เน้นคาเฟ่ ศิลปะ โรงแรมสวย และงบกลาง ๆ" />
-              <button type="submit" disabled={isSubmitting} className="mt-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ff3f78] text-white shadow-[0_14px_38px_rgba(255,63,120,0.34)] transition hover:-translate-y-0.5 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:opacity-60" aria-label="ส่งบรีฟให้ AI">
+              <button type="submit" disabled={isSubmitting} className="cta-glow mt-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ff3f78] text-white shadow-[0_14px_38px_rgba(255,63,120,0.34)] transition hover:-translate-y-0.5 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:opacity-60 disabled:animate-none" aria-label="ส่งบรีฟให้ AI">
                 <Send className="h-4 w-4" />
               </button>
             </form>
             {statusMessage ? (
-              <p aria-live="polite" className={`px-2 pt-3 text-sm font-medium ${statusTone === "error" ? "text-red-600" : "text-[#0f8f4b]"}`}>
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                aria-live="polite"
+                className={`px-2 pt-3 text-sm font-medium ${statusTone === "error" ? "text-red-600" : "text-[#0f8f4b]"}`}
+              >
                 {statusMessage}
-              </p>
+              </motion.p>
             ) : null}
           </motion.div>
 
@@ -175,17 +205,29 @@ export default function Home() {
             {quickActions.map((item) => {
               const Icon = item.icon;
               return (
-                <button key={item.label} className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/45 px-4 py-2 text-xs font-medium text-[#0f3a64]/72 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-[#ff3f78]/40 hover:bg-white/75 hover:text-[#0f3a64]">
+                <motion.button
+                  key={item.label}
+                  whileHover={{ scale: 1.06, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/45 px-4 py-2 text-xs font-medium text-[#0f3a64]/72 shadow-sm backdrop-blur transition hover:border-[#ff3f78]/40 hover:bg-white/75 hover:text-[#0f3a64]"
+                >
                   <Icon className="h-3.5 w-3.5 text-[#ff3f78]" />
                   {item.label}
-                </button>
+                </motion.button>
               );
             })}
           </motion.div>
 
-          <motion.a variants={fadeUp} href="#how-it-works" className="mt-12 inline-flex items-center gap-2 text-sm font-medium text-[#0f3a64]/64 transition hover:text-[#ff3f78]">
+          <motion.a
+            variants={fadeUp}
+            href="#how-it-works"
+            className="mt-12 inline-flex items-center gap-2 text-sm font-medium text-[#0f3a64]/64 transition hover:text-[#ff3f78]"
+          >
             ยังไม่รู้จะเริ่มตรงไหน? <span className="font-semibold text-[#0f3a64]">ดูวิธีทำงาน</span>
-            <ArrowDown className="h-4 w-4" />
+            <motion.span animate={{ y: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+              <ArrowDown className="h-4 w-4" />
+            </motion.span>
           </motion.a>
         </div>
       </motion.section>
@@ -195,9 +237,9 @@ export default function Home() {
           <div className="overflow-hidden rounded-[1.55rem] border border-white/75 bg-white/62">
             <div className="flex items-center justify-between border-b border-[#0f3a64]/10 px-5 py-3">
               <div className="flex gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#ff3f78]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#22d3ee]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#b9f529]" />
+                <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 2, delay: 0 }} className="h-2.5 w-2.5 rounded-full bg-[#ff3f78]" />
+                <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 2, delay: 0.3 }} className="h-2.5 w-2.5 rounded-full bg-[#22d3ee]" />
+                <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 2, delay: 0.6 }} className="h-2.5 w-2.5 rounded-full bg-[#b9f529]" />
               </div>
               <div className="hidden h-6 w-56 rounded-full bg-[#0f3a64]/5 md:block" />
               <Bot className="h-4 w-4 text-[#0f3a64]/55" />
@@ -206,9 +248,17 @@ export default function Home() {
             <div className="grid min-h-[20rem] md:grid-cols-[4.5rem_1fr_18rem]">
               <aside className="hidden border-r border-[#0f3a64]/10 bg-white/55 py-5 md:flex md:flex-col md:items-center md:gap-4">
                 {[Sparkles, MapPinned, Heart, CalendarDays, Gem].map((Icon, index) => (
-                  <span key={index} className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#9de9f4]/55 text-[#0f3a64]/72">
+                  <motion.span
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1, type: "spring", stiffness: 300 }}
+                    whileHover={{ scale: 1.2, rotate: 10 }}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#9de9f4]/55 text-[#0f3a64]/72"
+                  >
                     <Icon className="h-4 w-4" />
-                  </span>
+                  </motion.span>
                 ))}
               </aside>
 
@@ -218,32 +268,50 @@ export default function Home() {
                   อยากไปที่ไหน?
                 </h2>
                 <p className="mt-3 max-w-md text-sm leading-7 text-[#0f3a64]/62">
-                  เริ่มจากประโยคเดียว เช่น “อยากไปญี่ปุ่น 7 วัน เน้นอาหารดี โรงแรมสวย และไม่เดินเหนื่อย” แล้วระบบจะจัดเป็นแผนที่อ่านง่ายทันที
+                  เริ่มจากประโยคเดียว เช่น &quot;อยากไปญี่ปุ่น 7 วัน เน้นอาหารดี โรงแรมสวย และไม่เดินเหนื่อย&quot; แล้วระบบจะจัดเป็นแผนที่อ่านง่ายทันที
                 </p>
 
-                <div className="mt-7 grid gap-3">
+                <motion.div
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }}
+                  className="mt-7 grid gap-3"
+                >
                   {previewSteps.map((step) => {
                     const Icon = step.icon;
                     return (
-                      <div key={step.title} className="flex items-start gap-3 rounded-2xl bg-white/80 p-4 ring-1 ring-[#0f3a64]/8">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#b9f529]/35 text-[#0f3a64]">
+                      <motion.div
+                        key={step.title}
+                        variants={previewSlide}
+                        whileHover={{ x: 4, boxShadow: "0 8px 30px rgba(15,58,100,0.12)" }}
+                        className="flex items-start gap-3 rounded-2xl bg-white/80 p-4 ring-1 ring-[#0f3a64]/8 transition-shadow"
+                      >
+                        <motion.span
+                          whileHover={{ rotate: 12, scale: 1.1 }}
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#b9f529]/35 text-[#0f3a64]"
+                        >
                           <Icon className="h-4 w-4" />
-                        </span>
+                        </motion.span>
                         <div>
                           <p className="font-semibold text-[#0f3a64]">{step.title}</p>
                           <p className="mt-1 text-sm leading-6 text-[#0f3a64]/58">{step.copy}</p>
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })}
-                </div>
+                </motion.div>
               </div>
 
-              <div className="m-5 flex min-h-72 items-end overflow-hidden rounded-[1.4rem] bg-[radial-gradient(circle_at_30%_18%,rgba(255,255,255,0.72),transparent_25%),radial-gradient(circle_at_80%_18%,rgba(185,245,41,0.56),transparent_24%),linear-gradient(145deg,#38bdf8_0%,#0ea5e9_52%,#ff3f78_100%)] p-5 text-left text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.32)]">
+              <div className="m-5 flex min-h-72 items-end overflow-hidden rounded-[1.4rem] bg-[radial-gradient(circle_at_30%_18%,rgba(255,255,255,0.72),transparent_25%),radial-gradient(circle_at_80%_18%,rgba(185,245,41,0.56),transparent_24%),linear-gradient(145deg,#38bdf8_0%,#0ea5e9_52%,#ff3f78_100%)] p-5 text-left text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.32)] gradient-animated">
                 <div>
-                  <div className="mb-14 flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-[#ff3f78] shadow-[0_18px_42px_rgba(15,58,100,0.18)]">
+                  <motion.div
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="mb-14 flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-[#ff3f78] shadow-[0_18px_42px_rgba(15,58,100,0.18)] cursor-pointer"
+                  >
                     <Play className="ml-1 h-7 w-7 fill-[#ff3f78]" />
-                  </div>
+                  </motion.div>
                   <p className="text-sm text-white/78">Travel Brightly</p>
                   <h3 className="mt-1 text-3xl font-semibold leading-tight tracking-[-0.035em]">
                     เดินทางแบบสนุกในจังหวะของคุณเอง
@@ -264,19 +332,19 @@ export default function Home() {
             </h2>
           </div>
           <div className="flex gap-3">
-            <button className="flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/45 text-[#0f3a64]/72 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/75 hover:text-[#ff3f78]" aria-label="เลื่อนซ้าย">
+            <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/45 text-[#0f3a64]/72 shadow-sm backdrop-blur transition hover:bg-white/75 hover:text-[#ff3f78]" aria-label="เลื่อนซ้าย">
               <ArrowLeft className="h-4 w-4" />
-            </button>
-            <button className="flex h-11 w-11 items-center justify-center rounded-full border border-[#ff3f78]/25 bg-[#ff3f78] text-white shadow-[0_14px_40px_rgba(255,63,120,0.28)] transition hover:-translate-y-0.5 hover:bg-[#ff6b95]" aria-label="เลื่อนขวา">
+            </motion.button>
+            <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#ff3f78]/25 bg-[#ff3f78] text-white shadow-[0_14px_40px_rgba(255,63,120,0.28)] transition hover:bg-[#ff6b95]" aria-label="เลื่อนขวา">
               <ArrowRight className="h-4 w-4" />
-            </button>
+            </motion.button>
           </div>
         </motion.div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {destinations.map((destination, index) => (
-            <motion.div key={destination.city} variants={fadeUp}>
-              <Card className={`group relative min-h-[27rem] overflow-hidden border-white/70 bg-cover bg-center p-0 ${destination.background}`}>
+            <motion.div key={destination.city} variants={cardPop} whileHover={{ y: -8, transition: { type: "spring", stiffness: 300 } }}>
+              <Card className={`card-glow group relative min-h-[27rem] overflow-hidden border-white/70 bg-cover bg-center p-0 ${destination.background}`}>
                 <div className="absolute inset-0 bg-gradient-to-b from-[#0f3a64]/2 via-[#0f3a64]/8 to-[#0f3a64]/62" />
                 <div className="relative flex h-full min-h-[27rem] flex-col justify-between p-6">
                   <div className="flex items-center justify-between">
@@ -291,7 +359,13 @@ export default function Home() {
                     </h3>
                     <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold text-white backdrop-blur transition group-hover:border-white/70 group-hover:bg-white/32">
                       ดูไอเดียทริป
-                      <ArrowRight className="h-4 w-4" />
+                      <motion.span
+                        className="inline-block"
+                        initial={{ x: 0 }}
+                        whileHover={{ x: 4 }}
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </motion.span>
                     </div>
                   </div>
                 </div>

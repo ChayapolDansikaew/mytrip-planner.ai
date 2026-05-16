@@ -1,8 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { useMutation } from "convex/react";
+import { Trash2 } from "lucide-react";
 
 import type { Doc } from "@/convex/_generated/dataModel";
+import { api } from "@/convex/_generated/api";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type Trip = Doc<"trips">;
 
@@ -50,6 +65,8 @@ function getDisplayLabel(value: string | undefined, labels: Record<string, strin
 }
 
 export default function TripCard({ trip }: { trip: Trip }) {
+  const deleteTrip = useMutation(api.trips.deleteTrip);
+
   const tripName = getTripName(trip);
   const createdAt = new Date(trip._creationTime).toLocaleDateString("th-TH", {
     year: "numeric",
@@ -61,9 +78,14 @@ export default function TripCard({ trip }: { trip: Trip }) {
   const budgetLabel = getDisplayLabel(trip.budget, budgetLabels);
   const travelerLabel = getDisplayLabel(trip.travelers, travelerLabels);
 
+  async function handleDelete() {
+    await deleteTrip({ tripId: trip._id });
+  }
+
   return (
     <Link href={`/view-trip/${trip._id}`} className="group block focus:outline-none">
-      <article className="overflow-hidden rounded-2xl border border-white/70 bg-white/82 shadow-[0_18px_60px_rgba(15,58,100,0.12)] backdrop-blur transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_28px_90px_rgba(15,58,100,0.2)] group-focus-visible:ring-4 group-focus-visible:ring-[#ff3f78]/25">
+      <article className="relative overflow-hidden rounded-2xl border border-white/70 bg-white/82 shadow-[0_18px_60px_rgba(15,58,100,0.12)] backdrop-blur transition-all duration-300 group-hover:shadow-[0_28px_90px_rgba(15,58,100,0.2)] group-focus-visible:ring-4 group-focus-visible:ring-[#ff3f78]/25">
+        {/* Gradient cover */}
         <div
           className={`relative flex h-44 items-center justify-center bg-gradient-to-br ${gradients[gradientIndex]}`}
         >
@@ -76,8 +98,41 @@ export default function TripCard({ trip }: { trip: Trip }) {
               ✈️ {trip.destination}
             </span>
           </div>
+
+          {/* Delete button */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 z-10 h-9 w-9 rounded-full bg-black/30 text-white opacity-0 transition-all hover:bg-red-500 group-hover:opacity-100"
+                onClick={(e) => e.preventDefault()}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>ลบทริปนี้?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  การกระทำนี้ไม่สามารถย้อนกลับได้ ทริป &ldquo;{tripName}&rdquo;
+                  จะถูกลบอย่างถาวร
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-500 shadow-[0_18px_60px_rgba(239,68,68,0.3)] hover:bg-red-600"
+                  onClick={handleDelete}
+                >
+                  ลบทริป
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
+        {/* Card body */}
         <div className="space-y-3 p-4">
           <h3 className="truncate text-lg font-bold tracking-[-0.025em] text-[#0f3a64]">
             {tripName}
