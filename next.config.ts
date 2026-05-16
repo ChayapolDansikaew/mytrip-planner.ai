@@ -14,14 +14,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Suppress Mapbox GL worker warnings
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "mapbox-gl": "mapbox-gl",
-    };
-    return config;
-  },
+  // Remove webpack config entirely — not compatible with Turbopack
+  // Mapbox GL works fine without the alias in Next.js 16+
 };
 
 export default nextConfig;
