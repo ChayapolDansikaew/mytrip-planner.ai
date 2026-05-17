@@ -3,15 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  SignInButton,
-  SignUpButton,
   UserButton,
   useUser,
 } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { Compass } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 const navItems = [
   { label: "หน้าแรก", href: "/#top" },
@@ -80,14 +78,18 @@ export default function SiteHeader() {
             <UserButton />
           ) : (
             <>
-              <SignInButton mode="modal">
-                <Button variant="outline" size="sm">
-                  เข้าสู่ระบบ
-                </Button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <Button size="sm">เริ่มวางแผน</Button>
-              </SignUpButton>
+              <Link
+                href="/sign-in"
+                className={buttonVariants({ variant: "outline", size: "sm" })}
+              >
+                เข้าสู่ระบบ
+              </Link>
+              <Link
+                href="/sign-up"
+                className={buttonVariants({ size: "sm" })}
+              >
+                เริ่มวางแผน
+              </Link>
             </>
           )}
         </div>
