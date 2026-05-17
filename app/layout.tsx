@@ -22,7 +22,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      signInFallbackRedirectUrl="/create-trip"
+      signUpFallbackRedirectUrl="/create-trip"
+    >
       <html
         lang="th"
         className={`${kanit.variable} h-full antialiased`}
