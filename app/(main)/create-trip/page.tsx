@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 
 import {
   BudgetSelector,
@@ -54,14 +54,6 @@ export default function CreateTripPage() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
   const shouldReduceMotion = useReducedMotion();
-  const currentUser = useQuery(
-    api.users.getUserByClerkId,
-    user?.id ? { clerkId: user.id } : "skip",
-  );
-  const todayCount = useQuery(
-    api.trips.getTodayTripCount,
-    user?.id ? { userId: user.id } : "skip",
-  );
   const isSaving = useRef(false);
   const [formData, setFormData] = useState(initialFormData);
   const [loading, setLoading] = useState(false);
@@ -69,8 +61,6 @@ export default function CreateTripPage() {
   const [rateLimitError, setRateLimitError] =
     useState<RateLimitError | null>(null);
   const [saveStep, setSaveStep] = useState<SaveStep>("idle");
-
-  const isPremium = currentUser?.isPremium === true;
 
   useEffect(() => {
     if (isLoaded && !user) {
@@ -330,16 +320,9 @@ export default function CreateTripPage() {
             </div>
           </div>
 
-          {!isPremium && todayCount !== undefined ? (
-            <p className="mt-6 text-center text-sm font-medium text-[#0f3a64]/58">
-              🆓 ทริปฟรีที่ใช้ไปวันนี้: {todayCount}/3 ทริป
-              {todayCount >= 3 ? (
-                <span className="ml-1 font-semibold text-[#ff3f78]">
-                  (หมดโควตา)
-                </span>
-              ) : null}
-            </p>
-          ) : null}
+          <p className="mt-6 text-center text-sm font-medium text-[#0f3a64]/58">
+            🆓 ผู้ใช้ฟรีสร้างทริปได้ 3 ทริปต่อวัน ระบบจะแจ้งเตือนเมื่อถึงโควตา
+          </p>
 
           <motion.button
             type="submit"
