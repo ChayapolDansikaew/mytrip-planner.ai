@@ -35,17 +35,20 @@ export default function FloatingParticles({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || count <= 0) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches) return;
 
     const resizeCanvas = () => {
       const dpr = window.devicePixelRatio || 1;
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
     resizeCanvas();
@@ -67,6 +70,11 @@ export default function FloatingParticles({
     }));
 
     const animate = () => {
+      if (document.hidden) {
+        animRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
       const r = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, r.width, r.height);
 

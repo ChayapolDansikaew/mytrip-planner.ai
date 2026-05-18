@@ -3,38 +3,24 @@
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
 
 import SiteHeader from "@/components/SiteHeader";
 import TripCard from "@/components/my-trips/TripCard";
 import TripCardSkeleton from "@/components/my-trips/TripCardSkeleton";
 import { api } from "@/convex/_generated/api";
+import { fadeUp, liftHover, pressTap, springSnappy, staggerFast } from "@/lib/motion";
 
-const container: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
-};
+const container: Variants = staggerFast;
 
 const item: Variants = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
-};
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24, filter: "blur(8px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.65, ease: "easeOut" },
-  },
+  visible: { opacity: 1, y: 0, transition: springSnappy },
 };
 
 export default function MyTripsPage() {
   const { isLoaded, user } = useUser();
+  const shouldReduceMotion = useReducedMotion();
   const trips = useQuery(
     api.trips.getUserTrips,
     user?.id ? { userId: user.id } : "skip",
@@ -77,7 +63,7 @@ export default function MyTripsPage() {
             </div>
             <Link
               href="/create-trip"
-              className="hidden h-12 items-center justify-center rounded-full bg-[#ff3f78] px-6 text-sm font-semibold text-white shadow-[0_18px_55px_rgba(255,63,120,0.3)] transition hover:-translate-y-0.5 hover:bg-[#ff6b95] sm:inline-flex"
+              className="soft-focus-ring hidden h-12 items-center justify-center rounded-full bg-[#ff3f78] px-6 text-sm font-semibold text-white shadow-[0_18px_55px_rgba(255,63,120,0.3)] transition hover:-translate-y-0.5 hover:bg-[#ff6b95] sm:inline-flex"
             >
               + สร้างทริปใหม่
             </Link>
@@ -124,7 +110,13 @@ export default function MyTripsPage() {
               transition={{ duration: 0.5 }}
               className="flex flex-col items-center justify-center rounded-[2rem] border border-white/70 bg-white/52 px-6 py-32 text-center shadow-[0_30px_100px_rgba(15,58,100,0.12)] backdrop-blur-2xl"
             >
-              <div className="text-7xl animate-bounce">✈️</div>
+              <motion.div
+                animate={shouldReduceMotion ? {} : { y: [0, -8, 0], rotate: [0, 2, -2, 0] }}
+                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                className="text-7xl"
+              >
+                ✈️
+              </motion.div>
               <h2 className="mt-5 text-2xl font-bold tracking-[-0.035em] text-gray-700">
                 ยังไม่มีทริปของคุณ
               </h2>
@@ -134,7 +126,7 @@ export default function MyTripsPage() {
               </p>
               <Link
                 href="/create-trip"
-                className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-pink-500 px-8 text-base font-semibold text-white shadow-[0_18px_55px_rgba(236,72,153,0.3)] transition hover:-translate-y-0.5 hover:bg-pink-600"
+                className="soft-focus-ring mt-6 inline-flex h-12 items-center justify-center rounded-full bg-pink-500 px-8 text-base font-semibold text-white shadow-[0_18px_55px_rgba(236,72,153,0.3)] transition hover:-translate-y-0.5 hover:bg-pink-600"
               >
                 ✨ สร้างทริปแรก
               </Link>
@@ -146,7 +138,7 @@ export default function MyTripsPage() {
             <motion.div
               variants={container}
               initial="hidden"
-              animate="show"
+              animate="visible"
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
             >
               <AnimatePresence mode="popLayout">
@@ -156,8 +148,9 @@ export default function MyTripsPage() {
                     variants={item}
                     layout
                     exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.25 } }}
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 24 }}
+                    whileHover={shouldReduceMotion ? {} : liftHover}
+                    whileTap={pressTap}
+                    transition={springSnappy}
                   >
                     <TripCard trip={trip} />
                   </motion.div>
@@ -172,7 +165,7 @@ export default function MyTripsPage() {
           <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 sm:hidden">
             <Link
               href="/create-trip"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-[#ff3f78] px-6 text-sm font-semibold text-white shadow-[0_18px_60px_rgba(255,63,120,0.4)] transition hover:bg-[#ff6b95]"
+              className="soft-focus-ring inline-flex h-12 items-center justify-center rounded-full bg-[#ff3f78] px-6 text-sm font-semibold text-white shadow-[0_18px_60px_rgba(255,63,120,0.4)] transition hover:bg-[#ff6b95]"
             >
               + สร้างทริปใหม่
             </Link>

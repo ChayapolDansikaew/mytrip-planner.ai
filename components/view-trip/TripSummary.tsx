@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import AnimatedCounter from "@/components/ui/AnimatedCounter";
+import { cardReveal, liftHover, springSnappy, staggerFast } from "@/lib/motion";
 import type { TripData } from "@/types/trip";
 
 interface TripSummaryProps {
@@ -16,12 +17,10 @@ function formatValue(value?: string | number | null, fallback = "-") {
   return String(value);
 }
 
-const cardPop: Variants = {
-  hidden: { opacity: 0, y: 16, scale: 0.9 },
-  visible: { opacity: 1, y: 0, scale: 1 },
-};
+const cardPop: Variants = cardReveal;
 
 export default function TripSummary({ tripData }: TripSummaryProps) {
+  const shouldReduceMotion = useReducedMotion();
   const summaryItems = [
     {
       icon: "📍",
@@ -57,20 +56,20 @@ export default function TripSummary({ tripData }: TripSummaryProps) {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
-        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08 } } }}
+        variants={staggerFast}
         className="mt-6 grid auto-cols-[minmax(140px,1fr)] grid-flow-col gap-4 overflow-x-auto pb-2 md:grid-flow-row md:grid-cols-5 md:overflow-visible md:pb-0"
       >
         {summaryItems.map((item) => (
           <motion.article
             key={item.label}
             variants={cardPop}
-            whileHover={{ y: -4, boxShadow: "0 12px 30px rgba(0,0,0,0.1)" }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="card-glow flex min-w-[140px] flex-col items-center gap-2 rounded-2xl bg-white p-5 text-center shadow-sm"
+            whileHover={shouldReduceMotion ? {} : { ...liftHover, boxShadow: "0 12px 30px rgba(15,58,100,0.1)" }}
+            transition={springSnappy}
+            className="card-glow smooth-card flex min-w-[140px] flex-col items-center gap-2 rounded-2xl bg-white p-5 text-center shadow-sm"
           >
             <motion.span
-              whileHover={{ scale: 1.25, rotate: 10 }}
-              transition={{ type: "spring", stiffness: 400 }}
+              whileHover={shouldReduceMotion ? {} : { scale: 1.16, rotate: 8 }}
+              transition={springSnappy}
               className="text-3xl"
             >
               {item.icon}

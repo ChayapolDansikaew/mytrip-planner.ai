@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
@@ -18,6 +18,7 @@ import {
 import ErrorToast from "@/components/ui/ErrorToast";
 import RateLimitBanner from "@/components/ui/RateLimitBanner";
 import { api } from "@/convex/_generated/api";
+import { fadeUp, motionEase, pressTap, springSnappy } from "@/lib/motion";
 
 const initialFormData = {
   destination: "",
@@ -52,6 +53,7 @@ export default function CreateTripPage() {
   const createTrip = useMutation(api.trips.createTrip);
   const router = useRouter();
   const { user, isLoaded } = useUser();
+  const shouldReduceMotion = useReducedMotion();
   const currentUser = useQuery(
     api.users.getUserByClerkId,
     user?.id ? { clerkId: user.id } : "skip",
@@ -233,19 +235,19 @@ export default function CreateTripPage() {
       </div>
 
       <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        initial="hidden"
+        animate="visible"
+        variants={fadeUp}
         className="mx-auto flex w-full max-w-5xl flex-col items-center"
       >
         <div className="mb-8 text-center md:mb-10">
           <motion.div
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
+            transition={{ ...springSnappy, delay: 0.1 }}
             className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl border border-white/70 bg-white/65 text-3xl shadow-[0_20px_60px_rgba(15,58,100,0.14)] backdrop-blur"
           >
-            <motion.span animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 2 }}>✈️</motion.span>
+            <motion.span animate={shouldReduceMotion ? {} : { y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 2.6, ease: motionEase }}>✈️</motion.span>
           </motion.div>
           <motion.p
             initial={{ opacity: 0 }}
@@ -276,7 +278,7 @@ export default function CreateTripPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="w-full rounded-[2rem] border border-white/70 bg-white/45 p-4 shadow-[0_30px_100px_rgba(15,58,100,0.16)] backdrop-blur-2xl sm:p-6 md:rounded-[2.5rem] md:p-8"
+          className="smooth-card w-full rounded-[2rem] border border-white/70 bg-white/45 p-4 shadow-[0_30px_100px_rgba(15,58,100,0.16)] backdrop-blur-2xl sm:p-6 md:rounded-[2.5rem] md:p-8"
         >
           <div className="rounded-[1.5rem] border border-white/75 bg-white/42 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] sm:p-6 md:rounded-[2rem] md:p-8">
             <div className="grid gap-8">
@@ -342,8 +344,9 @@ export default function CreateTripPage() {
           <motion.button
             type="submit"
             disabled={!isFormValid || loading}
-            whileHover={!loading && isFormValid ? { scale: 1.02, y: -2 } : {}}
-            whileTap={!loading && isFormValid ? { scale: 0.98 } : {}}
+            whileHover={!shouldReduceMotion && !loading && isFormValid ? { scale: 1.01, y: -2 } : {}}
+            whileTap={!loading && isFormValid ? pressTap : {}}
+            transition={springSnappy}
             className={`mt-4 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#ff3f78] px-6 text-base font-semibold text-white shadow-[0_22px_70px_rgba(255,63,120,0.34)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:translate-y-0 disabled:bg-[#0f3a64]/22 disabled:shadow-none ${isFormValid && !loading ? "cta-glow" : ""}`}
           >
             {loading ? (
@@ -362,7 +365,7 @@ export default function CreateTripPage() {
                 initial={{ opacity: 0, y: 12, height: 0 }}
                 animate={{ opacity: 1, y: 0, height: "auto" }}
                 exit={{ opacity: 0, y: -8, height: 0 }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.36, ease: motionEase }}
                 className="mt-4 space-y-2 overflow-hidden rounded-2xl border border-white/70 bg-white/60 px-4 py-4 shadow-[0_18px_50px_rgba(15,58,100,0.08)] backdrop-blur"
               >
                 <StepItem
@@ -415,7 +418,7 @@ function StepItem({
     <motion.div
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.3, ease: motionEase }}
       className={`flex items-center gap-2 text-sm font-medium transition-all ${
         done ? "text-green-500" : active ? "text-[#ff3f78]" : "text-gray-400"
       }`}

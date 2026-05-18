@@ -2,6 +2,7 @@
 
 import { motion, type Variants } from "framer-motion";
 import { getMapsUrl } from "@/lib/maps";
+import { cardReveal, motionEase, slideInLeft, staggerSoft } from "@/lib/motion";
 import type { TripDay } from "@/types/trip";
 
 interface ItineraryProps {
@@ -17,23 +18,8 @@ const dayColors = [
   "bg-teal-500",
 ];
 
-const dayReveal: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
-
-const placeSlide: Variants = {
-  hidden: { opacity: 0, x: -16 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.4, ease: "easeOut" },
-  },
-};
+const dayReveal: Variants = cardReveal;
+const placeSlide: Variants = slideInLeft;
 
 function Chip({ icon, label }: { icon: string; label?: string | null }) {
   if (!label) return null;
@@ -104,7 +90,7 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
+                variants={staggerSoft}
                 className="relative space-y-6 pl-6"
               >
                 {/* Animated timeline line */}
@@ -130,13 +116,14 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
                         initial={{ scale: 0 }}
                         whileInView={{ scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ delay: placeIndex * 0.1 + 0.3, type: "spring", stiffness: 400 }}
+                        transition={{ delay: placeIndex * 0.08 + 0.24, type: "spring", stiffness: 360, damping: 24 }}
                         className={`absolute -left-4 top-1.5 h-3 w-3 rounded-full border-2 border-white shadow ${color}`}
                       />
 
                       <motion.div
-                        whileHover={{ x: 4, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
-                        className="space-y-2 rounded-xl bg-white p-4 shadow-sm transition-all"
+                        whileHover={{ x: 3, boxShadow: "0 12px 32px rgba(15,58,100,0.1)" }}
+                        transition={{ duration: 0.22, ease: motionEase }}
+                        className="smooth-card space-y-2 rounded-xl bg-white p-4 shadow-sm"
                       >
                         <h4 className="font-semibold text-gray-800">
                           {place?.name || "-"}

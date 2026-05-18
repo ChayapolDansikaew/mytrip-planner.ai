@@ -7,11 +7,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 
 import SiteHeader from "@/components/SiteHeader";
 import { extractTripCoordinates, geocodeDestination } from "@/lib/coordinates";
+import { fadeUp, motionEase } from "@/lib/motion";
 import type { TripMarker } from "@/components/map/GlobeMap";
 import type { TripData } from "@/types/trip";
 
@@ -35,6 +36,7 @@ function GlobeMapSkeleton() {
 export default function GlobalMapPage() {
   const { isLoaded, user } = useUser();
   const router = useRouter();
+  const shouldReduceMotion = useReducedMotion();
   const [markers, setMarkers] = useState<TripMarker[]>([]);
   const [isProcessing, setIsProcessing] = useState(true);
 
@@ -92,9 +94,9 @@ export default function GlobalMapPage() {
       <main className="relative flex min-h-[calc(100vh-64px)] flex-col bg-gray-950">
         {/* Header bar */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
           className="flex items-center justify-between border-b border-white/10 bg-gray-900/80 px-4 py-3 backdrop-blur-sm sm:px-6 sm:py-4"
         >
           <div className="flex items-center gap-3">
@@ -196,10 +198,10 @@ export default function GlobalMapPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.5 }}
+            transition={{ delay: shouldReduceMotion ? 0 : 1, duration: 0.5, ease: motionEase }}
             className="pointer-events-none absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/60 px-4 py-2 text-xs text-white/70 backdrop-blur-sm"
           >
-            <span className="animate-pulse text-pink-400">●</span>
+            <span className={shouldReduceMotion ? "text-pink-400" : "animate-pulse text-pink-400"}>●</span>
             กดที่ ✈️ เพื่อดูรายละเอียดทริป | ลาก/ซูมเพื่อสำรวจโลก
           </motion.div>
         )}

@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { getMapsUrl } from "@/lib/maps";
+import { cardReveal, liftHover, pressTap, springSnappy, staggerSoft } from "@/lib/motion";
 import type { TripHotel } from "@/types/trip";
 
 interface HotelListProps {
@@ -20,17 +21,11 @@ function getInitial(name?: string | null) {
   return (name?.trim().charAt(0) || "H").toUpperCase();
 }
 
-const cardVariant: Variants = {
-  hidden: { opacity: 0, y: 24, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: "spring", stiffness: 260, damping: 20 },
-  },
-};
+const cardVariant: Variants = cardReveal;
 
 export default function HotelList({ hotels }: HotelListProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   if (!hotels?.length) {
     return (
       <section>
@@ -54,7 +49,7 @@ export default function HotelList({ hotels }: HotelListProps) {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-60px" }}
-        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
+        variants={staggerSoft}
         className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3"
       >
         {hotels.map((hotel, index) => {
@@ -65,8 +60,8 @@ export default function HotelList({ hotels }: HotelListProps) {
             <motion.article
               key={`${name}-${index}`}
               variants={cardVariant}
-              whileHover={{ y: -6, boxShadow: "0 20px 50px rgba(0,0,0,0.12)" }}
-              className="card-glow overflow-hidden rounded-2xl bg-white shadow-sm transition-all"
+              whileHover={shouldReduceMotion ? {} : { ...liftHover, boxShadow: "0 20px 50px rgba(15,58,100,0.12)" }}
+              className="card-glow smooth-card overflow-hidden rounded-2xl bg-white shadow-sm"
             >
               <div className="flex h-40 items-center justify-center bg-gradient-to-br from-pink-400 via-cyan-400 to-lime-300 text-6xl font-black text-white gradient-animated">
                 <motion.span
@@ -108,8 +103,9 @@ export default function HotelList({ hotels }: HotelListProps) {
                   href={getMapsUrl(name, hotel.coordinates)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
+                  whileTap={pressTap}
+                  transition={springSnappy}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-blue-500 transition-colors hover:border-pink-300 hover:text-blue-700"
                 >
                   🗺️ ดูบน Google Maps

@@ -21,6 +21,12 @@ export default function AnimatedCounter({
   const containerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      hasAnimated.current = true;
+      queueMicrotask(() => setDisplayValue(value));
+      return;
+    }
+
     if (hasAnimated.current) {
       setDisplayValue(value);
       return;

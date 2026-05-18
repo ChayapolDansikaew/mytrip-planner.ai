@@ -3,6 +3,8 @@
 :root {
   --background: #9de9f4;
   --foreground: #0f3a64;
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -93,6 +95,17 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-kanit), Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ── Mapbox Globe & Popup Styles ────────────────────────────── */
@@ -115,8 +128,9 @@ body {
   box-shadow:
     0 4px 20px rgba(255, 63, 120, 0.45),
     0 0 0 3px rgba(255, 63, 120, 0.18);
-  transition: transform 0.2s ease;
-  animation: globe-bounce 2.2s ease-in-out infinite;
+  transition: transform 0.24s var(--ease-out-expo);
+  animation: globe-bounce 3.4s ease-in-out infinite;
+  will-change: transform;
 }
 
 .globe-marker-pin:hover {
@@ -258,8 +272,8 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition:
-    background 0.2s,
-    transform 0.15s;
+    background 0.2s var(--ease-out-expo),
+    transform 0.18s var(--ease-out-expo);
   font-family: var(--font-kanit), Arial, Helvetica, sans-serif;
 }
 
@@ -381,7 +395,8 @@ body {
     rgba(255, 255, 255, 0) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 2.4s ease-in-out infinite;
+  animation: shimmer 2.8s ease-in-out infinite;
+  will-change: background-position;
 }
 
 /* ── Animated timeline line ──────────────────────────────────── */
@@ -401,7 +416,7 @@ body {
   inset: 0;
   border-radius: inherit;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.36s var(--ease-out-expo);
   background: radial-gradient(
     600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
     rgba(255, 63, 120, 0.08),
@@ -433,13 +448,35 @@ body {
 
 /* ── Animated gradient background ────────────────────────────── */
 .gradient-animated {
-  background-size: 200% 200%;
-  animation: gradient-shift 6s ease infinite;
+  background-size: 220% 220%;
+  animation: gradient-shift 9s ease infinite;
 }
 
 /* ── CTA button pulsing glow ─────────────────────────────────── */
 .cta-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+  animation: pulse-glow 2.8s ease-in-out infinite;
+}
+
+.smooth-card {
+  transform: translateZ(0);
+  transition:
+    transform 0.28s var(--ease-out-expo),
+    box-shadow 0.28s var(--ease-out-expo),
+    border-color 0.28s var(--ease-out-expo),
+    background-color 0.28s var(--ease-out-expo);
+  will-change: transform;
+}
+
+.smooth-card:hover {
+  transform: translateY(-4px);
+}
+
+.soft-focus-ring {
+  outline: none;
+}
+
+.soft-focus-ring:focus-visible {
+  box-shadow: 0 0 0 4px rgba(255, 63, 120, 0.22);
 }
 
 /* ── Stagger delay utilities for CSS-only reveals ────────────── */
@@ -475,7 +512,8 @@ body {
   border: 3px solid white;
   border-radius: 50%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  transition: transform 0.2s ease;
+  transition: transform 0.24s var(--ease-out-expo);
+  will-change: transform;
 }
 
 .trip-marker-inner:hover {
@@ -517,5 +555,35 @@ body {
 .trip-place-popup .mapboxgl-popup-close-button:hover {
   color: #374151;
   background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .floating-blob,
+  .floating-blob-delayed,
+  .floating-blob-slow,
+  .gradient-animated,
+  .cta-glow,
+  .skeleton-shimmer,
+  .globe-marker-pin,
+  .globe-marker-pulse,
+  .globe-spin-icon {
+    animation: none !important;
+  }
+
+  .smooth-card,
+  .smooth-card:hover,
+  .trip-marker-inner:hover,
+  .trip-popup-button:hover {
+    transform: none !important;
+  }
 }
 

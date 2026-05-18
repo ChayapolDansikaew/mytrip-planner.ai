@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { motion, type Variants } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import {
   ArrowDown,
   ArrowLeft,
@@ -23,41 +23,21 @@ import {
 import SiteHeader from "@/components/SiteHeader";
 import { Card } from "@/components/ui/card";
 import FloatingParticles from "@/components/ui/FloatingParticles";
+import {
+  cardReveal,
+  fadeUp,
+  liftHover,
+  motionEase,
+  pressTap,
+  slideInLeft,
+  springSnappy,
+  staggerFast,
+  staggerSoft,
+} from "@/lib/motion";
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24, filter: "blur(8px)" },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.65, ease: "easeOut" },
-  },
-};
-
-const stagger: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
-};
-
-const cardPop: Variants = {
-  hidden: { opacity: 0, y: 32, scale: 0.92, rotate: -1 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    rotate: 0,
-    transition: { type: "spring", stiffness: 260, damping: 20 },
-  },
-};
-
-const previewSlide: Variants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
-  },
-};
+const stagger: Variants = staggerFast;
+const cardPop: Variants = cardReveal;
+const previewSlide: Variants = slideInLeft;
 
 const quickActions = [
   { icon: Plane, label: "สร้างทริปใหม่" },
@@ -96,6 +76,7 @@ const destinations = [
 ];
 
 export default function Home() {
+  const shouldReduceMotion = useReducedMotion();
   const [prompt, setPrompt] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
@@ -163,7 +144,7 @@ export default function Home() {
       </div>
 
       {/* Floating travel emoji particles */}
-      <FloatingParticles count={12} className="fixed z-[1]" />
+      <FloatingParticles count={shouldReduceMotion ? 0 : 10} className="fixed z-[1]" />
 
       <SiteHeader />
 
@@ -183,7 +164,7 @@ export default function Home() {
           </motion.p>
 
           <motion.div variants={fadeUp} className="mt-8 w-full max-w-3xl rounded-[1.6rem] border border-white/70 bg-white/45 p-3 text-left shadow-[0_34px_100px_rgba(15,58,100,0.16),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-2xl">
-            <form onSubmit={handleCreateTrip} className="flex min-h-28 items-start gap-4 rounded-[1.25rem] border border-white/75 bg-white/72 p-4">
+            <form onSubmit={handleCreateTrip} className="smooth-card flex min-h-28 items-start gap-4 rounded-[1.25rem] border border-white/75 bg-white/72 p-4 focus-within:border-[#ff3f78]/45 focus-within:shadow-[0_24px_80px_rgba(255,63,120,0.12)]">
               <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} aria-label="บอก AI ว่าต้องการทริปแบบไหน" className="min-h-20 flex-1 resize-none bg-transparent text-sm leading-7 text-[#0f3a64] outline-none placeholder:text-[#0f3a64]/42" placeholder="เช่น สร้างทริปปารีส 5 วัน จากกรุงเทพฯ เน้นคาเฟ่ ศิลปะ โรงแรมสวย และงบกลาง ๆ" />
               <button type="submit" disabled={isSubmitting} className="cta-glow mt-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ff3f78] text-white shadow-[0_14px_38px_rgba(255,63,120,0.34)] transition hover:-translate-y-0.5 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:opacity-60 disabled:animate-none" aria-label="ส่งบรีฟให้ AI">
                 <Send className="h-4 w-4" />
@@ -207,9 +188,9 @@ export default function Home() {
               return (
                 <motion.button
                   key={item.label}
-                  whileHover={{ scale: 1.06, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.04 }}
+                  whileTap={pressTap}
+                  transition={springSnappy}
                   className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/45 px-4 py-2 text-xs font-medium text-[#0f3a64]/72 shadow-sm backdrop-blur transition hover:border-[#ff3f78]/40 hover:bg-white/75 hover:text-[#0f3a64]"
                 >
                   <Icon className="h-3.5 w-3.5 text-[#ff3f78]" />
@@ -225,7 +206,7 @@ export default function Home() {
             className="mt-12 inline-flex items-center gap-2 text-sm font-medium text-[#0f3a64]/64 transition hover:text-[#ff3f78]"
           >
             ยังไม่รู้จะเริ่มตรงไหน? <span className="font-semibold text-[#0f3a64]">ดูวิธีทำงาน</span>
-            <motion.span animate={{ y: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+            <motion.span animate={shouldReduceMotion ? {} : { y: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.8, ease: motionEase }}>
               <ArrowDown className="h-4 w-4" />
             </motion.span>
           </motion.a>
@@ -275,7 +256,7 @@ export default function Home() {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true }}
-                  variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }}
+                  variants={staggerSoft}
                   className="mt-7 grid gap-3"
                 >
                   {previewSteps.map((step) => {
@@ -284,8 +265,8 @@ export default function Home() {
                       <motion.div
                         key={step.title}
                         variants={previewSlide}
-                        whileHover={{ x: 4, boxShadow: "0 8px 30px rgba(15,58,100,0.12)" }}
-                        className="flex items-start gap-3 rounded-2xl bg-white/80 p-4 ring-1 ring-[#0f3a64]/8 transition-shadow"
+                        whileHover={shouldReduceMotion ? {} : { x: 4, boxShadow: "0 12px 36px rgba(15,58,100,0.12)" }}
+                        className="smooth-card flex items-start gap-3 rounded-2xl bg-white/80 p-4 ring-1 ring-[#0f3a64]/8"
                       >
                         <motion.span
                           whileHover={{ rotate: 12, scale: 1.1 }}
@@ -306,8 +287,9 @@ export default function Home() {
               <div className="m-5 flex min-h-72 items-end overflow-hidden rounded-[1.4rem] bg-[radial-gradient(circle_at_30%_18%,rgba(255,255,255,0.72),transparent_25%),radial-gradient(circle_at_80%_18%,rgba(185,245,41,0.56),transparent_24%),linear-gradient(145deg,#38bdf8_0%,#0ea5e9_52%,#ff3f78_100%)] p-5 text-left text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.32)] gradient-animated">
                 <div>
                   <motion.div
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.06 }}
+                    whileTap={pressTap}
+                    transition={springSnappy}
                     className="mb-14 flex h-16 w-16 items-center justify-center rounded-full bg-white/90 text-[#ff3f78] shadow-[0_18px_42px_rgba(15,58,100,0.18)] cursor-pointer"
                   >
                     <Play className="ml-1 h-7 w-7 fill-[#ff3f78]" />
@@ -332,10 +314,10 @@ export default function Home() {
             </h2>
           </div>
           <div className="flex gap-3">
-            <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/45 text-[#0f3a64]/72 shadow-sm backdrop-blur transition hover:bg-white/75 hover:text-[#ff3f78]" aria-label="เลื่อนซ้าย">
+            <motion.button whileHover={shouldReduceMotion ? {} : { scale: 1.08 }} whileTap={pressTap} transition={springSnappy} className="soft-focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/45 text-[#0f3a64]/72 shadow-sm backdrop-blur transition hover:bg-white/75 hover:text-[#ff3f78]" aria-label="เลื่อนซ้าย">
               <ArrowLeft className="h-4 w-4" />
             </motion.button>
-            <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="flex h-11 w-11 items-center justify-center rounded-full border border-[#ff3f78]/25 bg-[#ff3f78] text-white shadow-[0_14px_40px_rgba(255,63,120,0.28)] transition hover:bg-[#ff6b95]" aria-label="เลื่อนขวา">
+            <motion.button whileHover={shouldReduceMotion ? {} : { scale: 1.08 }} whileTap={pressTap} transition={springSnappy} className="soft-focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-[#ff3f78]/25 bg-[#ff3f78] text-white shadow-[0_14px_40px_rgba(255,63,120,0.28)] transition hover:bg-[#ff6b95]" aria-label="เลื่อนขวา">
               <ArrowRight className="h-4 w-4" />
             </motion.button>
           </div>
@@ -343,7 +325,7 @@ export default function Home() {
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {destinations.map((destination, index) => (
-            <motion.div key={destination.city} variants={cardPop} whileHover={{ y: -8, transition: { type: "spring", stiffness: 300 } }}>
+            <motion.div key={destination.city} variants={cardPop} whileHover={shouldReduceMotion ? {} : liftHover}>
               <Card className={`card-glow group relative min-h-[27rem] overflow-hidden border-white/70 bg-cover bg-center p-0 ${destination.background}`}>
                 <div className="absolute inset-0 bg-gradient-to-b from-[#0f3a64]/2 via-[#0f3a64]/8 to-[#0f3a64]/62" />
                 <div className="relative flex h-full min-h-[27rem] flex-col justify-between p-6">

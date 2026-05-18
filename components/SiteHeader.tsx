@@ -6,10 +6,11 @@ import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Compass } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { pressTap, springSnappy } from "@/lib/motion";
 
 const navItems = [
   { label: "หน้าแรก", href: "/#top" },
@@ -22,6 +23,7 @@ const navItems = [
 export default function SiteHeader() {
   const pathname = usePathname();
   const { isSignedIn } = useUser();
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <motion.header
@@ -37,8 +39,9 @@ export default function SiteHeader() {
           aria-label="กลับสู่หน้าแรก AI Trip Planner"
         >
           <motion.span
-            whileHover={{ rotate: 360 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
+            whileHover={shouldReduceMotion ? {} : { rotate: 18, scale: 1.06 }}
+            whileTap={pressTap}
+            transition={springSnappy}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
           >
             <Compass className="h-4 w-4 text-[#ff3f78]" />
@@ -80,13 +83,13 @@ export default function SiteHeader() {
             <>
               <Link
                 href="/sign-in"
-                className={buttonVariants({ variant: "outline", size: "sm" })}
+                className={buttonVariants({ variant: "outline", size: "sm", className: "soft-focus-ring" })}
               >
                 เข้าสู่ระบบ
               </Link>
               <Link
                 href="/sign-up"
-                className={buttonVariants({ size: "sm" })}
+                className={buttonVariants({ size: "sm", className: "soft-focus-ring" })}
               >
                 เริ่มวางแผน
               </Link>

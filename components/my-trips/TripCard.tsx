@@ -84,13 +84,13 @@ export default function TripCard({ trip }: { trip: Trip }) {
 
   return (
     <Link href={`/view-trip/${trip._id}`} className="group block focus:outline-none">
-      <article className="relative overflow-hidden rounded-2xl border border-white/70 bg-white/82 shadow-[0_18px_60px_rgba(15,58,100,0.12)] backdrop-blur transition-all duration-300 group-hover:shadow-[0_28px_90px_rgba(15,58,100,0.2)] group-focus-visible:ring-4 group-focus-visible:ring-[#ff3f78]/25">
+      <article className="smooth-card relative overflow-hidden rounded-2xl border border-white/70 bg-white/82 shadow-[0_18px_60px_rgba(15,58,100,0.12)] backdrop-blur group-hover:shadow-[0_28px_90px_rgba(15,58,100,0.2)] group-focus-visible:ring-4 group-focus-visible:ring-[#ff3f78]/25">
         {/* Gradient cover */}
         <div
           className={`relative flex h-44 items-center justify-center bg-gradient-to-br ${gradients[gradientIndex]}`}
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_20%,rgba(255,255,255,0.36),transparent_28%),radial-gradient(circle_at_82%_80%,rgba(255,255,255,0.22),transparent_26%)]" />
-          <span className="relative text-6xl font-bold text-white/45">
+          <span className="relative text-6xl font-bold text-white/45 transition-transform duration-300 ease-out group-hover:scale-105">
             {destinationInitial}
           </span>
           <div className="absolute bottom-3 left-3 right-3 flex justify-start">
@@ -105,7 +105,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-2 right-2 z-10 h-9 w-9 rounded-full bg-black/30 text-white opacity-0 transition-all hover:bg-red-500 group-hover:opacity-100"
+                className="absolute top-2 right-2 z-10 h-9 w-9 rounded-full bg-black/30 text-white opacity-0 transition-all duration-200 hover:bg-red-500 focus-visible:opacity-100 group-hover:opacity-100"
                 onClick={(e) => e.preventDefault()}
               >
                 <Trash2 className="h-4 w-4" />
