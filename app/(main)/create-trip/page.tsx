@@ -49,6 +49,23 @@ type RateLimitError = {
   resetTime: string;
 };
 
+async function readCreateTripResponse(response: Response) {
+  const contentType = response.headers.get("content-type");
+
+  if (contentType?.includes("application/json")) {
+    return (await response.json()) as CreateTripResponse;
+  }
+
+  const text = await response.text().catch(() => "");
+
+  return {
+    error: "invalid_response",
+    message:
+      text.trim() ||
+      "เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง กรุณาตรวจสอบการตั้งค่า Environment Variables",
+  } satisfies CreateTripResponse;
+}
+
 export default function CreateTripPage() {
   const createTrip = useMutation(api.trips.createTrip);
   const router = useRouter();
@@ -135,7 +152,7 @@ export default function CreateTripPage() {
         }),
       });
 
-      const data = (await res.json()) as CreateTripResponse;
+      const data = await readCreateTripResponse(res);
 
       if (res.status === 429) {
         if (data.action === "upgrade") {
@@ -171,15 +188,24 @@ export default function CreateTripPage() {
           ? data.tripData.tripName
           : destination;
 
-      const tripId = await createTrip({
-        userId: user.id,
-        destination,
-        tripData: data.tripData,
-        duration,
-        budget: formData.budget,
-        travelers: formData.travelers,
-        tripName,
-      });
+      let tripId: string;
+
+      try {
+        tripId = await createTrip({
+          userId: user.id,
+          destination,
+          tripData: data.tripData,
+          duration,
+          budget: formData.budget,
+          travelers: formData.travelers,
+          tripName,
+        });
+      } catch (saveError) {
+        console.error("Trip save error:", saveError);
+        throw new Error(
+          "สร้างแผนทริปสำเร็จแล้ว แต่บันทึกลงฐานข้อมูลไม่สำเร็จ กรุณาตรวจสอบ Convex Deployment",
+        );
+      }
 
       setSaveStep("redirecting");
       console.log("ทริปที่สร้างแล้ว:", data.tripData);
@@ -187,7 +213,11 @@ export default function CreateTripPage() {
       router.push(`/view-trip/${tripId}`);
     } catch (err) {
       console.error("Trip generation error:", err);
-      setError("เกิดข้อผิดพลาดบางอย่าง กรุณาลองใหม่อีกครั้ง");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "เกิดข้อผิดพลาดบางอย่าง กรุณาลองใหม่อีกครั้ง",
+      );
     } finally {
       if (!didRedirect) {
         setLoading(false);
