@@ -29,6 +29,14 @@ function getCreateTripErrorMessage(error: unknown) {
     return "Gemini API key ไม่ถูกต้องหรือไม่มีสิทธิ์ใช้งาน กรุณาตรวจสอบ GEMINI_API_KEY";
   }
 
+  if (message.includes("not found") || message.includes("not supported") || message.includes("model")) {
+    return "โมเดล Gemini ที่ใช้อยู่ไม่พร้อมใช้งาน กรุณาตรวจสอบว่า GEMINI_API_KEY เปิดใช้งาน Generative Language API แล้ว";
+  }
+
+  if (message.includes("fetch failed") || message.includes("network") || message.includes("timeout")) {
+    return "เชื่อมต่อบริการ AI ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง หรือเช็กสถานะ Gemini API";
+  }
+
   if (message.includes("quota") || message.includes("rate limit")) {
     return "โควตา AI เต็มหรือถูกจำกัดชั่วคราว กรุณาลองใหม่ภายหลัง";
   }
@@ -37,7 +45,7 @@ function getCreateTripErrorMessage(error: unknown) {
     return "AI ตอบกลับรูปแบบไม่ถูกต้อง กรุณาลองสร้างทริปใหม่อีกครั้ง";
   }
 
-  return "เกิดข้อผิดพลาดในการสร้างทริป กรุณาลองใหม่อีกครั้ง";
+  return "สร้างทริปไม่สำเร็จจากฝั่งเซิร์ฟเวอร์ กรุณาตรวจสอบ Function Logs บน Vercel เพื่อดูรายละเอียดเพิ่มเติม";
 }
 
 export async function POST(req: NextRequest) {
@@ -189,7 +197,7 @@ export async function POST(req: NextRequest) {
 `;
 
     const genAI = new GoogleGenerativeAI(geminiApiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(prompt);
     const text = result.response.text();
     const clean = text.replace(/```json|```/g, "").trim();
