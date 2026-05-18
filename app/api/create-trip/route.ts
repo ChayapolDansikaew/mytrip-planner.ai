@@ -1,9 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { fetchQuery } from "convex/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 
-import { api } from "@/convex/_generated/api";
 import { ajAnonymous, ajFree } from "@/lib/arcjet";
 
 function getCreateTripErrorMessage(error: unknown) {
@@ -92,36 +90,30 @@ export async function POST(req: NextRequest) {
     }
 
     if (userId) {
-      const user = await fetchQuery(api.users.getUserByClerkId, {
-        clerkId: userId,
+      const decision = await ajFree.protect(req, {
+        userId,
+        requested: 1,
       });
 
-      if (!user?.isPremium) {
-        const decision = await ajFree.protect(req, {
-          userId,
-          requested: 1,
-        });
+      if (decision.isDenied()) {
+        if (decision.reason.isRateLimit()) {
+          return NextResponse.json(
+            {
+              error: "rate_limit",
+              message: "คุณใช้โควตาสร้างทริปฟรีรายวันครบแล้ว (3 ทริป/วัน)",
+              action: "upgrade",
+              limit: 3,
+              resetTime: "เที่ยงคืน (00:00 น.)",
+            },
+            { status: 429 },
+          );
+        }
 
-        if (decision.isDenied()) {
-          if (decision.reason.isRateLimit()) {
-            return NextResponse.json(
-              {
-                error: "rate_limit",
-                message: "คุณใช้โควตาสร้างทริปฟรีรายวันครบแล้ว (3 ทริป/วัน)",
-                action: "upgrade",
-                limit: 3,
-                resetTime: "เที่ยงคืน (00:00 น.)",
-              },
-              { status: 429 },
-            );
-          }
-
-          if (decision.reason.isShield()) {
-            return NextResponse.json(
-              { error: "forbidden", message: "คำขอถูกบล็อก" },
-              { status: 403 },
-            );
-          }
+        if (decision.reason.isShield()) {
+          return NextResponse.json(
+            { error: "forbidden", message: "คำขอถูกบล็อก" },
+            { status: 403 },
+          );
         }
       }
     }
