@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Plane, MapPinned, Sparkles } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
@@ -33,10 +34,10 @@ export default function MyTripsPage() {
     <>
       <SiteHeader />
 
-      <main className="relative isolate min-h-screen overflow-hidden bg-[#9de9f4] px-4 py-10 text-[#0f3a64] selection:bg-[#ff3f78]/20 selection:text-[#0f3a64] sm:px-6 lg:px-8">
+      <main className="relative isolate min-h-screen overflow-hidden bg-gradient-to-tr from-sky-300 via-[#9de9f4] to-emerald-200 px-4 py-10 text-[#0f3a64] selection:bg-[#ff3f78]/20 selection:text-[#0f3a64] sm:px-6 lg:px-8">
         {/* Background decorations */}
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(255,255,255,0.88),transparent_28%),radial-gradient(circle_at_84%_18%,rgba(185,245,41,0.32),transparent_24%),linear-gradient(180deg,#c9f7ff_0%,#f7fcff_48%,#fff8ed_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(255,255,255,0.88),transparent_28%),radial-gradient(circle_at_84%_18%,rgba(185,245,41,0.32),transparent_24%),linear-gradient(180deg,#c9f7ff_0%,rgba(247,252,255,0.6)_48%,rgba(255,248,237,0.4)_100%)]" />
           <div className="absolute left-[-8rem] top-28 h-72 w-72 rounded-full bg-[#ff3f78]/16 blur-3xl" />
           <div className="absolute bottom-8 right-[-7rem] h-80 w-80 rounded-full bg-[#b9f529]/35 blur-3xl" />
           <div className="absolute inset-x-0 top-0 h-32 bg-[linear-gradient(135deg,rgba(255,255,255,0.52)_25%,transparent_25%),linear-gradient(225deg,rgba(255,255,255,0.42)_25%,transparent_25%)] bg-[size:72px_72px] opacity-35" />
@@ -63,7 +64,7 @@ export default function MyTripsPage() {
             </div>
             <Link
               href="/create-trip"
-              className="soft-focus-ring hidden h-12 items-center justify-center rounded-full bg-[#ff3f78] px-6 text-sm font-semibold text-white shadow-[0_18px_55px_rgba(255,63,120,0.3)] transition hover:-translate-y-0.5 hover:bg-[#ff6b95] sm:inline-flex"
+              className="soft-focus-ring hidden h-12 items-center justify-center rounded-full bg-[#ff3f78] px-6 text-sm font-semibold text-white shadow-[0_14px_38px_rgba(255,63,120,0.34)] transition hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-95 hover:bg-[#ff6b95] sm:inline-flex"
             >
               + สร้างทริปใหม่
             </Link>
@@ -110,23 +111,46 @@ export default function MyTripsPage() {
               transition={{ duration: 0.5 }}
               className="flex flex-col items-center justify-center rounded-[2rem] border border-white/70 bg-white/52 px-6 py-32 text-center shadow-[0_30px_100px_rgba(15,58,100,0.12)] backdrop-blur-2xl"
             >
-              <motion.div
-                animate={shouldReduceMotion ? {} : { y: [0, -8, 0], rotate: [0, 2, -2, 0] }}
-                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                className="text-7xl"
-              >
-                ✈️
-              </motion.div>
-              <h2 className="mt-5 text-2xl font-bold tracking-[-0.035em] text-gray-700">
+              <div className="relative flex h-48 w-48 items-center justify-center">
+                <div className="absolute inset-0 rounded-full bg-[#ff3f78]/10 blur-2xl" />
+                
+                {/* Main Plane Icon */}
+                <motion.div
+                  animate={shouldReduceMotion ? {} : { y: [0, -10, 0], rotate: [0, 3, -3, 0] }}
+                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                  className="relative z-10 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-tr from-[#ff3f78] to-[#ff6b95] shadow-[0_16px_40px_rgba(255,63,120,0.3)]"
+                >
+                  <Plane className="h-10 w-10 text-white" />
+                </motion.div>
+
+                {/* Floating Map Pin */}
+                <motion.div
+                  animate={shouldReduceMotion ? {} : { y: [0, 8, 0], rotate: [0, -5, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }}
+                  className="absolute bottom-4 left-4 z-20 flex h-14 w-14 items-center justify-center rounded-full border border-white/60 bg-white/80 shadow-[0_12px_30px_rgba(15,58,100,0.15)] backdrop-blur-md"
+                >
+                  <MapPinned className="h-6 w-6 text-[#22d3ee]" />
+                </motion.div>
+
+                {/* Floating Sparkles */}
+                <motion.div
+                  animate={shouldReduceMotion ? {} : { scale: [1, 1.2, 1], rotate: [0, 15, 0] }}
+                  transition={{ repeat: Infinity, duration: 3, ease: "easeInOut", delay: 1 }}
+                  className="absolute right-6 top-4 z-0 flex h-10 w-10 items-center justify-center rounded-full bg-[#b9f529] shadow-[0_10px_24px_rgba(185,245,41,0.4)]"
+                >
+                  <Sparkles className="h-5 w-5 text-[#0f3a64]" />
+                </motion.div>
+              </div>
+              <h2 className="mt-6 text-2xl font-bold tracking-[-0.035em] text-[#0f3a64]">
                 ยังไม่มีทริปของคุณ
               </h2>
-              <p className="mt-2 max-w-sm text-sm leading-7 text-gray-500">
+              <p className="mt-2 max-w-sm text-sm leading-7 text-[#0f3a64]/70">
                 เริ่มสร้างทริปแรกของคุณด้วย AI
                 แล้วแผนการเดินทางในฝันจะเป็นจริง!
               </p>
               <Link
                 href="/create-trip"
-                className="soft-focus-ring mt-6 inline-flex h-12 items-center justify-center rounded-full bg-pink-500 px-8 text-base font-semibold text-white shadow-[0_18px_55px_rgba(236,72,153,0.3)] transition hover:-translate-y-0.5 hover:bg-pink-600"
+                className="soft-focus-ring mt-8 inline-flex h-12 items-center justify-center rounded-full bg-[#ff3f78] px-8 text-base font-semibold text-white shadow-[0_14px_38px_rgba(255,63,120,0.34)] transition hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-95 hover:bg-[#ff6b95]"
               >
                 ✨ สร้างทริปแรก
               </Link>
@@ -165,7 +189,7 @@ export default function MyTripsPage() {
           <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 sm:hidden">
             <Link
               href="/create-trip"
-              className="soft-focus-ring inline-flex h-12 items-center justify-center rounded-full bg-[#ff3f78] px-6 text-sm font-semibold text-white shadow-[0_18px_60px_rgba(255,63,120,0.4)] transition hover:bg-[#ff6b95]"
+              className="soft-focus-ring inline-flex h-14 items-center justify-center rounded-full bg-[#ff3f78] px-8 text-sm font-semibold text-white shadow-[0_14px_38px_rgba(255,63,120,0.34)] transition hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-95 hover:bg-[#ff6b95]"
             >
               + สร้างทริปใหม่
             </Link>

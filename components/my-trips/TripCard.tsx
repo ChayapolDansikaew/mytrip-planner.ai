@@ -84,7 +84,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
 
   return (
     <Link href={`/view-trip/${trip._id}`} className="group block focus:outline-none">
-      <article className="smooth-card relative overflow-hidden rounded-2xl border border-white/70 bg-white/82 shadow-[0_18px_60px_rgba(15,58,100,0.12)] backdrop-blur group-hover:shadow-[0_28px_90px_rgba(15,58,100,0.2)] group-focus-visible:ring-4 group-focus-visible:ring-[#ff3f78]/25">
+      <article className="relative overflow-hidden rounded-2xl border border-white/70 bg-white/82 shadow-[0_8px_24px_rgba(15,58,100,0.08),0_4px_0_rgba(15,58,100,0.06)] backdrop-blur transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_16px_36px_rgba(15,58,100,0.12),0_6px_0_rgba(15,58,100,0.08)] group-active:translate-y-0.5 group-active:shadow-[0_4px_12px_rgba(15,58,100,0.08),0_2px_0_rgba(15,58,100,0.06)] group-focus-visible:ring-4 group-focus-visible:ring-[#ff3f78]/25">
         {/* Gradient cover */}
         <div
           className={`relative flex h-44 items-center justify-center bg-gradient-to-br ${gradients[gradientIndex]}`}
@@ -94,7 +94,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
             {destinationInitial}
           </span>
           <div className="absolute bottom-3 left-3 right-3 flex justify-start">
-            <span className="max-w-full truncate rounded-full bg-white/22 px-3 py-1 text-xs font-semibold text-white shadow-sm backdrop-blur">
+            <span className="max-w-full truncate rounded-full border border-white/30 bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
               ✈️ {trip.destination}
             </span>
           </div>
@@ -145,17 +145,17 @@ export default function TripCard({ trip }: { trip: Trip }) {
 
           <div className="flex flex-wrap gap-2">
             {trip.duration ? (
-              <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-600">
+              <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-600 backdrop-blur-sm">
                 📅 {trip.duration} วัน
               </span>
             ) : null}
             {budgetLabel ? (
-              <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-600">
+              <span className="rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 backdrop-blur-sm">
                 💰 {budgetLabel}
               </span>
             ) : null}
             {travelerLabel ? (
-              <span className="rounded-full bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-600">
+              <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-2.5 py-1 text-xs font-medium text-purple-600 backdrop-blur-sm">
                 👥 {travelerLabel}
               </span>
             ) : null}

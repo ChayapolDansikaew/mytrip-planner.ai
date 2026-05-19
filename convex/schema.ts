@@ -19,5 +19,11 @@ export default defineSchema({
     travelers: v.optional(v.string()),
     tripName: v.optional(v.string()),
     imageUrl: v.optional(v.string()),
-  }).index("by_userId", ["userId"]),
+    isFavorite: v.optional(v.boolean()),
+    isPublic: v.optional(v.boolean()),
+    startDate: v.optional(v.string()),
+    likes: v.optional(v.number()),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_isPublic_likes", ["isPublic", "likes"]),
 });
