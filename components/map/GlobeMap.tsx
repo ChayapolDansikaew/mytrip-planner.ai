@@ -148,44 +148,50 @@ export default function GlobeMap({ trips, onTripClick }: GlobeMapProps) {
         </div>
       `;
 
-      // Popup content
+      // Popup content element
+      const popupEl = document.createElement("div");
+      popupEl.className = "trip-popup-inner";
+      popupEl.innerHTML = `
+        <div class="trip-popup-title">
+          ${trip.tripName ?? trip.destination}
+        </div>
+        <div class="trip-popup-destination">
+          📍 ${trip.destination}
+        </div>
+        <div class="trip-popup-badges">
+          ${
+            trip.duration
+              ? `<span class="trip-badge trip-badge-blue">📅 ${trip.duration} วัน</span>`
+              : ""
+          }
+          ${
+            trip.budget
+              ? `<span class="trip-badge trip-badge-green">💰 ${trip.budget}</span>`
+              : ""
+          }
+          ${
+            trip.travelers
+              ? `<span class="trip-badge trip-badge-purple">👥 ${trip.travelers}</span>`
+              : ""
+          }
+        </div>
+      `;
+
+      // Create click listener for view trip button using Next.js routing instead of hard refresh
+      const viewBtn = document.createElement("button");
+      viewBtn.className = "trip-popup-button";
+      viewBtn.textContent = "ดูทริปนี้ →";
+      viewBtn.addEventListener("click", () => {
+        onTripClick?.(trip.tripId);
+      });
+      popupEl.appendChild(viewBtn);
+
       const popup = new mapboxgl.Popup({
         offset: 30,
         closeButton: true,
         className: "trip-popup",
         maxWidth: "280px",
-      }).setHTML(`
-        <div class="trip-popup-inner">
-          <div class="trip-popup-title">
-            ${trip.tripName ?? trip.destination}
-          </div>
-          <div class="trip-popup-destination">
-            📍 ${trip.destination}
-          </div>
-          <div class="trip-popup-badges">
-            ${
-              trip.duration
-                ? `<span class="trip-badge trip-badge-blue">📅 ${trip.duration} วัน</span>`
-                : ""
-            }
-            ${
-              trip.budget
-                ? `<span class="trip-badge trip-badge-green">💰 ${trip.budget}</span>`
-                : ""
-            }
-            ${
-              trip.travelers
-                ? `<span class="trip-badge trip-badge-purple">👥 ${trip.travelers}</span>`
-                : ""
-            }
-          </div>
-          <button 
-            onclick="window.location.href='/view-trip/${trip.tripId}'"
-            class="trip-popup-button">
-            ดูทริปนี้ →
-          </button>
-        </div>
-      `);
+      }).setDOMContent(popupEl);
 
       const marker = new mapboxgl.Marker({ element: el, anchor: "bottom" })
         .setLngLat(trip.coordinates)
@@ -204,7 +210,6 @@ export default function GlobeMap({ trips, onTripClick }: GlobeMapProps) {
           duration: 2000,
           essential: true,
         });
-        onTripClick?.(trip.tripId);
       });
     });
   }, [trips, onTripClick]);
