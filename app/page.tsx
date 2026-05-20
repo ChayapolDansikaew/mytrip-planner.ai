@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useRef, useEffect, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
@@ -80,6 +80,46 @@ const destinations = [
   },
 ];
 
+const inspirationPrompts = [
+  "วางแผนทริปโตเกียว 5 วัน เน้นกินซูชิ ราเมน ชิมคาเฟ่สไตล์มินิมอล และตะลุยช้อปปิ้งย่านชิบูยะและฮาราจูกุ",
+  "จัดทริปมัลดีฟส์ 3 วัน 2 คืน พักพูลวิลล่ากลางน้ำ ดำน้ำตื้นชมปะการัง ทานมื้อค่ำใต้แสงเทียนสุดโรแมนติก",
+  "แพลนเที่ยวสวิตเซอร์แลนด์ 7 วัน นั่งรถไฟสายด่วน Glacier Express ชมวิวเทือกเขาแอลป์ และเดินเล่นในเมืองสไตล์เทพนิยายอย่างลูเซิร์น",
+  "บุกทริปไอซ์แลนด์ 6 วัน ขับรถเที่ยวล่าแสงเหนือตามเส้นทาง Golden Circle ชมน้ำตกอันยิ่งใหญ่ และแช่น้ำร้อน Blue Lagoon",
+  "ทริปเชียงใหม่ 3 วัน 2 คืน เที่ยวคาเฟ่ในป่าเขียวขจี ชมพระอาทิตย์ขึ้นที่กิ่วแม่ปาน และทานอาหารเหนืออร่อยๆ ในตัวเมือง",
+];
+
+const hiddenGemsPrompts = [
+  "ค้นหา Hidden Gems ในเกียวโต 4 วัน แนะนำสถานที่ท่องเที่ยวและคาเฟ่ลับที่ไม่ซ้ำใคร เลี่ยงจุดที่นักท่องเที่ยวแออัด",
+  "ตามรอยพิกัดลับและ Hidden Gems ในเชียงใหม่ 3 วัน รวมคาเฟ่กลางป่า ร้านอาหารพื้นบ้านฟีลโฮมมี่ และจุดชมวิวที่สงบเงียบ",
+  "แนะนำจุดเช็คอินลับ Hidden Gems ในโซล 5 วัน ย่านเดินเล่นชิคๆ สตรีทอาร์ทเก๋ๆ และร้านอร่อยโลคอลเฉพาะคนพื้นที่",
+  "ค้นพบ Hidden Gems ในภูเก็ต 3 วัน เที่ยวชายหาดลับที่ซ่อนอยู่ ร้านอาหารท้องถิ่นรสจัดจ้าน และคาเฟ่สไตล์เปอรานากันลับๆ",
+  "ตามหา Hidden Gems ในฮอกไกโดหน้าร้อน 5 วัน ชมทุ่งดอกไม้ที่ซ่อนเร้น ทะเลสาบสีน้ำเงินลึกลับ และหมู่บ้านชาวประมงเล็กๆ",
+];
+
+const specialRoutePrompts = [
+  "ออกแบบเส้นทางพิเศษ Road Trip แถบโอกินาว่า 5 วัน ขับรถเที่ยวเลาะชายทะเล สะพานคุริิมะ ทานอาหารท้องถิ่น และชมพระอาทิตย์ตกดิน",
+  "วางแผนเส้นทางพิเศษเที่ยวอิตาลีตอนใต้ Amalfi Coast 6 วัน ลัดเลาะริมหน้าผา เมืองสีสันสดใส และล่องเรือชมถ้ำหินปูนสุดตระการตา",
+  "จัดเส้นทางพิเศษเดินป่าขึ้นดอยม่อนจอง 3 วัน ชมทุ่งหญ้าสีทอง กางเต็นท์นอนดูดาว และสัมผัสอากาศหนาวและธรรมชาติบนยอดเขา",
+  "ออกแบบเส้นทางพิเศษตะลอนกินสตรีทฟู้ดกรุงเทพฯ 2 วัน เจาะลึกร้านเด็ดเยาวราช ตลาดพลู และย่านเก่าวังหลัง พร้อมแผนเดินทางด้วยเรือและรถตุ๊กตุ๊ก",
+  "วางแผนเส้นทางพิเศษปั่นจักรยานเที่ยวรอบทะเลสาบบิวะ (Biwa) ญี่ปุ่น 4 วัน แวะพักเมืองประวัติศาสตร์ ทานเนื้อโอมิชั้นเลิศ และพักเรียวกังโบราณ",
+];
+
+function getQuickActionPrompt(actionLabel: string): string {
+  if (actionLabel === "หาแรงบันดาลใจ") {
+    const idx = Math.floor(Math.random() * inspirationPrompts.length);
+    return inspirationPrompts[idx];
+  }
+  if (actionLabel === "ค้นหา Hidden Gems") {
+    const idx = Math.floor(Math.random() * hiddenGemsPrompts.length);
+    return hiddenGemsPrompts[idx];
+  }
+  if (actionLabel === "ออกแบบเส้นทางพิเศษ") {
+    const idx = Math.floor(Math.random() * specialRoutePrompts.length);
+    return specialRoutePrompts[idx];
+  }
+  return "";
+}
+
 export default function Home() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
@@ -89,6 +129,55 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [statusTone, setStatusTone] = useState<"success" | "error">("success");
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+      }
+    };
+  }, []);
+
+  function handleQuickAction(actionLabel: string) {
+    if (actionLabel === "สร้างทริปใหม่") {
+      router.push("/create-trip");
+      return;
+    }
+
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+      typingIntervalRef.current = null;
+    }
+
+    const selectedPrompt = getQuickActionPrompt(actionLabel);
+
+    if (selectedPrompt) {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        textareaRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      let currentText = "";
+      let i = 0;
+      setPrompt("");
+
+      typingIntervalRef.current = setInterval(() => {
+        if (i < selectedPrompt.length) {
+          currentText += selectedPrompt[i];
+          setPrompt(currentText);
+          i++;
+        } else {
+          if (typingIntervalRef.current) {
+            clearInterval(typingIntervalRef.current);
+            typingIntervalRef.current = null;
+          }
+        }
+      }, 15);
+    }
+  }
 
   async function handleCreateTrip(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -210,7 +299,20 @@ export default function Home() {
 
           <motion.div variants={fadeUp} className="mt-8 w-full max-w-3xl rounded-[1.6rem] border border-white/70 bg-white/45 p-3 shadow-[0_34px_100px_rgba(15,58,100,0.16),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-2xl transition-all duration-300">
             <form onSubmit={handleCreateTrip} className="smooth-card flex min-h-28 items-start gap-4 rounded-[1.25rem] border border-white/75 bg-white/80 p-4 shadow-[0_12px_40px_rgba(15,58,100,0.08),0_4px_0_#0b809a] focus-within:-translate-y-0.5 focus-within:border-[#ff3f78]/45 focus-within:shadow-[0_24px_80px_rgba(255,63,120,0.12),0_6px_0_#0b809a] transition-all">
-              <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} aria-label="บอก AI ว่าต้องการทริปแบบไหน" className="min-h-20 flex-1 resize-none bg-transparent text-sm leading-7 text-[#0f3a64] outline-none placeholder:text-[#0f3a64]/42" placeholder="เช่น สร้างทริปปารีส 5 วัน จากกรุงเทพฯ เน้นคาเฟ่ ศิลปะ โรงแรมสวย และงบกลาง ๆ" />
+              <textarea
+                ref={textareaRef}
+                value={prompt}
+                onChange={(event) => {
+                  if (typingIntervalRef.current) {
+                    clearInterval(typingIntervalRef.current);
+                    typingIntervalRef.current = null;
+                  }
+                  setPrompt(event.target.value);
+                }}
+                aria-label="บอก AI ว่าต้องการทริปแบบไหน"
+                className="min-h-20 flex-1 resize-none bg-transparent text-sm leading-7 text-[#0f3a64] outline-none placeholder:text-[#0f3a64]/42"
+                placeholder="เช่น สร้างทริปปารีส 5 วัน จากกรุงเทพฯ เน้นคาเฟ่ ศิลปะ โรงแรมสวย และงบกลาง ๆ"
+              />
               <button type="submit" disabled={isSubmitting} className="cta-glow mt-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff3f78] text-white shadow-[0_14px_38px_rgba(255,63,120,0.34)] transition hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-95 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:opacity-60 disabled:animate-none" aria-label="ส่งบรีฟให้ AI">
                 <Send className="h-4 w-4" />
               </button>
@@ -233,6 +335,7 @@ export default function Home() {
               return (
                 <motion.button
                   key={item.label}
+                  onClick={() => handleQuickAction(item.label)}
                   whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.04 }}
                   whileTap={pressTap}
                   transition={springSnappy}
