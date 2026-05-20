@@ -119,31 +119,93 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json().catch(() => null);
-    const destination =
-      typeof body?.destination === "string" ? body.destination.trim() : "";
-    const duration =
-      typeof body?.duration === "string" || typeof body?.duration === "number"
-        ? Number(body.duration)
-        : 0;
-    const budget = typeof body?.budget === "string" ? body.budget.trim() : "";
-    const travelers =
-      typeof body?.travelers === "string" ? body.travelers.trim() : "";
+    const promptParam =
+      typeof body?.prompt === "string" ? body.prompt.trim() : "";
 
-    if (
-      !destination ||
-      !Number.isInteger(duration) ||
-      duration < 1 ||
-      duration > 30 ||
-      !budget ||
-      !travelers
-    ) {
-      return NextResponse.json(
-        { error: "กรุณากรอกรายละเอียดทริปให้ครบถ้วน" },
-        { status: 400 },
-      );
+    let destination = "";
+    let duration = 0;
+    let budget = "";
+    let travelers = "";
+
+    if (promptParam) {
+      if (!promptParam) {
+        return NextResponse.json(
+          { error: "กรุณากรอกบรีฟรายละเอียดความต้องการสำหรับทริป" },
+          { status: 400 },
+        );
+      }
+    } else {
+      destination =
+        typeof body?.destination === "string" ? body.destination.trim() : "";
+      duration =
+        typeof body?.duration === "string" || typeof body?.duration === "number"
+          ? Number(body.duration)
+          : 0;
+      budget = typeof body?.budget === "string" ? body.budget.trim() : "";
+      travelers = typeof body?.travelers === "string" ? body.travelers.trim() : "";
+
+      if (
+        !destination ||
+        !Number.isInteger(duration) ||
+        duration < 1 ||
+        duration > 30 ||
+        !budget ||
+        !travelers
+      ) {
+        return NextResponse.json(
+          { error: "กรุณากรอกรายละเอียดทริปให้ครบถ้วน" },
+          { status: 400 },
+        );
+      }
     }
 
-    const prompt = `
+    let promptText = "";
+    if (promptParam) {
+      promptText = `
+คุณคือผู้เชี่ยวชาญด้านการวางแผนการท่องเที่ยวระดับมืออาชีพ
+กรุณาสร้างแผนการเดินทางแบบละเอียดตามความต้องการของลูกค้าในข้อความต่อไปนี้:
+"${promptParam}"
+
+กรุณาแปลงความต้องการนี้ออกมาเป็นข้อมูลและโครงสร้าง JSON ที่ถูกต้องสมบูรณ์
+ตอบกลับเป็น JSON object ที่ถูกต้องเท่านั้น ห้ามใส่ markdown ห้ามใส่ backticks และห้ามมีข้อความอื่นนอก JSON
+ให้ใช้ key เป็นภาษาอังกฤษตามโครงสร้างด้านล่าง แต่ค่า string ทั้งหมดต้องเขียนเป็นภาษาไทยที่อ่านเป็นธรรมชาติและน่าดึงดูดใจ:
+{
+  "tripName": "string (ชื่อทริปภาษาไทยที่สร้างสรรค์ เช่น ตะลุยคาเฟ่ชิคชิค ณ ปารีส)",
+  "destination": "string (เมืองหรือประเทศจุดหมายปลายทางเป็นภาษาไทย)",
+  "duration": number (จำนวนวันเดินทางเป็นตัวเลข เช่น 5 โดยดึงจากข้อความของลูกค้า หรือประมาณการตามความเหมาะสมตั้งแต่ 1-14 วัน)",
+  "budget": "string (ระดับงบประมาณที่ตรงกับข้อความ เช่น ประหยัด, ปานกลาง, หรูหรา)",
+  "travelers": "string (ผู้ร่วมเดินทาง เช่น คนเดียว, คู่รัก, ครอบครัว, กลุ่มเพื่อน)",
+  "bestTimeToVisit": "string (ช่วงเวลาที่ดีที่สุดในการมาท่องเที่ยวที่นี่ เช่น ตุลาคม - เมษายน)",
+  "hotels": [
+    {
+      "name": "string (ชื่อโรงแรมแนะนำ)",
+      "address": "string (ที่อยู่โรงแรม)",
+      "price": "string (งบประมาณราคา เช่น ~3,500 บาท/คืน)",
+      "rating": number (คะแนนรีวิว 1.0 - 5.0 เช่น 4.5),
+      "description": "string (คำอธิบายสั้นๆ เกี่ยวกับโรงแรมและจุดเด่น)",
+      "coordinates": { "lat": number, "lng": number }
+    }
+  ],
+  "itinerary": [
+    {
+      "day": number,
+      "theme": "string (ธีมของวันนี้ในภาษาไทย เช่น วันแรกกับการชมสถาปัตยกรรมสุดอลังการ)",
+      "places": [
+        {
+          "name": "string (ชื่อสถานที่ท่องเที่ยว ร้านอาหาร คาเฟ่ หรือจุดที่น่าสนใจ)",
+          "details": "string (รายละเอียดที่ควรไปทำที่นี่ในภาษาไทย เช่น ถ่ายรูปมุมห้ามพลาด ชิมกาแฟ หรือเดินชมสวนดอกไม้)",
+          "ticketPrice": "string (ค่าเข้าชมหรือค่าใช้จ่าย เช่น ฟรี หรือ 15 ยูโร)",
+          "timeToVisit": "string (เวลาที่ควรไปเยือน เช่น 09:00 - 11:30 น.)",
+          "travelTime": "string (เวลาเดินทางไปสถานที่ถัดไป เช่น เดินเท้า 5 นาที หรือ นั่งรถไฟ 10 นาที)",
+          "coordinates": { "lat": number, "lng": number }
+        }
+      ]
+    }
+  ]
+}
+`;
+    } else {
+      promptText = `
 สร้างแผนการเดินทางแบบละเอียดสำหรับทริปต่อไปนี้:
 - จุดหมายปลายทาง: ${destination}
 - ระยะเวลา: ${duration} วัน
@@ -187,6 +249,7 @@ export async function POST(req: NextRequest) {
   ]
 }
 `;
+    }
 
     const openai = new OpenAI({ apiKey: openaiApiKey });
     const response = await openai.chat.completions.create({
@@ -194,7 +257,7 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: prompt,
+          content: promptText,
         },
       ],
       response_format: { type: "json_object" },

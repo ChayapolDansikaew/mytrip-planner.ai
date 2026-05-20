@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import {
   ArrowDown,
@@ -76,6 +80,9 @@ const destinations = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+  const { user, isLoaded } = useUser();
+  const createTrip = useMutation(api.trips.createTrip);
   const shouldReduceMotion = useReducedMotion();
   const [prompt, setPrompt] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,8 +100,14 @@ export default function Home() {
       return;
     }
 
+    if (isLoaded && !user) {
+      router.push("/sign-in");
+      return;
+    }
+
     setIsSubmitting(true);
-    setStatusMessage("");
+    setStatusMessage("🤖 AI กำลังสร้างและจัดทำแผนการเดินทางให้คุณ...");
+    setStatusTone("success");
 
     try {
       const response = await fetch("/api/create-trip", {
@@ -105,27 +118,56 @@ export default function Home() {
         body: JSON.stringify({ prompt: trimmedPrompt }),
       });
       const data = (await response.json().catch(() => null)) as {
+        tripData?: Record<string, unknown>;
         message?: string;
+        error?: string;
       } | null;
 
       if (response.status === 429) {
-        alert("Daily limit reached. Upgrade to Premium.");
         setStatusTone("error");
-        setStatusMessage("ถึงขีดจำกัดรายวันแล้ว อัปเกรดเป็น Premium");
+        setStatusMessage(
+          data?.message ?? "คุณใช้โควตาสร้างทริปฟรีรายวันครบแล้ว หรือกรุณาเข้าสู่ระบบ",
+        );
         return;
       }
 
       if (!response.ok) {
         setStatusTone("error");
         setStatusMessage(
-          data?.message ?? "ไม่สามารถสร้างทริปได้ในตอนนี้ กรุณาลองใหม่อีกครั้ง",
+          data?.message ?? data?.error ?? "ไม่สามารถสร้างทริปได้ในตอนนี้ กรุณาลองใหม่อีกครั้ง",
         );
         return;
       }
 
+      if (!data?.tripData) {
+        setStatusTone("error");
+        setStatusMessage("ไม่พบข้อมูลทริปจากเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง");
+        return;
+      }
+
+      setStatusMessage("💾 กำลังบันทึกทริปของคุณไปยังฐานข้อมูล...");
+
+      const destination = typeof data.tripData.destination === "string" ? data.tripData.destination : "แผนเที่ยวใหม่";
+      const tripName = typeof data.tripData.tripName === "string" ? data.tripData.tripName : destination;
+      const duration = typeof data.tripData.duration === "number" ? data.tripData.duration : 3;
+      const budget = typeof data.tripData.budget === "string" ? data.tripData.budget : "ปานกลาง";
+      const travelers = typeof data.tripData.travelers === "string" ? data.tripData.travelers : "คนเดียว";
+
+      const tripId = await createTrip({
+        userId: user!.id,
+        destination,
+        tripData: data.tripData,
+        duration,
+        budget,
+        travelers,
+        tripName,
+      });
+
       setStatusTone("success");
-      setStatusMessage(data?.message ?? "เริ่มสร้างทริปให้แล้ว");
-    } catch {
+      setStatusMessage("✈️ เสร็จสมบูรณ์! กำลังพาคุณไปยังหน้าแผนการเดินทางของคุณ...");
+      router.push(`/view-trip/${tripId}`);
+    } catch (error) {
+      console.error("Home prompt creation error:", error);
       setStatusTone("error");
       setStatusMessage("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
     } finally {
