@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import type { TripData } from "@/types/trip";
@@ -12,14 +13,7 @@ interface TripHeroProps {
   tripId: string;
 }
 
-const gradients = [
-  "from-pink-500 via-rose-400 to-orange-400",
-  "from-blue-500 via-cyan-400 to-teal-400",
-  "from-purple-500 via-violet-400 to-pink-400",
-  "from-green-500 via-emerald-400 to-cyan-400",
-  "from-orange-500 via-amber-400 to-yellow-400",
-  "from-indigo-500 via-blue-400 to-cyan-400",
-];
+
 
 function getDisplayValue(value?: string | number | null, fallback = "-") {
   if (value === undefined || value === null || value === "") {
@@ -29,13 +23,57 @@ function getDisplayValue(value?: string | number | null, fallback = "-") {
   return String(value);
 }
 
+function getDestinationImage(destination: string): string | null {
+  const dest = destination.toLowerCase().trim();
+  if (
+    dest.includes("กรุงเทพ") ||
+    dest.includes("bangkok") ||
+    dest.includes("thailand") ||
+    dest.includes("ไทย")
+  ) {
+    return "/images/bangkok.png";
+  }
+  if (
+    dest.includes("ปารีส") ||
+    dest.includes("paris") ||
+    dest.includes("ฝรั่งเศส") ||
+    dest.includes("france")
+  ) {
+    return "/images/paris.png";
+  }
+  if (
+    dest.includes("โตเกียว") ||
+    dest.includes("tokyo") ||
+    dest.includes("ญี่ปุ่น") ||
+    dest.includes("japan")
+  ) {
+    return "/images/tokyo.png";
+  }
+  if (
+    dest.includes("นิวยอร์ก") ||
+    dest.includes("new york") ||
+    dest.includes("สหรัฐ") ||
+    dest.includes("america") ||
+    dest.includes("usa")
+  ) {
+    return "/images/new_york.png";
+  }
+  if (
+    dest.includes("โรม") ||
+    dest.includes("rome") ||
+    dest.includes("อิตาลี") ||
+    dest.includes("italy")
+  ) {
+    return "/images/rome.png";
+  }
+  return null;
+}
+
 export default function TripHero({ tripData }: TripHeroProps) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const destination = getDisplayValue(tripData.destination);
-  const idx = destination.charCodeAt(0) % gradients.length;
-  const gradient = gradients[idx];
 
   async function handleShare() {
     const currentUrl = window.location.href;
@@ -55,21 +93,20 @@ export default function TripHero({ tripData }: TripHeroProps) {
     window.setTimeout(() => setCopied(false), 1800);
   }
 
+  const imageUrl = getDestinationImage(destination);
+
   return (
     <section
-      className={`relative flex h-72 w-full overflow-hidden bg-gradient-to-br ${gradient} text-white shadow-sm md:h-96 gradient-animated`}
+      className="relative flex h-72 w-full overflow-hidden bg-slate-900 text-white shadow-sm md:h-96"
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-black/20" />
-      <motion.div
-        animate={shouldReduceMotion ? {} : { scale: [1, 1.12, 1], opacity: [0.2, 0.28, 0.2] }}
-        transition={{ repeat: Infinity, duration: 10, ease: motionEase }}
-        className="absolute left-8 top-12 h-28 w-28 rounded-full bg-white/20 blur-2xl"
+      <Image
+        src={imageUrl || "/images/default_travel.png"}
+        alt={destination}
+        fill
+        className="object-cover transition-transform duration-[15s] ease-out scale-105"
+        priority
       />
-      <motion.div
-        animate={shouldReduceMotion ? {} : { scale: [1, 1.16, 1], opacity: [0.15, 0.24, 0.15] }}
-        transition={{ repeat: Infinity, duration: 12, ease: motionEase, delay: 2 }}
-        className="absolute bottom-8 right-10 h-40 w-40 rounded-full bg-white/15 blur-3xl"
-      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/25" />
 
       <motion.button
         type="button"

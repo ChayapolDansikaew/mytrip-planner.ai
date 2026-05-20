@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useMutation } from "convex/react";
 import { Trash2 } from "lucide-react";
 
@@ -20,15 +21,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 type Trip = Doc<"trips">;
-
-const gradients = [
-  "from-pink-400 to-orange-400",
-  "from-blue-400 to-cyan-400",
-  "from-purple-400 to-pink-400",
-  "from-green-400 to-teal-400",
-  "from-yellow-400 to-orange-400",
-  "from-indigo-400 to-purple-400",
-];
 
 const budgetLabels: Record<string, string> = {
   cheap: "ประหยัด",
@@ -64,6 +56,52 @@ function getDisplayLabel(value: string | undefined, labels: Record<string, strin
   return labels[value] ?? value;
 }
 
+function getDestinationImage(destination: string): string | null {
+  const dest = destination.toLowerCase().trim();
+  if (
+    dest.includes("กรุงเทพ") ||
+    dest.includes("bangkok") ||
+    dest.includes("thailand") ||
+    dest.includes("ไทย")
+  ) {
+    return "/images/bangkok.png";
+  }
+  if (
+    dest.includes("ปารีส") ||
+    dest.includes("paris") ||
+    dest.includes("ฝรั่งเศส") ||
+    dest.includes("france")
+  ) {
+    return "/images/paris.png";
+  }
+  if (
+    dest.includes("โตเกียว") ||
+    dest.includes("tokyo") ||
+    dest.includes("ญี่ปุ่น") ||
+    dest.includes("japan")
+  ) {
+    return "/images/tokyo.png";
+  }
+  if (
+    dest.includes("นิวยอร์ก") ||
+    dest.includes("new york") ||
+    dest.includes("สหรัฐ") ||
+    dest.includes("america") ||
+    dest.includes("usa")
+  ) {
+    return "/images/new_york.png";
+  }
+  if (
+    dest.includes("โรม") ||
+    dest.includes("rome") ||
+    dest.includes("อิตาลี") ||
+    dest.includes("italy")
+  ) {
+    return "/images/rome.png";
+  }
+  return null;
+}
+
 export default function TripCard({ trip }: { trip: Trip }) {
   const deleteTrip = useMutation(api.trips.deleteTrip);
 
@@ -73,8 +111,6 @@ export default function TripCard({ trip }: { trip: Trip }) {
     month: "short",
     day: "numeric",
   });
-  const destinationInitial = trip.destination.trim().charAt(0).toUpperCase() || "✈";
-  const gradientIndex = destinationInitial.charCodeAt(0) % gradients.length;
   const budgetLabel = getDisplayLabel(trip.budget, budgetLabels);
   const travelerLabel = getDisplayLabel(trip.travelers, travelerLabels);
 
@@ -85,14 +121,17 @@ export default function TripCard({ trip }: { trip: Trip }) {
   return (
     <Link href={`/view-trip/${trip._id}`} className="group block focus:outline-none">
       <article className="relative overflow-hidden rounded-2xl border border-white/70 bg-white/82 shadow-[0_8px_24px_rgba(15,58,100,0.08),0_4px_0_rgba(15,58,100,0.06)] backdrop-blur transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_16px_36px_rgba(15,58,100,0.12),0_6px_0_rgba(15,58,100,0.08)] group-active:translate-y-0.5 group-active:shadow-[0_4px_12px_rgba(15,58,100,0.08),0_2px_0_rgba(15,58,100,0.06)] group-focus-visible:ring-4 group-focus-visible:ring-[#ff3f78]/25">
-        {/* Gradient cover */}
-        <div
-          className={`relative flex h-44 items-center justify-center bg-gradient-to-br ${gradients[gradientIndex]}`}
-        >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_28%_20%,rgba(255,255,255,0.36),transparent_28%),radial-gradient(circle_at_82%_80%,rgba(255,255,255,0.22),transparent_26%)]" />
-          <span className="relative text-6xl font-bold text-white/45 transition-transform duration-300 ease-out group-hover:scale-105">
-            {destinationInitial}
-          </span>
+        {/* Image cover with responsive zoom and text contrast gradient */}
+        <div className="relative flex h-44 items-center justify-center overflow-hidden bg-slate-900">
+          <Image
+            src={getDestinationImage(trip.destination) || "/images/default_travel.png"}
+            alt={trip.destination}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 360px"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0f3a64]/10 via-transparent to-[#0f3a64]/65 group-hover:to-[#0f3a64]/75 transition-all duration-300" />
+          
           <div className="absolute bottom-3 left-3 right-3 flex justify-start">
             <span className="max-w-full truncate rounded-full border border-white/30 bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
               ✈️ {trip.destination}
