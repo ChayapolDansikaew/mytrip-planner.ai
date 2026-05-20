@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -60,22 +61,22 @@ const destinations = [
   {
     city: "ปารีส, ฝรั่งเศส",
     title: "เดินเล่นเมืองศิลป์ หอไอเฟล ลูฟวร์ และคาเฟ่ริมถนน",
-    background: "bg-[radial-gradient(circle_at_28%_18%,rgba(255,255,255,0.72),transparent_24%),radial-gradient(circle_at_72%_24%,rgba(255,63,120,0.42),transparent_20%),linear-gradient(145deg,#22d3ee_0%,#0ea5e9_48%,#b9f529_100%)]",
+    image: "/images/paris.png",
   },
   {
     city: "นิวยอร์ก, สหรัฐฯ",
     title: "พลังเมืองใหญ่ วิวตึกระฟ้า บรอดเวย์ และมื้อค่ำสุดพิเศษ",
-    background: "bg-[radial-gradient(circle_at_74%_18%,rgba(185,245,41,0.5),transparent_22%),radial-gradient(circle_at_20%_72%,rgba(255,63,120,0.36),transparent_24%),linear-gradient(145deg,#60a5fa_0%,#06b6d4_46%,#9de9f4_100%)]",
+    image: "/images/new_york.png",
   },
   {
     city: "โตเกียว, ญี่ปุ่น",
     title: "วัดเก่า ซากุระ ย่านสร้างสรรค์ และมื้อโอมากาเสะ",
-    background: "bg-[radial-gradient(circle_at_66%_16%,rgba(255,255,255,0.72),transparent_24%),radial-gradient(circle_at_36%_34%,rgba(255,63,120,0.4),transparent_20%),linear-gradient(145deg,#7dd3fc_0%,#38bdf8_40%,#d5ff63_100%)]",
+    image: "/images/tokyo.png",
   },
   {
     city: "โรม, อิตาลี",
     title: "ประวัติศาสตร์ สถาปัตยกรรม คลาสสิก และไวน์ยามเย็น",
-    background: "bg-[radial-gradient(circle_at_40%_18%,rgba(255,255,255,0.68),transparent_24%),radial-gradient(circle_at_78%_70%,rgba(185,245,41,0.54),transparent_24%),linear-gradient(145deg,#38bdf8_0%,#0ea5e9_44%,#ff6b95_100%)]",
+    image: "/images/rome.png",
   },
 ];
 
@@ -285,7 +286,16 @@ export default function Home() {
                   4.9
                 </span>
               </div>
-              <div className="h-40 w-full rounded-[1.25rem] bg-[radial-gradient(circle_at_28%_18%,rgba(255,255,255,0.72),transparent_24%),linear-gradient(145deg,#60a5fa_0%,#06b6d4_46%,#9de9f4_100%)] shadow-inner" />
+              <div className="relative h-40 w-full overflow-hidden rounded-[1.25rem] bg-slate-100 shadow-inner">
+                <Image
+                  src="/images/paris.png"
+                  alt="ปารีส, ฝรั่งเศส"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 320px"
+                  priority
+                />
+              </div>
               <div className="mt-5 space-y-3">
                 <div className="h-3 w-3/4 rounded-full bg-[#0f3a64]/10" />
                 <div className="h-3 w-1/2 rounded-full bg-[#0f3a64]/10" />
@@ -444,9 +454,17 @@ export default function Home() {
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {destinations.map((destination, index) => (
             <motion.div key={destination.city} variants={cardPop} whileHover={shouldReduceMotion ? {} : liftHover}>
-              <Card className={`card-glow group relative min-h-[27rem] overflow-hidden border-white/70 bg-cover bg-center p-0 ${destination.background}`}>
-                <div className="absolute inset-0 bg-gradient-to-b from-[#0f3a64]/2 via-[#0f3a64]/8 to-[#0f3a64]/62" />
-                <div className="relative flex h-full min-h-[27rem] flex-col justify-between p-6">
+              <Card className="card-glow group relative min-h-[27rem] overflow-hidden border-white/70 bg-slate-900 p-0">
+                <Image
+                  src={destination.image}
+                  alt={destination.city}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  priority={index < 2}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#0f3a64]/10 via-[#0f3a64]/40 to-[#0f3a64]/75 group-hover:via-[#0f3a64]/20 group-hover:to-[#0f3a64]/85 transition-all duration-300" />
+                <div className="relative z-10 flex h-full min-h-[27rem] flex-col justify-between p-6">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-white">{destination.city}</p>
                     <span className="rounded-full bg-white/24 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
