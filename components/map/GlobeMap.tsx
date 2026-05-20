@@ -28,13 +28,16 @@ export default function GlobeMap({ trips, onTripClick }: GlobeMapProps) {
   const animationRef = useRef<number>(0);
   const isUserInteracting = useRef(false);
 
-  // Rotate one frame — reads refs directly, no circular dependency
+  // Rotate one frame — slowly spins the globe eastwards on its axis
   const rotateFrame = useCallback(() => {
     if (!map.current || isUserInteracting.current) return;
-    map.current.easeTo({
-      bearing: map.current.getBearing() + 0.3,
-      duration: 100,
-      easing: (t: number) => t,
+    
+    // Only auto-rotate if zoomed out (viewing the whole globe)
+    if (map.current.getZoom() > 3) return;
+
+    const center = map.current.getCenter();
+    map.current.jumpTo({
+      center: [center.lng - 0.15, center.lat],
     });
   }, []);
 
@@ -63,7 +66,10 @@ export default function GlobeMap({ trips, onTripClick }: GlobeMapProps) {
       projection: "globe",
       zoom: 1.5,
       center: [100.5, 13.7], // Default center on Bangkok
-      pitch: 0,
+      pitch: 23.5, // 23.5 degrees physical globe tilt
+      bearing: 0,
+      dragRotate: false, // Lock stand (disable right-click rotation)
+      touchPitch: false, // Lock stand (disable touch pitch modification)
     });
 
     map.current.on("load", () => {
@@ -82,14 +88,25 @@ export default function GlobeMap({ trips, onTripClick }: GlobeMapProps) {
       startRotation();
     });
 
+    let idleTimeout: NodeJS.Timeout;
+
     // Pause rotation on user interaction
     const pauseRotation = () => {
       isUserInteracting.current = true;
       stopRotation();
+      if (idleTimeout) clearTimeout(idleTimeout);
     };
+
     const resumeRotation = () => {
       isUserInteracting.current = false;
-      startRotation();
+      if (idleTimeout) clearTimeout(idleTimeout);
+      
+      // Resume slow auto-spin after 6 seconds of inactivity
+      idleTimeout = setTimeout(() => {
+        if (!isUserInteracting.current) {
+          startRotation();
+        }
+      }, 6000);
     };
 
     map.current.on("mousedown", pauseRotation);
@@ -98,6 +115,7 @@ export default function GlobeMap({ trips, onTripClick }: GlobeMapProps) {
     map.current.on("touchend", resumeRotation);
 
     return () => {
+      if (idleTimeout) clearTimeout(idleTimeout);
       stopRotation();
       map.current?.remove();
       map.current = null;
