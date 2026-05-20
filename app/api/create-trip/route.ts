@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
 
 import { ajAnonymous, ajFree } from "@/lib/arcjet";
 
@@ -11,8 +11,8 @@ function getCreateTripErrorMessage(error: unknown) {
 
   const message = error.message.toLowerCase();
 
-  if (message.includes("gemini_api_key")) {
-    return "ยังไม่ได้ตั้งค่า GEMINI_API_KEY บน Vercel กรุณาเพิ่ม Environment Variable แล้ว Deploy ใหม่";
+  if (message.includes("openai_api_key") || message.includes("api_key is missing")) {
+    return "ยังไม่ได้ตั้งค่า OPENAI_API_KEY บน Vercel หรือ .env.local กรุณาเพิ่ม Environment Variable แล้ว Deploy ใหม่";
   }
 
   if (message.includes("arcjet_key")) {
@@ -23,20 +23,20 @@ function getCreateTripErrorMessage(error: unknown) {
     return "เชื่อมต่อ Convex ไม่สำเร็จ กรุณาตรวจสอบ NEXT_PUBLIC_CONVEX_URL, CONVEX_DEPLOYMENT และ Deploy Convex functions";
   }
 
-  if (message.includes("api key") || message.includes("permission") || message.includes("unauthorized")) {
-    return "Gemini API key ไม่ถูกต้องหรือไม่มีสิทธิ์ใช้งาน กรุณาตรวจสอบ GEMINI_API_KEY";
+  if (message.includes("api key") || message.includes("permission") || message.includes("unauthorized") || message.includes("401")) {
+    return "OpenAI API key ไม่ถูกต้องหรือไม่มีสิทธิ์ใช้งาน กรุณาตรวจสอบ OPENAI_API_KEY";
   }
 
   if (message.includes("not found") || message.includes("not supported") || message.includes("model")) {
-    return "โมเดล Gemini ที่ใช้อยู่ไม่พร้อมใช้งาน กรุณาตรวจสอบว่า GEMINI_API_KEY เปิดใช้งาน Generative Language API แล้ว";
+    return "โมเดล OpenAI ที่ใช้อยู่ไม่พร้อมใช้งาน กรุณาตรวจสอบความถูกต้องของชื่อโมเดล";
   }
 
   if (message.includes("fetch failed") || message.includes("network") || message.includes("timeout")) {
-    return "เชื่อมต่อบริการ AI ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง หรือเช็กสถานะ Gemini API";
+    return "เชื่อมต่อบริการ AI ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง หรือเช็กสถานะ OpenAI API";
   }
 
-  if (message.includes("quota") || message.includes("rate limit")) {
-    return "โควตา AI เต็มหรือถูกจำกัดชั่วคราว กรุณาลองใหม่ภายหลัง";
+  if (message.includes("quota") || message.includes("rate limit") || message.includes("429")) {
+    return "โควตา OpenAI เต็มหรือถูกจำกัดชั่วคราว กรุณาลองใหม่ภายหลัง";
   }
 
   if (message.includes("json")) {
@@ -48,11 +48,11 @@ function getCreateTripErrorMessage(error: unknown) {
 
 export async function POST(req: NextRequest) {
   try {
-    const geminiApiKey = process.env.GEMINI_API_KEY;
+    const openaiApiKey = process.env.OPENAI_API_KEY;
     const arcjetKey = process.env.ARCJET_KEY;
 
-    if (!geminiApiKey) {
-      throw new Error("GEMINI_API_KEY is missing");
+    if (!openaiApiKey) {
+      throw new Error("OPENAI_API_KEY is missing");
     }
 
     if (!arcjetKey) {
@@ -188,14 +188,22 @@ export async function POST(req: NextRequest) {
 }
 `;
 
-    const genAI = new GoogleGenerativeAI(geminiApiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    const clean = text.replace(/```json|```/g, "").trim();
+    const openai = new OpenAI({ apiKey: openaiApiKey });
+    const response = await openai.chat.completions.create({
+      model: "gpt-5.4-mini",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      response_format: { type: "json_object" },
+    });
+    const text = response.choices[0]?.message?.content;
+    const clean = text ? text.trim() : "";
 
     if (!clean) {
-      throw new Error("Gemini returned empty response");
+      throw new Error("OpenAI returned empty response");
     }
 
     const tripData = JSON.parse(clean);
