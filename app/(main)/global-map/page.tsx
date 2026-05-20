@@ -91,7 +91,7 @@ export default function GlobalMapPage() {
     <>
       <SiteHeader />
 
-      <main className="relative flex min-h-[calc(100vh-64px)] flex-col bg-gray-950">
+      <main className="relative flex h-[calc(100vh-64px)] flex-col bg-gray-950 overflow-hidden">
         {/* Header bar */}
         <motion.div
           initial="hidden"
@@ -138,14 +138,14 @@ export default function GlobalMapPage() {
         </motion.div>
 
         {/* Map area */}
-        <div className="flex-1 p-3 sm:p-4">
+        <div className="relative flex-1">
           {/* Signed out state */}
           {isSignedOut ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex h-full flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-slate-800 to-blue-900 p-8 text-center"
+              className="absolute inset-3 sm:inset-4 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-slate-800 to-blue-900 p-8 text-center"
             >
               <span className="text-6xl">🔐</span>
               <h2 className="text-2xl font-bold text-white">
@@ -162,14 +162,16 @@ export default function GlobalMapPage() {
               </Link>
             </motion.div>
           ) : isLoading ? (
-            <GlobeMapSkeleton />
+            <div className="absolute inset-3 sm:inset-4">
+              <GlobeMapSkeleton />
+            </div>
           ) : trips?.length === 0 ? (
             // Empty state
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex h-full flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-slate-800 to-blue-900 p-8 text-center"
+              className="absolute inset-3 sm:inset-4 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-slate-800 to-blue-900 p-8 text-center"
             >
               <span className="text-6xl">🗺️</span>
               <h2 className="text-2xl font-bold text-white">

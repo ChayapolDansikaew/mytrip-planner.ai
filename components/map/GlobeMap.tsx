@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
+// Mapbox GL initialization will set the access token inside useEffect
 
 export interface TripMarker {
   tripId: string;
@@ -54,6 +54,8 @@ export default function GlobeMap({ trips, onTripClick }: GlobeMapProps) {
 
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
+
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -190,7 +192,7 @@ export default function GlobeMap({ trips, onTripClick }: GlobeMapProps) {
   }, [trips, onTripClick]);
 
   return (
-    <div className="relative h-full w-full">
+    <div className="absolute inset-3 sm:inset-4">
       <div ref={mapContainer} className="h-full w-full rounded-2xl" />
     </div>
   );

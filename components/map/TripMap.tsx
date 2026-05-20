@@ -5,7 +5,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import type { TripHotel, TripDay } from "@/types/trip";
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
+// Mapbox GL initialization will set the access token inside useEffect
 
 // Day color palette — matches Itinerary.tsx day badge colors
 const DAY_COLORS = [
@@ -55,6 +55,8 @@ export default function TripMap({
   // Initialize map
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
+
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
