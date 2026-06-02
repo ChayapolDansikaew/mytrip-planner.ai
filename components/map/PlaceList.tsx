@@ -1,7 +1,9 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import type { TripHotel, TripDay } from "@/types/trip";
+import { pressTap, springSnappy } from "@/lib/motion";
 
 const DAY_COLORS = [
   "border-pink-300 bg-pink-50/70 text-pink-900 dark:border-pink-500/30 dark:bg-pink-950/15 dark:text-pink-200",
@@ -36,6 +38,7 @@ export default function PlaceList({
 }: PlaceListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef<HTMLButtonElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   // Auto-scroll to active item
   useEffect(() => {
@@ -63,15 +66,18 @@ export default function PlaceList({
               const markerId = `hotel-${idx}`;
               const isActive = activeMarkerId === markerId;
               return (
-                <button
+                <motion.button
                   key={idx}
                   ref={isActive ? activeRef : undefined}
                   onClick={() => onPlaceClick(markerId)}
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.015, x: 2 }}
+                  whileTap={pressTap}
+                  transition={springSnappy}
                   className={`w-full rounded-xl border p-3 cursor-pointer
                     text-left transition-all duration-200
                     ${
                       isActive
-                        ? "border-amber-300 bg-amber-50/60 shadow-md scale-[1.01] dark:border-amber-500/30 dark:bg-amber-950/15"
+                        ? "border-amber-300 bg-amber-50/60 shadow-md dark:border-amber-500/30 dark:bg-amber-950/15"
                         : "border-transparent bg-gray-50 hover:bg-gray-100 dark:bg-[#0a233d]/45 dark:hover:bg-[#0f2e4f]/80"
                     }`}
                 >
@@ -96,7 +102,7 @@ export default function PlaceList({
                       )}
                     </div>
                   </div>
-                </button>
+                </motion.button>
               );
             })}
           </div>
@@ -124,15 +130,18 @@ export default function PlaceList({
               const colorClass =
                 DAY_COLORS[(day.day - 1) % DAY_COLORS.length];
               return (
-                <button
+                <motion.button
                   key={pIdx}
                   ref={isActive ? activeRef : undefined}
                   onClick={() => onPlaceClick(markerId)}
+                  whileHover={shouldReduceMotion ? {} : { scale: 1.015, x: 2 }}
+                  whileTap={pressTap}
+                  transition={springSnappy}
                   className={`w-full rounded-xl border p-3 cursor-pointer
                     text-left transition-all duration-200
                     ${
                       isActive
-                        ? `${colorClass} shadow-md scale-[1.01]`
+                        ? `${colorClass} shadow-md`
                         : "border-transparent bg-gray-50 hover:bg-gray-100 dark:bg-[#0a233d]/45 dark:hover:bg-[#0f2e4f]/80"
                     }`}
                 >
@@ -167,7 +176,7 @@ export default function PlaceList({
                       </div>
                     </div>
                   </div>
-                </button>
+                </motion.button>
               );
             })}
           </div>

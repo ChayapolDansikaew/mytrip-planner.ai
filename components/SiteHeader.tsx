@@ -103,15 +103,26 @@ export default function SiteHeader() {
         <div className="flex items-center gap-3">
           <button
             onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/80 dark:border-white/10 dark:bg-[#0a233d] text-[#0f3a64] dark:text-[#e3fafc] shadow-sm hover:bg-white dark:hover:bg-[#143c66] focus:outline-none cursor-pointer transition"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/80 dark:border-white/10 dark:bg-[#0a233d] text-[#0f3a64] dark:text-[#e3fafc] shadow-sm hover:bg-white dark:hover:bg-[#143c66] focus:outline-none cursor-pointer transition relative overflow-hidden"
             aria-label={theme === "light" ? "สลับเป็นโหมดมืด" : "สลับเป็นโหมดสว่าง"}
             type="button"
           >
-            {theme === "light" ? (
-              <Moon className="h-4 w-4" />
-            ) : (
-              <Sun className="h-4 w-4" />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={theme}
+                initial={{ y: -10, opacity: 0, rotate: -45 }}
+                animate={{ y: 0, opacity: 1, rotate: 0 }}
+                exit={{ y: 10, opacity: 0, rotate: 45 }}
+                transition={{ duration: 0.15 }}
+                className="flex items-center justify-center"
+              >
+                {theme === "light" ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </button>
 
           {isSignedIn ? (
