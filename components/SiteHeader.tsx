@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -8,7 +8,7 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
-import { Compass, Menu, X } from "lucide-react";
+import { Compass, Menu, X, Sun, Moon } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { pressTap, springSnappy } from "@/lib/motion";
@@ -26,6 +26,24 @@ export default function SiteHeader() {
   const { isSignedIn } = useUser();
   const shouldReduceMotion = useReducedMotion();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    if (nextTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   return (
     <motion.header
@@ -80,6 +98,19 @@ export default function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={toggleTheme}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/80 dark:border-white/10 dark:bg-[#0a233d] text-[#0f3a64] dark:text-[#e3fafc] shadow-sm hover:bg-white dark:hover:bg-[#143c66] focus:outline-none cursor-pointer transition"
+            aria-label={theme === "light" ? "สลับเป็นโหมดมืด" : "สลับเป็นโหมดสว่าง"}
+            type="button"
+          >
+            {theme === "light" ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
+          </button>
+
           {isSignedIn ? (
             <UserButton />
           ) : (

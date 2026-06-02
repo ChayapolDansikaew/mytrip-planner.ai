@@ -31,7 +31,23 @@ export default function RootLayout({
       <html
         lang="th"
         className={`${kanit.variable} h-full antialiased`}
+        suppressHydrationWarning
       >
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                try {
+                  if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (_) {}
+              `,
+            }}
+          />
+        </head>
         <body className={`${kanit.className} min-h-full flex flex-col`}>
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </body>

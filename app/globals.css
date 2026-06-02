@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #9de9f4;
   --foreground: #0f3a64;
@@ -7,11 +9,9 @@
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #081d33;
-    --foreground: #e3fafc;
-  }
+.dark {
+  --background: #081d33;
+  --foreground: #e3fafc;
 }
 
 
