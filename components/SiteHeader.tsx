@@ -32,7 +32,7 @@ export default function SiteHeader() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sticky top-0 z-50 border-b border-white/60 bg-[#bdf3fa] shadow-[0_12px_40px_rgba(15,58,100,0.08)]"
+      className="sticky top-0 z-50 border-b border-white/60 dark:border-white/10 bg-[#bdf3fa] dark:bg-[#07192b] shadow-[0_12px_40px_rgba(15,58,100,0.08)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.3)]"
     >
       <nav className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 lg:px-8">
         <Link
@@ -44,17 +44,17 @@ export default function SiteHeader() {
             whileHover={shouldReduceMotion ? {} : { rotate: 18, scale: 1.06 }}
             whileTap={pressTap}
             transition={springSnappy}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/55 dark:bg-[#0a233d]/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
           >
             <Compass className="h-4 w-4 text-[#ff3f78]" />
           </motion.span>
-          <span className="text-lg font-semibold tracking-[-0.03em] text-[#0f3a64]">
+          <span className="text-lg font-semibold tracking-[-0.03em] text-[#0f3a64] dark:text-[#e3fafc]">
             AI Trip Planner
           </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-1 rounded-full border border-white/70 bg-white/85 p-1 text-sm text-[#0f3a64]/85 shadow-sm md:flex">
+        <div className="hidden items-center gap-1 rounded-full border border-white/70 dark:border-white/10 bg-white/85 dark:bg-[#0a233d]/90 p-1 text-sm text-[#0f3a64]/85 dark:text-[#e3fafc]/85 shadow-sm md:flex">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -62,14 +62,14 @@ export default function SiteHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative rounded-full px-4 py-2 transition hover:bg-white/60 hover:text-[#0f3a64] ${
-                  isActive ? "text-[#ff3f78] shadow-sm font-semibold" : ""
+                className={`relative rounded-full px-4 py-2 transition hover:bg-white/60 dark:hover:bg-[#0f2e4f]/80 hover:text-[#0f3a64] dark:hover:text-[#e3fafc] ${
+                  isActive ? "text-[#ff3f78] dark:text-[#ff5a8d] shadow-sm font-semibold" : ""
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="nav-active-pill"
-                    className="absolute inset-0 rounded-full bg-white/70"
+                    className="absolute inset-0 rounded-full bg-white/70 dark:bg-white/15"
                     transition={{ type: "spring", stiffness: 350, damping: 30 }}
                   />
                 )}
@@ -86,7 +86,7 @@ export default function SiteHeader() {
             <div className="hidden items-center gap-3 sm:flex">
               <Link
                 href="/sign-in"
-                className={buttonVariants({ variant: "outline", size: "sm", className: "soft-focus-ring" })}
+                className={buttonVariants({ variant: "outline", size: "sm", className: "soft-focus-ring dark:bg-[#0a233d] dark:text-white dark:hover:bg-[#0f2e4f]" })}
               >
                 เข้าสู่ระบบ
               </Link>
@@ -102,7 +102,7 @@ export default function SiteHeader() {
           {/* Mobile Menu Toggle Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/80 text-[#0f3a64] shadow-sm hover:bg-white focus:outline-none md:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 dark:border-white/10 bg-white/80 dark:bg-[#0a233d] text-[#0f3a64] dark:text-[#e3fafc] shadow-sm hover:bg-white dark:hover:bg-[#143c66] focus:outline-none md:hidden"
             aria-label={isMobileMenuOpen ? "ปิดเมนู" : "เปิดเมนู"}
           >
             {isMobileMenuOpen ? (
@@ -122,7 +122,7 @@ export default function SiteHeader() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="border-t border-white/60 bg-[#bdf3fa] shadow-inner md:hidden overflow-hidden"
+            className="border-t border-white/60 dark:border-white/10 bg-[#bdf3fa] dark:bg-[#07192b] shadow-inner md:hidden overflow-hidden"
           >
             <div className="flex flex-col gap-2 p-4">
               {navItems.map((item) => {
@@ -135,7 +135,7 @@ export default function SiteHeader() {
                     className={`rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
                       isActive
                         ? "bg-[#ff3f78] text-white shadow-sm"
-                        : "bg-white/60 text-[#0f3a64]/85 hover:bg-white/90"
+                        : "bg-white/60 dark:bg-[#0a233d]/70 text-[#0f3a64]/85 dark:text-[#e3fafc]/85 hover:bg-white/90 dark:hover:bg-[#0f2e4f]"
                     }`}
                   >
                     {item.label}
@@ -143,11 +143,11 @@ export default function SiteHeader() {
                 );
               })}
               {!isSignedIn && (
-                <div className="mt-2 flex flex-col gap-2 border-t border-white/40 pt-4 sm:hidden">
+                <div className="mt-2 flex flex-col gap-2 border-t border-white/40 dark:border-white/10 pt-4 sm:hidden">
                   <Link
                     href="/sign-in"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center soft-focus-ring" })}
+                    className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center soft-focus-ring dark:bg-[#0a233d] dark:text-white" })}
                   >
                     เข้าสู่ระบบ
                   </Link>
