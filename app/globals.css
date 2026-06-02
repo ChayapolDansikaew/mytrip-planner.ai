@@ -221,6 +221,18 @@ select {
   background: transparent;
 }
 
+/* Dark mode for Mapbox popups */
+.dark .trip-popup .mapboxgl-popup-content {
+  background-color: #0a233d;
+  color: #e3fafc;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+.dark .trip-popup .mapboxgl-popup-tip {
+  border-top-color: #0a233d;
+}
+
 .trip-popup-inner {
   padding: 14px 16px 16px;
 }
@@ -235,10 +247,18 @@ select {
   white-space: nowrap;
 }
 
+.dark .trip-popup-title {
+  color: #e3fafc;
+}
+
 .trip-popup-destination {
   font-size: 13px;
   color: #888;
   margin-bottom: 10px;
+}
+
+.dark .trip-popup-destination {
+  color: rgba(227, 250, 252, 0.68);
 }
 
 .trip-popup-badges {
@@ -565,6 +585,26 @@ select {
 .trip-place-popup .mapboxgl-popup-close-button:hover {
   color: #374151;
   background: transparent;
+}
+
+/* Dark mode for Mapbox trip place popups */
+.dark .trip-place-popup .mapboxgl-popup-content {
+  background-color: #0a233d;
+  color: #e3fafc;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.dark .trip-place-popup .mapboxgl-popup-tip {
+  border-top-color: #0a233d;
+}
+
+.dark .trip-place-popup .mapboxgl-popup-close-button {
+  color: rgba(227, 250, 252, 0.68);
+}
+
+.dark .trip-place-popup .mapboxgl-popup-close-button:hover {
+  color: #e3fafc;
 }
 
 @media (prefers-reduced-motion: reduce) {

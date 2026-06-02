@@ -45,6 +45,42 @@ export default function TripMap({
   const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
   const popupsRef = useRef<Map<string, mapboxgl.Popup>>(new Map());
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  // Monitor document theme class changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const initialDark = document.documentElement.classList.contains("dark");
+    const timer = setTimeout(() => {
+      setIsDark(initialDark);
+    }, 0);
+
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, []);
+
+  // Update map style dynamically
+  useEffect(() => {
+    if (!map.current || !mapLoaded) return;
+
+    const styleUrl = isDark
+      ? "mapbox://styles/mapbox/dark-v11"
+      : "mapbox://styles/mapbox/streets-v12";
+
+    map.current.setStyle(styleUrl);
+  }, [isDark, mapLoaded]);
 
   // Stable callback ref so marker effect doesn't re-run
   const onMarkerClickRef = useRef(onMarkerClick);
@@ -58,9 +94,13 @@ export default function TripMap({
 
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
 
+    const initialDark = document.documentElement.classList.contains("dark");
+
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v12",
+      style: initialDark
+        ? "mapbox://styles/mapbox/dark-v11"
+        : "mapbox://styles/mapbox/streets-v12",
       zoom: 10,
       center: [100.5, 13.7], // Default to Bangkok
     });
@@ -263,7 +303,8 @@ export default function TripMap({
       {/* Map Legend */}
       <div
         className="pointer-events-none absolute bottom-4 left-4 space-y-1.5
-        rounded-xl bg-white/90 p-3 text-xs font-medium shadow-lg backdrop-blur-sm"
+        rounded-xl bg-white/90 p-3 text-xs font-medium shadow-lg backdrop-blur-sm
+        dark:bg-[#0a233d]/90 dark:shadow-none"
       >
         <div className="flex items-center gap-2">
           <div
@@ -272,7 +313,7 @@ export default function TripMap({
           >
             🏨
           </div>
-          <span className="text-gray-700">โรงแรมแนะนำ</span>
+          <span className="text-gray-700 dark:text-[#e3fafc]">โรงแรมแนะนำ</span>
         </div>
         <div className="flex items-center gap-2">
           <div
@@ -281,7 +322,7 @@ export default function TripMap({
           >
             1
           </div>
-          <span className="text-gray-700">สถานที่ตามวัน</span>
+          <span className="text-gray-700 dark:text-[#e3fafc]">สถานที่ตามวัน</span>
         </div>
       </div>
     </div>

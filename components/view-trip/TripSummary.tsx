@@ -51,7 +51,7 @@ export default function TripSummary({ tripData }: TripSummaryProps) {
 
   return (
     <section>
-      <h2 className="text-2xl font-bold text-gray-900">📊 สรุปทริป</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-[#e3fafc]">📊 สรุปทริป</h2>
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -65,7 +65,7 @@ export default function TripSummary({ tripData }: TripSummaryProps) {
             variants={cardPop}
             whileHover={shouldReduceMotion ? {} : { ...liftHover, boxShadow: "0 12px 30px rgba(15,58,100,0.1)" }}
             transition={springSnappy}
-            className="card-glow smooth-card flex min-w-[140px] flex-col items-center gap-2 rounded-2xl bg-white p-5 text-center shadow-sm"
+            className="card-glow smooth-card flex min-w-[140px] flex-col items-center gap-2 rounded-2xl bg-white p-5 text-center shadow-sm dark:bg-[#0a233d] dark:shadow-none"
           >
             <motion.span
               whileHover={shouldReduceMotion ? {} : { scale: 1.16, rotate: 8 }}
@@ -74,12 +74,12 @@ export default function TripSummary({ tripData }: TripSummaryProps) {
             >
               {item.icon}
             </motion.span>
-            <p className="text-xs font-medium text-gray-500">
+            <p className="text-xs font-medium text-gray-500 dark:text-[#e3fafc]/68">
               {item.label}
             </p>
             <AnimatedCounter
               value={item.value}
-              className="line-clamp-2 text-center text-sm font-bold text-gray-800"
+              className="line-clamp-2 text-center text-sm font-bold text-gray-800 dark:text-[#e3fafc]"
             />
           </motion.article>
         ))}

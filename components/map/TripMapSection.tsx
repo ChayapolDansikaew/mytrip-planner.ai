@@ -11,11 +11,11 @@ const TripMap = dynamic(() => import("./TripMap"), {
   loading: () => (
     <div
       className="flex h-full w-full items-center justify-center
-      rounded-2xl bg-gray-100"
+      rounded-2xl bg-gray-100 dark:bg-[#0a233d]"
     >
       <div className="space-y-2 text-center">
-        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-pink-200 border-t-pink-500" />
-        <p className="text-sm text-gray-500">กำลังโหลดแผนที่...</p>
+        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-pink-200 border-t-pink-500 dark:border-pink-900/30 dark:border-t-pink-500" />
+        <p className="text-sm text-gray-500 dark:text-[#e3fafc]/68">กำลังโหลดแผนที่...</p>
       </div>
     </div>
   ),
@@ -61,23 +61,23 @@ export default function TripMapSection({
     >
       {/* Section Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-800">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-[#e3fafc]">
           🗺️ แผนที่การเดินทาง
         </h2>
 
         {/* View Toggle */}
-        <div className="flex gap-1 rounded-xl bg-gray-100 p-1">
+        <div className="flex gap-1 rounded-xl bg-gray-100 p-1 dark:bg-[#0f2e4f]">
           {(["split", "map", "list"] as const).map((v) => (
             <button
               key={v}
               type="button"
               onClick={() => setView(v)}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium
-                transition-all
+                transition-all cursor-pointer
                 ${
                   view === v
-                    ? "bg-white text-gray-800 shadow"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "bg-white text-gray-800 shadow dark:bg-[#0a233d] dark:text-[#e3fafc] dark:shadow-none"
+                    : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 }`}
             >
               {v === "split"
@@ -92,7 +92,7 @@ export default function TripMapSection({
 
       {/* Content */}
       <div
-        className={`overflow-hidden rounded-2xl border border-gray-200 shadow-sm
+        className={`overflow-hidden rounded-2xl border border-gray-200 shadow-sm dark:border-white/10 dark:shadow-[0_20px_60px_rgba(0,0,0,0.3)]
         ${
           view === "split"
             ? "flex h-[600px] flex-col lg:flex-row"
@@ -102,10 +102,10 @@ export default function TripMapSection({
         {/* Place List Panel */}
         {(view === "split" || view === "list") && (
           <div
-            className={`bg-white p-4
+            className={`bg-white p-4 dark:bg-[#0a233d]/70
             ${
               view === "split"
-                ? "h-64 w-full border-b border-gray-200 lg:h-full lg:w-80 lg:border-b-0 lg:border-r"
+                ? "h-64 w-full border-b border-gray-200 lg:h-full lg:w-80 lg:border-b-0 lg:border-r dark:border-white/10"
                 : "h-full w-full"
             }`}
           >

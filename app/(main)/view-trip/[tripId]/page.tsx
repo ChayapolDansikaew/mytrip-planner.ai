@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { motion, type Variants } from "framer-motion";
 
 import HotelList from "@/components/view-trip/HotelList";
+import SiteHeader from "@/components/SiteHeader";
 import Itinerary from "@/components/view-trip/Itinerary";
 import TripHero from "@/components/view-trip/TripHero";
 import TripMapSection from "@/components/map/TripMapSection";
@@ -47,7 +48,7 @@ export default function ViewTripPage() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 px-4 text-center"
+        className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-50 px-4 text-center dark:bg-[#081d33] dark:text-[#e3fafc]"
       >
         <motion.span
           animate={{ rotate: [0, 10, -10, 0] }}
@@ -56,8 +57,8 @@ export default function ViewTripPage() {
         >
           🗺️
         </motion.span>
-        <h2 className="text-2xl font-bold text-gray-700">ไม่พบข้อมูลทริป</h2>
-        <p className="text-gray-500">ทริปนี้อาจถูกลบไปแล้วหรือลิงก์ไม่ถูกต้อง</p>
+        <h2 className="text-2xl font-bold text-gray-700 dark:text-[#e3fafc]">ไม่พบข้อมูลทริป</h2>
+        <p className="text-gray-500 dark:text-[#e3fafc]/68">ทริปนี้อาจถูกลบไปแล้วหรือลิงก์ไม่ถูกต้อง</p>
         <motion.button
           type="button"
           whileHover={{ scale: 1.05 }}
@@ -74,7 +75,8 @@ export default function ViewTripPage() {
   const tripData = trip.tripData as TripData;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#081d33] dark:text-[#e3fafc]">
+      <SiteHeader />
       <TripHero tripData={tripData} tripId={tripId ?? ""} />
       <motion.div
         initial="hidden"
@@ -99,7 +101,7 @@ export default function ViewTripPage() {
         </motion.div>
         <motion.div
           variants={sectionReveal}
-          className="flex flex-col justify-center gap-3 border-t border-gray-200 pt-6 sm:flex-row"
+          className="flex flex-col justify-center gap-3 border-t border-gray-200 pt-6 sm:flex-row dark:border-white/10"
         >
           <motion.button
             type="button"
@@ -115,7 +117,7 @@ export default function ViewTripPage() {
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => router.push("/my-trips")}
-            className="rounded-full border border-gray-300 px-8 py-3 font-semibold text-gray-700 transition-all hover:border-pink-400 hover:text-pink-500"
+            className="rounded-full border border-gray-300 px-8 py-3 font-semibold text-gray-700 transition-all hover:border-pink-400 hover:text-pink-500 dark:border-white/10 dark:text-[#e3fafc] dark:hover:border-[#ff3f78]/40 dark:hover:text-[#ff5a8d]"
           >
             🗺️ ทริปทั้งหมดของฉัน
           </motion.button>

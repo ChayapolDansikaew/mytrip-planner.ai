@@ -120,7 +120,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
 
   return (
     <Link href={`/view-trip/${trip._id}`} className="group block focus:outline-none">
-      <article className="relative overflow-hidden rounded-2xl border border-white/70 bg-white/82 shadow-[0_8px_24px_rgba(15,58,100,0.08),0_4px_0_rgba(15,58,100,0.06)] backdrop-blur transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_16px_36px_rgba(15,58,100,0.12),0_6px_0_rgba(15,58,100,0.08)] group-active:translate-y-0.5 group-active:shadow-[0_4px_12px_rgba(15,58,100,0.08),0_2px_0_rgba(15,58,100,0.06)] group-focus-visible:ring-4 group-focus-visible:ring-[#ff3f78]/25">
+      <article className="relative overflow-hidden rounded-2xl border border-white/70 bg-white/82 shadow-[0_8px_24px_rgba(15,58,100,0.08),0_4px_0_rgba(15,58,100,0.06)] backdrop-blur transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:shadow-[0_16px_36px_rgba(15,58,100,0.12),0_6px_0_rgba(15,58,100,0.08)] group-active:translate-y-0.5 group-active:shadow-[0_4px_12px_rgba(15,58,100,0.08),0_2px_0_rgba(15,58,100,0.06)] group-focus-visible:ring-4 group-focus-visible:ring-[#ff3f78]/25 dark:border-white/10 dark:bg-[#0a233d]/82 dark:shadow-[0_8px_24px_rgba(0,0,0,0.2),0_4px_0_rgba(0,0,0,0.1)] dark:group-hover:shadow-[0_16px_36px_rgba(0,0,0,0.3),0_6px_0_rgba(0,0,0,0.15)] dark:group-active:shadow-[0_4px_12px_rgba(0,0,0,0.2),0_2px_0_rgba(0,0,0,0.1)]">
         {/* Image cover with responsive zoom and text contrast gradient */}
         <div className="relative flex h-44 items-center justify-center overflow-hidden bg-slate-900">
           <Image
@@ -130,10 +130,10 @@ export default function TripCard({ trip }: { trip: Trip }) {
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, 360px"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0f3a64]/10 via-transparent to-[#0f3a64]/65 group-hover:to-[#0f3a64]/75 transition-all duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0f3a64]/10 via-transparent to-[#0f3a64]/65 group-hover:to-[#0f3a64]/75 dark:from-black/10 dark:to-black/75 dark:group-hover:to-black/85 transition-all duration-300" />
           
           <div className="absolute bottom-3 left-3 right-3 flex justify-start">
-            <span className="max-w-full truncate rounded-full border border-white/30 bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm backdrop-blur-md">
+            <span className="max-w-full truncate rounded-full border border-white/30 bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-[#0a233d]/50">
               ✈️ {trip.destination}
             </span>
           </div>
@@ -173,34 +173,34 @@ export default function TripCard({ trip }: { trip: Trip }) {
 
         {/* Card body */}
         <div className="space-y-3 p-4">
-          <h3 className="truncate text-lg font-bold tracking-[-0.025em] text-[#0f3a64]">
+          <h3 className="truncate text-lg font-bold tracking-[-0.025em] text-[#0f3a64] dark:text-[#e3fafc]">
             {tripName}
           </h3>
 
-          <p className="flex items-center gap-1 text-sm text-[#0f3a64]/58">
+          <p className="flex items-center gap-1 text-sm text-[#0f3a64]/58 dark:text-[#e3fafc]/58">
             <span>📍</span>
             <span className="truncate">{trip.destination}</span>
           </p>
 
           <div className="flex flex-wrap gap-2">
             {trip.duration ? (
-              <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-600 backdrop-blur-sm">
+              <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-xs font-medium text-blue-600 backdrop-blur-sm dark:border-blue-500/30 dark:bg-blue-500/20 dark:text-blue-400">
                 📅 {trip.duration} วัน
               </span>
             ) : null}
             {budgetLabel ? (
-              <span className="rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 backdrop-blur-sm">
+              <span className="rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-600 backdrop-blur-sm dark:border-green-500/30 dark:bg-green-500/20 dark:text-green-400">
                 💰 {budgetLabel}
               </span>
             ) : null}
             {travelerLabel ? (
-              <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-2.5 py-1 text-xs font-medium text-purple-600 backdrop-blur-sm">
+              <span className="rounded-full border border-purple-500/20 bg-purple-500/10 px-2.5 py-1 text-xs font-medium text-purple-600 backdrop-blur-sm dark:border-purple-500/30 dark:bg-purple-500/20 dark:text-purple-400">
                 👥 {travelerLabel}
               </span>
             ) : null}
           </div>
 
-          <p className="pt-1 text-xs text-[#0f3a64]/42">สร้างเมื่อ {createdAt}</p>
+          <p className="pt-1 text-xs text-[#0f3a64]/42 dark:text-[#e3fafc]/42">สร้างเมื่อ {createdAt}</p>
         </div>
       </article>
     </Link>
