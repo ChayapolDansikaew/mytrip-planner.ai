@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
-const PARTICLE_SYMBOLS = ["✈️", "🌍", "⭐", "🗺️", "🏖️", "🎒", "🧳", "🌴"];
+const PARTICLE_COLORS = ["#ff3f78", "#22d3ee", "#b9f529", "#ffffff"];
+const SHAPE_TYPES = ["circle", "ring", "plus"] as const;
 
 interface Particle {
   x: number;
@@ -11,7 +12,8 @@ interface Particle {
   vy: number;
   size: number;
   opacity: number;
-  symbol: string;
+  type: typeof SHAPE_TYPES[number];
+  color: string;
   rotation: number;
   rotationSpeed: number;
 }
@@ -22,7 +24,7 @@ interface FloatingParticlesProps {
 }
 
 /**
- * Canvas-based floating particle background with travel-themed emojis.
+ * Canvas-based floating particle background with minimalist geometric shapes.
  * Performance-optimised: uses requestAnimationFrame and canvas rendering.
  */
 export default function FloatingParticles({
@@ -59,14 +61,14 @@ export default function FloatingParticles({
     particlesRef.current = Array.from({ length: count }, () => ({
       x: Math.random() * rect.width,
       y: Math.random() * rect.height,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: -Math.random() * 0.4 - 0.1,
-      size: Math.random() * 16 + 12,
-      opacity: Math.random() * 0.25 + 0.08,
-      symbol:
-        PARTICLE_SYMBOLS[Math.floor(Math.random() * PARTICLE_SYMBOLS.length)],
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: -Math.random() * 0.3 - 0.1,
+      size: Math.random() * 8 + 4, // smaller, subtle geometric shapes
+      opacity: Math.random() * 0.22 + 0.08,
+      type: SHAPE_TYPES[Math.floor(Math.random() * SHAPE_TYPES.length)],
+      color: PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)],
       rotation: Math.random() * Math.PI * 2,
-      rotationSpeed: (Math.random() - 0.5) * 0.01,
+      rotationSpeed: (Math.random() - 0.5) * 0.008,
     }));
 
     const animate = () => {
@@ -92,10 +94,28 @@ export default function FloatingParticles({
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rotation);
         ctx.globalAlpha = p.opacity;
-        ctx.font = `${p.size}px serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(p.symbol, 0, 0);
+
+        // Draw shape
+        ctx.beginPath();
+        if (p.type === "circle") {
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+        } else if (p.type === "ring") {
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.strokeStyle = p.color;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        } else if (p.type === "plus") {
+          ctx.moveTo(-p.size / 2, 0);
+          ctx.lineTo(p.size / 2, 0);
+          ctx.moveTo(0, -p.size / 2);
+          ctx.lineTo(0, p.size / 2);
+          ctx.strokeStyle = p.color;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+
         ctx.restore();
       });
 

@@ -129,7 +129,7 @@ select {
     0 4px 20px rgba(255, 63, 120, 0.45),
     0 0 0 3px rgba(255, 63, 120, 0.18);
   transition: transform 0.24s var(--ease-out-expo);
-  animation: globe-bounce 3.4s ease-in-out infinite;
+  animation: globe-glide 3s infinite;
   will-change: transform;
 }
 
@@ -150,13 +150,15 @@ select {
   animation: globe-pulse 2s ease-out infinite;
 }
 
-@keyframes globe-bounce {
+@keyframes globe-glide {
   0%,
   100% {
     transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1); /* Decelerate naturally going up */
   }
   50% {
     transform: translateY(-6px);
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); /* Accelerate naturally going down */
   }
 }
 

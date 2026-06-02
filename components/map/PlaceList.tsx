@@ -4,12 +4,12 @@ import { useRef, useEffect } from "react";
 import type { TripHotel, TripDay } from "@/types/trip";
 
 const DAY_COLORS = [
-  "border-pink-500 bg-pink-50",
-  "border-blue-500 bg-blue-50",
-  "border-purple-500 bg-purple-50",
-  "border-green-500 bg-green-50",
-  "border-orange-500 bg-orange-50",
-  "border-teal-500 bg-teal-50",
+  "border-pink-300 bg-pink-50/70 text-pink-900",
+  "border-blue-300 bg-blue-50/70 text-blue-900",
+  "border-purple-300 bg-purple-50/70 text-purple-900",
+  "border-green-300 bg-green-50/70 text-green-900",
+  "border-orange-300 bg-orange-50/70 text-orange-900",
+  "border-teal-300 bg-teal-50/70 text-teal-900",
 ];
 
 const DAY_BADGE_COLORS = [
@@ -67,11 +67,11 @@ export default function PlaceList({
                   key={idx}
                   ref={isActive ? activeRef : undefined}
                   onClick={() => onPlaceClick(markerId)}
-                  className={`w-full rounded-xl border-l-4 p-3
+                  className={`w-full rounded-xl border p-3
                     text-left transition-all duration-200
                     ${
                       isActive
-                        ? "border-amber-400 bg-amber-50 shadow-md"
+                        ? "border-amber-300 bg-amber-50/60 shadow-md scale-[1.01]"
                         : "border-transparent bg-gray-50 hover:bg-gray-100"
                     }`}
                 >
@@ -128,11 +128,11 @@ export default function PlaceList({
                   key={pIdx}
                   ref={isActive ? activeRef : undefined}
                   onClick={() => onPlaceClick(markerId)}
-                  className={`w-full rounded-xl border-l-4 p-3
+                  className={`w-full rounded-xl border p-3
                     text-left transition-all duration-200
                     ${
                       isActive
-                        ? `${colorClass} shadow-md`
+                        ? `${colorClass} shadow-md scale-[1.01]`
                         : "border-transparent bg-gray-50 hover:bg-gray-100"
                     }`}
                 >

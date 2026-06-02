@@ -284,7 +284,7 @@ export default function Home() {
         
         {/* Left Column - Copy & CTA */}
         <div className="flex w-full flex-col items-center text-center lg:col-span-7 xl:col-span-7 lg:items-start lg:text-left">
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/55 px-4 py-2 text-xs font-semibold tracking-[0.08em] text-[#ff3f78] shadow-[0_18px_50px_rgba(15,58,100,0.1)] backdrop-blur-xl">
+          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/95 px-4 py-2 text-xs font-semibold tracking-[0.08em] text-[#ff3f78] shadow-[0_18px_50px_rgba(15,58,100,0.1)]">
             <Star className="h-3.5 w-3.5 fill-[#ff3f78] text-[#ff3f78]" />
             ผู้ช่วยวางแผนทริปส่วนตัวด้วย AI
           </motion.div>
@@ -293,7 +293,7 @@ export default function Home() {
             วางแผนทริปสดใสไปทั่ว <span className="text-[#ff3f78]">โลก</span> ในไม่กี่วินาที
           </motion.h1>
 
-          <motion.p variants={fadeUp} className="mt-5 max-w-2xl text-base leading-8 text-[#0f3a64]/80 md:text-lg">
+          <motion.p variants={fadeUp} className="mt-5 max-w-2xl text-base leading-8 text-[#0f3a64]/95 md:text-lg font-medium">
             บอก AI ว่าคุณอยากไปไหน ชอบสไตล์แบบไหน และมีงบเท่าไหร่ แล้วรับแผนเที่ยวที่อ่านง่าย สดใส และพร้อมออกเดินทางจริง
           </motion.p>
 
@@ -310,7 +310,7 @@ export default function Home() {
                   setPrompt(event.target.value);
                 }}
                 aria-label="บอก AI ว่าต้องการทริปแบบไหน"
-                className="min-h-20 flex-1 resize-none bg-transparent text-sm leading-7 text-[#0f3a64] outline-none placeholder:text-[#0f3a64]/42"
+                className="min-h-20 flex-1 resize-none bg-transparent text-sm leading-7 text-[#0f3a64] outline-none placeholder:text-[#0f3a64]/58"
                 placeholder="เช่น สร้างทริปปารีส 5 วัน จากกรุงเทพฯ เน้นคาเฟ่ ศิลปะ โรงแรมสวย และงบกลาง ๆ"
               />
               <button type="submit" disabled={isSubmitting} className="cta-glow mt-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff3f78] text-white shadow-[0_14px_38px_rgba(255,63,120,0.34)] transition hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-95 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:opacity-60 disabled:animate-none" aria-label="ส่งบรีฟให้ AI">
@@ -339,7 +339,7 @@ export default function Home() {
                   whileHover={shouldReduceMotion ? {} : { y: -3, scale: 1.04 }}
                   whileTap={pressTap}
                   transition={springSnappy}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/60 px-4 py-2 text-xs font-semibold text-[#0f3a64]/80 shadow-[0_4px_12px_rgba(15,58,100,0.06)] backdrop-blur transition hover:border-[#ff3f78]/40 hover:bg-white/90 hover:text-[#0f3a64] hover:shadow-[0_8px_24px_rgba(15,58,100,0.12)]"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/95 px-4 py-2 text-xs font-semibold text-[#0f3a64]/85 shadow-[0_4px_12px_rgba(15,58,100,0.06)] transition hover:border-[#ff3f78]/40 hover:bg-white hover:text-[#0f3a64] hover:shadow-[0_8px_24px_rgba(15,58,100,0.12)]"
                 >
                   <Icon className="h-3.5 w-3.5 text-[#ff3f78]" />
                   {item.label}
@@ -379,12 +379,12 @@ export default function Home() {
             <div className="absolute inset-0 z-0 rounded-full bg-[#22d3ee]/20 blur-[80px]" style={{ transform: "translateZ(-100px)" }} />
             
             {/* Main Mock Card */}
-            <div className="smooth-card relative z-10 w-72 md:w-80 rounded-[2rem] border border-white/60 bg-white/70 p-5 shadow-[0_24px_80px_rgba(15,58,100,0.15),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl" style={{ transform: "translateZ(0px)" }}>
+            <div className="smooth-card relative z-10 w-72 md:w-80 rounded-[2rem] border border-white/60 bg-white p-5 shadow-[0_24px_80px_rgba(15,58,100,0.15),inset_0_1px_0_rgba(255,255,255,0.8)]" style={{ transform: "translateZ(0px)" }}>
               <div className="mb-4 flex items-center justify-between">
                 <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-600">
                   ✈️ ปารีส, ฝรั่งเศส
                 </span>
-                <span className="flex items-center gap-1 rounded-full bg-white/50 px-2 py-1 text-xs font-semibold text-[#0f3a64]/80 backdrop-blur-sm">
+                <span className="flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-xs font-semibold text-[#0f3a64]/85">
                   <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
                   4.9
                 </span>
@@ -409,7 +409,7 @@ export default function Home() {
             <motion.div 
               animate={shouldReduceMotion ? {} : { y: [0, 12, 0] }}
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 1 }}
-              className="absolute -right-4 top-24 z-20 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/70 bg-white/80 shadow-[0_16px_40px_rgba(255,63,120,0.2)] backdrop-blur-xl"
+              className="absolute -right-4 top-24 z-20 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/70 bg-white shadow-[0_16px_40px_rgba(255,63,120,0.2)]"
               style={{ transform: "translateZ(40px)" }}
             >
               <MapPinned className="h-8 w-8 text-[#ff3f78]" />
@@ -419,7 +419,7 @@ export default function Home() {
             <motion.div 
               animate={shouldReduceMotion ? {} : { y: [0, -12, 0] }}
               transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }}
-              className="absolute -left-2 bottom-24 xl:-left-8 xl:bottom-32 z-20 flex items-center gap-3 rounded-[1.25rem] border border-white/70 bg-white/80 p-3 shadow-[0_16px_40px_rgba(34,211,238,0.2)] backdrop-blur-xl"
+              className="absolute -left-2 bottom-24 xl:-left-8 xl:bottom-32 z-20 flex items-center gap-3 rounded-[1.25rem] border border-white/70 bg-white p-3 shadow-[0_16px_40px_rgba(34,211,238,0.2)]"
               style={{ transform: "translateZ(60px)" }}
             >
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#22d3ee]/20 text-[#0f3a64]">
@@ -445,8 +445,8 @@ export default function Home() {
       </motion.section>
 
       <motion.section id="how-it-works" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-120px" }} variants={stagger} className="relative z-10 mx-auto w-full max-w-6xl px-5 pb-20 lg:px-8">
-        <motion.div variants={fadeUp} className="w-full rounded-[2rem] border border-white/70 bg-white/45 p-3 text-[#0f3a64] shadow-[0_40px_120px_rgba(15,58,100,0.14)] backdrop-blur-2xl">
-          <div className="overflow-hidden rounded-[1.55rem] border border-white/75 bg-white/62">
+        <motion.div variants={fadeUp} className="w-full rounded-[2rem] border border-white/70 bg-[#d8f7fc] p-3 text-[#0f3a64] shadow-[0_40px_120px_rgba(15,58,100,0.14)]">
+          <div className="overflow-hidden rounded-[1.55rem] border border-white/75 bg-white/95">
             <div className="flex items-center justify-between border-b border-[#0f3a64]/10 px-5 py-3">
               <div className="flex gap-2">
                 <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 2, delay: 0 }} className="h-2.5 w-2.5 rounded-full bg-[#ff3f78]" />
@@ -458,7 +458,7 @@ export default function Home() {
             </div>
 
             <div className="grid min-h-[20rem] md:grid-cols-[4.5rem_1fr_18rem]">
-              <aside className="hidden border-r border-[#0f3a64]/10 bg-white/55 py-5 md:flex md:flex-col md:items-center md:gap-4">
+              <aside className="hidden border-r border-[#0f3a64]/10 bg-slate-50/50 py-5 md:flex md:flex-col md:items-center md:gap-4">
                 {[Sparkles, MapPinned, Heart, CalendarDays, Gem].map((Icon, index) => (
                   <motion.span
                     key={index}
@@ -479,7 +479,7 @@ export default function Home() {
                 <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-[#0f3a64] md:text-4xl">
                   อยากไปที่ไหน?
                 </h2>
-                <p className="mt-3 max-w-md text-sm leading-7 text-[#0f3a64]/62">
+                <p className="mt-3 max-w-md text-sm leading-7 text-[#0f3a64]/85">
                   เริ่มจากประโยคเดียว เช่น &quot;อยากไปญี่ปุ่น 7 วัน เน้นอาหารดี โรงแรมสวย และไม่เดินเหนื่อย&quot; แล้วระบบจะจัดเป็นแผนที่อ่านง่ายทันที
                 </p>
 
@@ -497,7 +497,7 @@ export default function Home() {
                         key={step.title}
                         variants={previewSlide}
                         whileHover={shouldReduceMotion ? {} : { x: 4, boxShadow: "0 12px 36px rgba(15,58,100,0.12)" }}
-                        className="smooth-card flex items-start gap-3 rounded-2xl bg-white/80 p-4 ring-1 ring-[#0f3a64]/8"
+                        className="smooth-card flex items-start gap-3 rounded-2xl bg-white/95 p-4 ring-1 ring-[#0f3a64]/12"
                       >
                         <motion.span
                           whileHover={{ rotate: 12, scale: 1.1 }}
@@ -507,7 +507,7 @@ export default function Home() {
                         </motion.span>
                         <div>
                           <p className="font-semibold text-[#0f3a64]">{step.title}</p>
-                          <p className="mt-1 text-sm leading-6 text-[#0f3a64]/58">{step.copy}</p>
+                          <p className="mt-1 text-sm leading-6 text-[#0f3a64]/80">{step.copy}</p>
                         </div>
                       </motion.div>
                     );
@@ -525,7 +525,7 @@ export default function Home() {
                   >
                     <Play className="ml-1 h-7 w-7 fill-[#ff3f78]" />
                   </motion.div>
-                  <p className="text-sm text-white/78">Travel Brightly</p>
+                  <p className="text-sm text-white/90">Travel Brightly</p>
                   <h3 className="mt-1 text-3xl font-semibold leading-tight tracking-[-0.035em]">
                     เดินทางแบบสนุกในจังหวะของคุณเอง
                   </h3>
@@ -545,7 +545,7 @@ export default function Home() {
             </h2>
           </div>
           <div className="flex gap-3">
-            <motion.button whileHover={shouldReduceMotion ? {} : { scale: 1.08 }} whileTap={pressTap} transition={springSnappy} className="soft-focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/45 text-[#0f3a64]/72 shadow-sm backdrop-blur transition hover:bg-white/75 hover:text-[#ff3f78]" aria-label="เลื่อนซ้าย">
+            <motion.button whileHover={shouldReduceMotion ? {} : { scale: 1.08 }} whileTap={pressTap} transition={springSnappy} className="soft-focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/90 text-[#0f3a64]/85 shadow-sm transition hover:bg-white hover:text-[#ff3f78]" aria-label="เลื่อนซ้าย">
               <ArrowLeft className="h-4 w-4" />
             </motion.button>
             <motion.button whileHover={shouldReduceMotion ? {} : { scale: 1.08 }} whileTap={pressTap} transition={springSnappy} className="soft-focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-[#ff3f78]/25 bg-[#ff3f78] text-white shadow-[0_14px_40px_rgba(255,63,120,0.28)] transition hover:bg-[#ff6b95]" aria-label="เลื่อนขวา">
@@ -570,7 +570,7 @@ export default function Home() {
                 <div className="relative z-10 flex h-full min-h-[27rem] flex-col justify-between p-6">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-white">{destination.city}</p>
-                    <span className="rounded-full bg-white/24 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
+                    <span className="rounded-full bg-white/40 px-3 py-1 text-xs font-semibold text-white">
                       0{index + 1}
                     </span>
                   </div>
@@ -578,7 +578,7 @@ export default function Home() {
                     <h3 className="text-3xl font-semibold leading-tight tracking-[-0.035em] text-white drop-shadow-sm">
                       {destination.title}
                     </h3>
-                    <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold text-white backdrop-blur transition group-hover:border-white/70 group-hover:bg-white/32">
+                    <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/35 px-4 py-2 text-sm font-semibold text-white transition group-hover:border-white/70 group-hover:bg-white/50">
                       ดูไอเดียทริป
                       <motion.span
                         className="inline-block"

@@ -1,13 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
-import { motion, useReducedMotion } from "framer-motion";
-import { Compass } from "lucide-react";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
+import { Compass, Menu, X } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { pressTap, springSnappy } from "@/lib/motion";
@@ -24,13 +25,14 @@ export default function SiteHeader() {
   const pathname = usePathname();
   const { isSignedIn } = useUser();
   const shouldReduceMotion = useReducedMotion();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sticky top-0 z-50 border-b border-white/60 bg-[#9de9f4]/72 shadow-[0_12px_40px_rgba(15,58,100,0.08)] backdrop-blur-2xl"
+      className="sticky top-0 z-50 border-b border-white/60 bg-[#bdf3fa] shadow-[0_12px_40px_rgba(15,58,100,0.08)]"
     >
       <nav className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 lg:px-8">
         <Link
@@ -51,7 +53,8 @@ export default function SiteHeader() {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-1 rounded-full border border-white/70 bg-white/42 p-1 text-sm text-[#0f3a64]/68 shadow-sm backdrop-blur md:flex">
+        {/* Desktop Navigation */}
+        <div className="hidden items-center gap-1 rounded-full border border-white/70 bg-white/85 p-1 text-sm text-[#0f3a64]/85 shadow-sm md:flex">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 
@@ -60,7 +63,7 @@ export default function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 className={`relative rounded-full px-4 py-2 transition hover:bg-white/60 hover:text-[#0f3a64] ${
-                  isActive ? "text-[#ff3f78] shadow-sm" : ""
+                  isActive ? "text-[#ff3f78] shadow-sm font-semibold" : ""
                 }`}
               >
                 {isActive && (
@@ -80,7 +83,7 @@ export default function SiteHeader() {
           {isSignedIn ? (
             <UserButton />
           ) : (
-            <>
+            <div className="hidden items-center gap-3 sm:flex">
               <Link
                 href="/sign-in"
                 className={buttonVariants({ variant: "outline", size: "sm", className: "soft-focus-ring" })}
@@ -93,10 +96,75 @@ export default function SiteHeader() {
               >
                 เริ่มวางแผน
               </Link>
-            </>
+            </div>
           )}
+
+          {/* Mobile Menu Toggle Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/80 text-[#0f3a64] shadow-sm hover:bg-white focus:outline-none md:hidden"
+            aria-label={isMobileMenuOpen ? "ปิดเมนู" : "เปิดเมนู"}
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Menu Panel */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="border-t border-white/60 bg-[#bdf3fa] shadow-inner md:hidden overflow-hidden"
+          >
+            <div className="flex flex-col gap-2 p-4">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+                      isActive
+                        ? "bg-[#ff3f78] text-white shadow-sm"
+                        : "bg-white/60 text-[#0f3a64]/85 hover:bg-white/90"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+              {!isSignedIn && (
+                <div className="mt-2 flex flex-col gap-2 border-t border-white/40 pt-4 sm:hidden">
+                  <Link
+                    href="/sign-in"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center soft-focus-ring" })}
+                  >
+                    เข้าสู่ระบบ
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={buttonVariants({ size: "sm", className: "w-full justify-center soft-focus-ring" })}
+                  >
+                    เริ่มวางแผน
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }
+
