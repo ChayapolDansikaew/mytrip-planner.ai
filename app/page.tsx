@@ -132,12 +132,39 @@ export default function Home() {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScrollLimits = () => {
+    const container = carouselRef.current;
+    if (container) {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      setCanScrollLeft(scrollLeft > 2);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
+    }
+  };
+
+  const scrollCarousel = (direction: "left" | "right") => {
+    const container = carouselRef.current;
+    if (container) {
+      const scrollAmount = direction === "left" ? -340 : 340;
+      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
+    const container = carouselRef.current;
+    if (container) {
+      // Small timeout to allow render completion
+      setTimeout(checkScrollLimits, 100);
+      window.addEventListener("resize", checkScrollLimits);
+    }
     return () => {
       if (typingIntervalRef.current) {
         clearInterval(typingIntervalRef.current);
       }
+      window.removeEventListener("resize", checkScrollLimits);
     };
   }, []);
 
@@ -313,7 +340,7 @@ export default function Home() {
                 className="min-h-20 flex-1 resize-none bg-transparent text-sm leading-7 text-[#0f3a64] outline-none placeholder:text-[#0f3a64]/58"
                 placeholder="เช่น สร้างทริปปารีส 5 วัน จากกรุงเทพฯ เน้นคาเฟ่ ศิลปะ โรงแรมสวย และงบกลาง ๆ"
               />
-              <button type="submit" disabled={isSubmitting} className="cta-glow mt-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff3f78] text-white shadow-[0_14px_38px_rgba(255,63,120,0.34)] transition hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-95 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:opacity-60 disabled:animate-none" aria-label="ส่งบรีฟให้ AI">
+              <button type="submit" disabled={isSubmitting} className="cta-glow mt-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ff3f78] text-white shadow-[0_10px_24px_rgba(255,63,120,0.18)] transition hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-95 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:opacity-60 disabled:animate-none" aria-label="ส่งบรีฟให้ AI">
                 <Send className="h-4 w-4" />
               </button>
             </form>
@@ -545,18 +572,43 @@ export default function Home() {
             </h2>
           </div>
           <div className="flex gap-3">
-            <motion.button whileHover={shouldReduceMotion ? {} : { scale: 1.08 }} whileTap={pressTap} transition={springSnappy} className="soft-focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/90 text-[#0f3a64]/85 shadow-sm transition hover:bg-white hover:text-[#ff3f78]" aria-label="เลื่อนซ้าย">
+            <motion.button
+              onClick={() => scrollCarousel("left")}
+              disabled={!canScrollLeft}
+              whileHover={shouldReduceMotion ? {} : { scale: 1.08 }}
+              whileTap={pressTap}
+              transition={springSnappy}
+              className="soft-focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/90 text-[#0f3a64]/85 shadow-sm transition hover:bg-white hover:text-[#ff3f78] disabled:opacity-30 disabled:pointer-events-none"
+              aria-label="เลื่อนซ้าย"
+            >
               <ArrowLeft className="h-4 w-4" />
             </motion.button>
-            <motion.button whileHover={shouldReduceMotion ? {} : { scale: 1.08 }} whileTap={pressTap} transition={springSnappy} className="soft-focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-[#ff3f78]/25 bg-[#ff3f78] text-white shadow-[0_14px_40px_rgba(255,63,120,0.28)] transition hover:bg-[#ff6b95]" aria-label="เลื่อนขวา">
+            <motion.button
+              onClick={() => scrollCarousel("right")}
+              disabled={!canScrollRight}
+              whileHover={shouldReduceMotion ? {} : { scale: 1.08 }}
+              whileTap={pressTap}
+              transition={springSnappy}
+              className="soft-focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-[#ff3f78]/25 bg-[#ff3f78] text-white shadow-[0_14px_40px_rgba(255,63,120,0.28)] transition hover:bg-[#ff6b95] disabled:opacity-30 disabled:pointer-events-none"
+              aria-label="เลื่อนขวา"
+            >
               <ArrowRight className="h-4 w-4" />
             </motion.button>
           </div>
         </motion.div>
 
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div
+          ref={carouselRef}
+          onScroll={checkScrollLimits}
+          className="flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-6 scrollbar-none"
+        >
           {destinations.map((destination, index) => (
-            <motion.div key={destination.city} variants={cardPop} whileHover={shouldReduceMotion ? {} : liftHover}>
+            <motion.div
+              key={destination.city}
+              variants={cardPop}
+              whileHover={shouldReduceMotion ? {} : liftHover}
+              className="w-[280px] sm:w-[300px] md:w-[320px] shrink-0 snap-start"
+            >
               <Card className="card-glow group relative min-h-[27rem] overflow-hidden border-white/70 bg-slate-900 p-0">
                 <Image
                   src={destination.image}

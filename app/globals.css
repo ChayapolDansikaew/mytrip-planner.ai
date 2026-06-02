@@ -322,13 +322,13 @@ select {
   0%,
   100% {
     box-shadow:
-      0 0 0 0 rgba(255, 63, 120, 0.4),
-      0 14px 38px rgba(255, 63, 120, 0.2);
+      0 0 0 0 rgba(255, 63, 120, 0.15),
+      0 10px 24px rgba(255, 63, 120, 0.08);
   }
   50% {
     box-shadow:
-      0 0 20px 6px rgba(255, 63, 120, 0.15),
-      0 14px 38px rgba(255, 63, 120, 0.34);
+      0 0 15px 4px rgba(255, 63, 120, 0.08),
+      0 10px 24px rgba(255, 63, 120, 0.18);
   }
 }
 
@@ -456,7 +456,7 @@ select {
 
 /* ── CTA button pulsing glow ─────────────────────────────────── */
 .cta-glow {
-  animation: pulse-glow 2.8s ease-in-out infinite;
+  animation: pulse-glow 4s ease-in-out infinite;
 }
 
 .smooth-card {
@@ -588,4 +588,14 @@ select {
     transform: none !important;
   }
 }
+
+/* Hide scrollbars but keep functionality */
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
 

@@ -360,7 +360,7 @@ export default function CreateTripPage() {
             whileHover={!shouldReduceMotion && !loading && isFormValid ? { scale: 1.01, y: -2 } : {}}
             whileTap={!loading && isFormValid ? pressTap : {}}
             transition={springSnappy}
-            className={`mt-4 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#ff3f78] px-6 text-base font-semibold text-white shadow-[0_22px_70px_rgba(255,63,120,0.34)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:translate-y-0 disabled:bg-[#0f3a64]/22 disabled:shadow-none ${isFormValid && !loading ? "cta-glow" : ""}`}
+            className={`mt-4 flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[#ff3f78] px-6 text-base font-semibold text-white shadow-[0_14px_36px_rgba(255,63,120,0.18)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#ff6b95] disabled:pointer-events-none disabled:translate-y-0 disabled:bg-[#0f3a64]/22 disabled:shadow-none ${isFormValid && !loading ? "cta-glow" : ""}`}
           >
             {loading ? (
               <>
