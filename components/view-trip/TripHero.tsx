@@ -175,7 +175,7 @@ export default function TripHero({ tripData }: TripHeroProps) {
               ✈️
             </motion.span>
           </motion.div>
-          <h1 className="line-clamp-2 text-3xl font-bold text-white drop-shadow-sm md:text-5xl">
+          <h1 className="line-clamp-2 text-3xl font-bold tracking-tighter text-white drop-shadow-lg md:text-6xl">
             {getDisplayValue(tripData.tripName, destination)}
           </h1>
           <p className="mt-2 text-lg font-medium text-white/80">

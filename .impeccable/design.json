@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-02T16:28:00Z",
+  "title": "Design System: AI Trip Planner",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Coral Pink",
+        "canonical": "oklch(68.5% 0.23 6)",
+        "tonalRamp": ["#4c0017", "#800029", "#b3003e", "#e61a5c", "#ff4d84", "#ff80aa", "#ffb3d1", "#ffe6f0"]
+      },
+      "neutral-bg": {
+        "role": "neutral",
+        "displayName": "Clear Sky",
+        "canonical": "oklch(88.5% 0.12 210)",
+        "tonalRamp": ["#05252b", "#0d4d56", "#147481", "#1e9cac", "#48bfd0", "#84d8e4", "#c0eff5", "#ecfafd"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display Title",
+        "purpose": "Hero and homepage branding headlines."
+      },
+      "body": {
+        "displayName": "Body Sans",
+        "purpose": "Primary readable paragraph details."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-low",
+        "value": "0 4px 12px rgba(0, 0, 0, 0.08)",
+        "purpose": "Diffuse hover shadow under card surfaces."
+      },
+      {
+        "name": "pulse-glow",
+        "value": "0 0 20px 6px rgba(255, 63, 120, 0.15)",
+        "purpose": "Pulsing focus states for map pins and core action targets."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Standard transitions for interactive components."
+      },
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "High-end decelerating ease for UI entry and scales."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Standard call to action buttons with smooth high-end translation and glow on hover.",
+      "html": "<button class=\"ds-btn-primary\">สร้างแผนการท่องเที่ยว</button>",
+      "css": ".ds-btn-primary { font-family: 'Kanit', sans-serif; background: #ff3f78; color: #ffffff; padding: 10px 20px; font-weight: 500; font-size: 1rem; border: none; border-radius: 16px; cursor: pointer; transition: background 0.24s cubic-bezier(0.22, 1, 0.36, 1), transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; } .ds-btn-primary:hover { background: #ff6b95; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(255, 63, 120, 0.3); }"
+    },
+    {
+      "name": "Active Itinerary Card",
+      "kind": "card",
+      "refersTo": "card-itinerary",
+      "description": "Selected itinerary point with full soft amber border outline and micro-scale up.",
+      "html": "<div class=\"ds-card-active\"><span class=\"ds-card-icon\">📍</span><div class=\"ds-card-content\"><h4 class=\"ds-card-title\">วัดพระศรีรัตนศาสดาราม</h4><p class=\"ds-card-desc\">เข้าชมความงามของพระอุโบสถและพระแก้วมรกต</p></div></div>",
+      "css": ".ds-card-active { font-family: 'Kanit', sans-serif; display: flex; align-items: start; gap: 8px; background: rgba(255, 255, 255, 0.6); border: 1px solid #f59e0b; border-radius: 12px; padding: 12px; transform: scale(1.01); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); transition: transform 0.2s; } .ds-card-icon { font-size: 1rem; flex-shrink: 0; } .ds-card-content { display: flex; flex-direction: column; gap: 2px; } .ds-card-title { font-weight: 600; font-size: 0.9rem; color: #0f3a64; margin: 0; } .ds-card-desc { font-size: 0.8rem; color: #555; margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cheerful Explorer",
+    "overview": "The AI Trip Planner interface is designed to evoke excitement, joy, and wanderlust, matching the high-energy anticipation of planning a new trip. The visual language relies on a bright sky-to-aqua canvas, high-contrast coral/pink accents, friendly rounded geometry, and breezy floating animations that make the application feel alive and responsive.",
+    "keyCharacteristics": [
+      "High-vibrancy sky-blue and cyan background washes.",
+      "Soft, highly rounded geometry (rounded-xl or 12px+ radii).",
+      "Energetic hot-pink and coral primary action triggers.",
+      "Physics-driven, smooth sinusoidal floating animations (no tacky elastic bounces)."
+    ],
+    "rules": [
+      {
+        "name": "The 10% Coral Rule",
+        "body": "Primary Coral Pink is restricted to <=10% of any screen surface. By keeping it rare, it serves as an immediate, high-priority beacon.",
+        "section": "colors"
+      },
+      {
+        "name": "The Flat-by-Default Rule",
+        "body": "All cards, panels, and lists rest flat on their background canvas. Shadows and borders only appear as responsive feedback.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do maintain high typographic contrast (>=4.5:1 ratio) for Thai text using the Deep Ink Navy against sky-tinted backgrounds.",
+      "Do use full-border outlines and slight scales to indicate active items instead of thick colored side borders.",
+      "Do implement a physics-based globe-glide animation utilizing individual cubic-bezier ease-out and ease-in curves."
+    ],
+    "donts": [
+      "Don't use thick colored borders on one side of a card (border-l-4) as a selection indicator.",
+      "Don't use generic corporate gray bento grids, saturated primary-color buttons, or heavy structural shadows.",
+      "Don't use decorative glassmorphism or combine text gradients with transparent sheets.",
+      "Don't apply bouncy or elastic animations to icons, images, or interactive cards."
+    ]
+  }
+}

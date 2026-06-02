@@ -89,7 +89,7 @@ export default function MyTripsPage() {
             >
               <span className="text-6xl">🔐</span>
               <h2 className="mt-5 text-2xl font-semibold tracking-[-0.035em] text-[#0f3a64] dark:text-[#e3fafc]">
-                กรุณาเข้าสู่ระบบก่อนดูทริปของคุณ
+                ล็อกอินเพื่อดูทริปของคุณ
               </h2>
               <p className="mt-2 max-w-md text-sm leading-7 text-[#0f3a64]/62 dark:text-[#e3fafc]/62">
                 เข้าสู่ระบบเพื่อดูแผนการเดินทางที่เคยสร้างไว้และเริ่มวางแผนทริปใหม่
@@ -141,8 +141,8 @@ export default function MyTripsPage() {
                   <Sparkles className="h-5 w-5 text-[#0f3a64] dark:text-[#e3fafc]" />
                 </motion.div>
               </div>
-              <h2 className="mt-6 text-2xl font-bold tracking-[-0.035em] text-[#0f3a64] dark:text-[#e3fafc]">
-                ยังไม่มีทริปของคุณ
+              <h2 className="mt-6 text-2xl font-semibold tracking-[-0.035em] text-[#0f3a64] dark:text-[#e3fafc]">
+                คุณยังไม่มีทริป
               </h2>
               <p className="mt-2 max-w-sm text-sm leading-7 text-[#0f3a64]/70 dark:text-[#e3fafc]/70">
                 เริ่มสร้างทริปแรกของคุณด้วย AI

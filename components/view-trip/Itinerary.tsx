@@ -50,7 +50,7 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
 
   return (
     <section>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-[#e3fafc]">
+      <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-[#e3fafc]">
         🗓️ แผนการเดินทางรายวัน
       </h2>
 

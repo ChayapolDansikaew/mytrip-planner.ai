@@ -51,7 +51,7 @@ export default function TripSummary({ tripData }: TripSummaryProps) {
 
   return (
     <section>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-[#e3fafc]">📊 สรุปทริป</h2>
+      <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-[#e3fafc]">📊 สรุปทริป</h2>
       <motion.div
         initial="hidden"
         whileInView="visible"

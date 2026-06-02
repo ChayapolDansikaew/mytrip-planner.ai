@@ -133,7 +133,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
           <div className="absolute inset-0 bg-gradient-to-b from-[#0f3a64]/10 via-transparent to-[#0f3a64]/65 group-hover:to-[#0f3a64]/75 dark:from-black/10 dark:to-black/75 dark:group-hover:to-black/85 transition-all duration-300" />
           
           <div className="absolute bottom-3 left-3 right-3 flex justify-start">
-            <span className="max-w-full truncate rounded-full border border-white/30 bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-[#0a233d]/50">
+            <span className="max-w-full truncate rounded-full border border-white/30 bg-white/20 px-3 py-1 text-xs font-medium text-white shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-[#0a233d]/50">
               ✈️ {trip.destination}
             </span>
           </div>
@@ -177,7 +177,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
             {tripName}
           </h3>
 
-          <p className="flex items-center gap-1 text-sm text-[#0f3a64]/58 dark:text-[#e3fafc]/58">
+          <p className="flex items-center gap-1 text-sm font-bold text-[#0f3a64]/58 dark:text-[#e3fafc]/58">
             <span>📍</span>
             <span className="truncate">{trip.destination}</span>
           </p>

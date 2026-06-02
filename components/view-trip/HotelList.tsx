@@ -43,7 +43,7 @@ export default function HotelList({ hotels }: HotelListProps) {
 
   return (
     <section>
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-[#e3fafc]">🏨 โรงแรมแนะนำ</h2>
+      <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-[#e3fafc]">🏨 โรงแรมแนะนำ</h2>
 
       <motion.div
         initial="hidden"
