@@ -1,6 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { motion, useReducedMotion } from "framer-motion";
+import { pressTap } from "@/lib/motion";
 
 type BudgetValue = "cheap" | "moderate" | "luxury";
 
@@ -36,6 +38,8 @@ const budgetOptions: Array<{
 ];
 
 export function BudgetSelector({ value, onChange }: BudgetSelectorProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <fieldset className="space-y-4">
       <div>
@@ -51,13 +55,15 @@ export function BudgetSelector({ value, onChange }: BudgetSelectorProps) {
           const isSelected = value === option.value;
 
           return (
-            <button
+            <motion.button
               key={option.value}
               type="button"
               onClick={() => onChange(option.value)}
               aria-pressed={isSelected}
+              whileHover={shouldReduceMotion ? {} : { scale: 1.015, y: -2 }}
+              whileTap={pressTap}
               className={cn(
-                "group rounded-[1.35rem] border bg-white/78 p-5 text-left shadow-[0_18px_50px_rgba(15,58,100,0.08)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-[#ff3f78]/55 hover:bg-white hover:shadow-[0_24px_70px_rgba(255,63,120,0.16)] dark:bg-[#0a233d]/78 dark:border-white/10 dark:text-[#e3fafc] dark:shadow-[0_18px_50px_rgba(0,0,0,0.2)] dark:hover:bg-[#0f2e4f]/80 dark:hover:border-white/20 dark:hover:shadow-[0_24px_70px_rgba(255,63,120,0.2)]",
+                "group rounded-[1.35rem] border bg-white/78 p-5 text-left shadow-[0_18px_50px_rgba(15,58,100,0.08)] backdrop-blur transition-all duration-300 hover:border-[#ff3f78]/55 hover:bg-white hover:shadow-[0_24px_70px_rgba(255,63,120,0.16)] dark:bg-[#0a233d]/78 dark:border-white/10 dark:text-[#e3fafc] dark:shadow-[0_18px_50px_rgba(0,0,0,0.2)] dark:hover:bg-[#0f2e4f]/80 dark:hover:border-white/20 dark:hover:shadow-[0_24px_70px_rgba(255,63,120,0.2)]",
                 isSelected
                   ? "border-[#ff3f78] bg-[#fff0f5] ring-4 ring-[#ff3f78]/15 dark:border-[#ff3f78] dark:bg-[#ff3f78]/15 dark:ring-[#ff3f78]/25"
                   : "border-white/70",
@@ -72,7 +78,7 @@ export function BudgetSelector({ value, onChange }: BudgetSelectorProps) {
               <span className="mt-1 block text-sm leading-6 text-[#0f3a64]/58 dark:text-[#e3fafc]/58">
                 {option.description}
               </span>
-            </button>
+            </motion.button>
           );
         })}
       </div>
