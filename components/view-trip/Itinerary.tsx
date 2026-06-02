@@ -66,7 +66,7 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
               whileInView="visible"
               viewport={{ once: true, margin: "-40px" }}
               variants={dayReveal}
-              className="rounded-2xl bg-white/70 p-5 shadow-sm backdrop-blur sm:p-6 dark:bg-[#0a233d]/45 dark:shadow-none"
+              className="rounded-2xl bg-white/70 p-5 shadow-sm backdrop-blur sm:p-6 dark:bg-[#0a233d]/45 dark:shadow-none transition-colors duration-300"
             >
               <motion.div
                 initial={{ opacity: 0, x: -20 }}

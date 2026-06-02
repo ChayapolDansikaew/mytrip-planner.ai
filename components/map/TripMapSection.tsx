@@ -92,7 +92,7 @@ export default function TripMapSection({
 
       {/* Content */}
       <div
-        className={`overflow-hidden rounded-2xl border border-gray-200 shadow-sm dark:border-white/10 dark:shadow-[0_20px_60px_rgba(0,0,0,0.3)]
+        className={`overflow-hidden rounded-2xl border border-gray-200 shadow-sm dark:border-white/10 dark:shadow-[0_20px_60px_rgba(0,0,0,0.3)] transition-colors duration-300
         ${
           view === "split"
             ? "flex h-[600px] flex-col lg:flex-row"
@@ -102,7 +102,7 @@ export default function TripMapSection({
         {/* Place List Panel */}
         {(view === "split" || view === "list") && (
           <div
-            className={`bg-white p-4 dark:bg-[#0a233d]/70
+            className={`bg-white p-4 dark:bg-[#0a233d]/70 transition-colors duration-300
             ${
               view === "split"
                 ? "h-64 w-full border-b border-gray-200 lg:h-full lg:w-80 lg:border-b-0 lg:border-r dark:border-white/10"

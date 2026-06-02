@@ -53,7 +53,7 @@ export default function SiteHeader() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sticky top-0 z-50 border-b border-white/60 dark:border-white/10 bg-[#bdf3fa] dark:bg-[#07192b] shadow-[0_12px_40px_rgba(15,58,100,0.08)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.3)]"
+      className="sticky top-0 z-50 border-b border-white/60 dark:border-white/10 bg-[#bdf3fa] dark:bg-[#07192b] shadow-[0_12px_40px_rgba(15,58,100,0.08)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.3)] transition-colors duration-300"
     >
       <nav className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 lg:px-8">
         <Link

@@ -49,7 +49,7 @@ export default function MyTripsPage() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mb-8 flex flex-col gap-5 rounded-[2rem] border border-white/70 bg-white/45 p-5 shadow-[0_30px_100px_rgba(15,58,100,0.14)] backdrop-blur-2xl sm:p-6 md:flex-row md:items-center md:justify-between dark:border-white/10 dark:bg-[#0a233d]/45 dark:shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
+            className="mb-8 flex flex-col gap-5 rounded-[2rem] border border-white/70 bg-white/45 p-5 shadow-[0_30px_100px_rgba(15,58,100,0.14)] backdrop-blur-2xl sm:p-6 md:flex-row md:items-center md:justify-between dark:border-white/10 dark:bg-[#0a233d]/45 dark:shadow-[0_30px_100px_rgba(0,0,0,0.4)] transition-colors duration-300"
           >
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#ff3f78] dark:text-[#ff5a8d]">
@@ -85,7 +85,7 @@ export default function MyTripsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center rounded-[2rem] border border-white/70 bg-white/52 px-6 py-24 text-center shadow-[0_30px_100px_rgba(15,58,100,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#0a233d]/52 dark:shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
+              className="flex flex-col items-center justify-center rounded-[2rem] border border-white/70 bg-white/52 px-6 py-24 text-center shadow-[0_30px_100px_rgba(15,58,100,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#0a233d]/52 dark:shadow-[0_30px_100px_rgba(0,0,0,0.4)] transition-colors duration-300"
             >
               <span className="text-6xl">🔐</span>
               <h2 className="mt-5 text-2xl font-semibold tracking-[-0.035em] text-[#0f3a64] dark:text-[#e3fafc]">
@@ -109,7 +109,7 @@ export default function MyTripsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center rounded-[2rem] border border-white/70 bg-white/52 px-6 py-32 text-center shadow-[0_30px_100px_rgba(15,58,100,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#0a233d]/52 dark:shadow-[0_30px_100px_rgba(0,0,0,0.4)]"
+              className="flex flex-col items-center justify-center rounded-[2rem] border border-white/70 bg-white/52 px-6 py-32 text-center shadow-[0_30px_100px_rgba(15,58,100,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#0a233d]/52 dark:shadow-[0_30px_100px_rgba(0,0,0,0.4)] transition-colors duration-300"
             >
               <div className="relative flex h-48 w-48 items-center justify-center">
                 <div className="absolute inset-0 rounded-full bg-[#ff3f78]/10 dark:bg-[#ff3f78]/5 blur-2xl" />
