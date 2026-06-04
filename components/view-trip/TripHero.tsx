@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 
 import type { TripData } from "@/types/trip";
 import { motionEase, pressTap, springSnappy } from "@/lib/motion";
@@ -69,14 +72,40 @@ function getDestinationImage(destination: string): string | null {
   return null;
 }
 
-export default function TripHero({ tripData }: TripHeroProps) {
+export default function TripHero({ tripData, tripId }: TripHeroProps) {
   const router = useRouter();
+  const setTripPublicStatus = useMutation(api.trips.setTripPublicStatus);
   const [copied, setCopied] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const destination = getDisplayValue(tripData.destination);
 
   async function handleShare() {
     const currentUrl = window.location.href;
+
+    try {
+      if (tripId) {
+        await setTripPublicStatus({
+          tripId: tripId as Id<"trips">,
+          isPublic: true,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to set trip public status:", error);
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: tripData.tripName || "AI Trip Planner",
+          text: `ดูแผนการเดินทางไป ${destination} ของฉันสิ!`,
+          url: currentUrl,
+        });
+        return; // Don't show toast if native share succeeds
+      } catch (e) {
+        // Fallback to clipboard if user cancels or it fails
+        console.error("Native share failed, falling back to clipboard:", e);
+      }
+    }
 
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(currentUrl);
@@ -122,7 +151,7 @@ export default function TripHero({ tripData }: TripHeroProps) {
             router.push("/my-trips");
           }
         }}
-        className="absolute left-4 top-4 z-20 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all hover:bg-white/30 md:left-8 md:top-6"
+        className="absolute left-4 top-4 z-20 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 md:left-8 md:top-6"
       >
         ← กลับ
       </motion.button>
@@ -135,7 +164,7 @@ export default function TripHero({ tripData }: TripHeroProps) {
         whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1 }}
         whileTap={pressTap}
         onClick={handleShare}
-        className="absolute right-4 top-4 z-20 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all hover:bg-white/30 md:right-8 md:top-6"
+        className="absolute right-4 top-4 z-20 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 md:right-8 md:top-6"
       >
         🔗 แชร์
       </motion.button>
@@ -147,7 +176,7 @@ export default function TripHero({ tripData }: TripHeroProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.24, ease: motionEase }}
-            className="absolute right-4 top-16 z-30 rounded-full bg-gray-950/90 px-4 py-2 text-sm font-semibold text-white shadow-xl backdrop-blur md:right-8 md:top-20"
+            className="fixed right-4 top-24 z-[100] rounded-full bg-gray-950/90 px-4 py-2 text-sm font-semibold text-white shadow-xl backdrop-blur md:right-8 md:top-24"
           >
             ✅ คัดลอกลิงก์แล้ว!
           </motion.div>

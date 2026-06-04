@@ -46,7 +46,19 @@ export const getTripById = query({
     tripId: v.id("trips"),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.tripId);
+    const trip = await ctx.db.get(args.tripId);
+    if (!trip) return null;
+
+    if (trip.isPublic) {
+      return trip;
+    }
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== trip.userId) {
+      return null;
+    }
+
+    return trip;
   },
 });
 
@@ -127,6 +139,14 @@ export const setTripPublicStatus = mutation({
     isPublic: v.boolean(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Unauthorized");
+
+    const trip = await ctx.db.get(args.tripId);
+    if (!trip || trip.userId !== identity.subject) {
+      throw new Error("Unauthorized");
+    }
+
     await ctx.db.patch(args.tripId, {
       isPublic: args.isPublic,
     });
