@@ -378,7 +378,7 @@ export default function Home() {
             {greeting}
           </motion.div>
 
-          <motion.h1 variants={fadeUp} className="mt-8 text-5xl font-semibold leading-[1.08] tracking-[-0.045em] text-[#0f3a64] md:text-7xl lg:text-[4.5rem] xl:text-[5.2rem] dark:text-[#e3fafc]">
+          <motion.h1 variants={fadeUp} className="mt-8 text-5xl font-semibold leading-snug tracking-normal text-[#0f3a64] md:text-7xl lg:text-[4.5rem] xl:text-[5.2rem] dark:text-[#e3fafc]">
             วางแผนทริปสดใสไปทั่ว <span className="text-[#ff3f78] dark:text-[#ff5a8d]">โลก</span> ในไม่กี่วินาที
           </motion.h1>
 
@@ -565,7 +565,7 @@ export default function Home() {
 
               <div className="p-6 text-left md:p-8">
                 <p className="text-sm font-semibold text-[#ff3f78] dark:text-[#ff5a8d]">ถามฉันได้เลย</p>
-                <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-[#0f3a64] md:text-4xl dark:text-[#e3fafc]">
+                <h2 className="mt-3 text-3xl font-semibold tracking-normal text-[#0f3a64] md:text-4xl dark:text-[#e3fafc]">
                   อยากไปที่ไหน?
                 </h2>
                 <p className="mt-3 max-w-md text-sm leading-7 text-[#0f3a64]/85 dark:text-[#e3fafc]/85">
@@ -615,7 +615,7 @@ export default function Home() {
                     <Play className="ml-1 h-7 w-7 fill-[#ff3f78]" />
                   </motion.div>
                   <p className="text-sm text-white/90">Travel Brightly</p>
-                  <h3 className="mt-1 text-3xl font-semibold leading-tight tracking-[-0.035em]">
+                  <h3 className="mt-1 text-3xl font-semibold leading-snug tracking-normal">
                     เดินทางแบบสนุกในจังหวะของคุณเอง
                   </h3>
                 </div>
@@ -629,7 +629,7 @@ export default function Home() {
         <motion.div variants={fadeUp} className="mb-10 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-semibold tracking-[0.12em] text-[#ff3f78] dark:text-[#ff5a8d]">POPULAR DESTINATIONS</p>
-            <h2 className="mt-3 text-4xl font-semibold tracking-[-0.04em] text-[#0f3a64] md:text-5xl dark:text-[#e3fafc]">
+            <h2 className="mt-3 text-4xl font-semibold tracking-normal text-[#0f3a64] md:text-5xl dark:text-[#e3fafc]">
               จุดหมายยอดนิยมที่ควรลอง
             </h2>
           </div>
@@ -695,7 +695,7 @@ export default function Home() {
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-3xl font-semibold leading-tight tracking-[-0.035em] text-white drop-shadow-sm">
+                      <h3 className="text-3xl font-semibold leading-snug tracking-normal text-white drop-shadow-sm">
                         {destination.title}
                       </h3>
                       <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/35 px-4 py-2 text-sm font-semibold text-white transition group-hover:border-white/70 group-hover:bg-white/50 dark:border-white/20 dark:bg-white/20 dark:group-hover:border-white/50 dark:group-hover:bg-white/30">

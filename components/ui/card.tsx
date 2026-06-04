@@ -22,7 +22,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
   return (
     <h3
       className={cn(
-        "font-serif text-2xl font-medium tracking-[-0.03em]",
+        "font-serif text-2xl font-medium tracking-normal",
         className,
       )}
       {...props}

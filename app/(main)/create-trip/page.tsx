@@ -305,7 +305,7 @@ export default function CreateTripPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="mt-3 text-4xl font-semibold tracking-[-0.045em] text-[#0f3a64] sm:text-5xl lg:text-6xl dark:text-[#e3fafc]"
+            className="mt-3 text-4xl font-semibold tracking-normal text-[#0f3a64] sm:text-5xl lg:text-6xl dark:text-[#e3fafc]"
           >
             บอกเราว่าคุณอยากเที่ยวแบบไหน
           </motion.h1>
@@ -334,7 +334,7 @@ export default function CreateTripPage() {
               <div className="space-y-3">
                 <label
                   htmlFor="duration"
-                  className="block text-base font-semibold tracking-[-0.02em] text-[#0f3a64] md:text-lg dark:text-[#e3fafc]"
+                  className="block text-base font-semibold tracking-normal text-[#0f3a64] md:text-lg dark:text-[#e3fafc]"
                 >
                   คุณวางแผนเดินทางกี่วัน?
                 </label>

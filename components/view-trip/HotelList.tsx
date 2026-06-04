@@ -29,7 +29,7 @@ export default function HotelList({ hotels }: HotelListProps) {
   if (!hotels?.length) {
     return (
       <section>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-[#e3fafc]">🏨 โรงแรมแนะนำ</h2>
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-[#e3fafc]">🏨 โรงแรมแนะนำ</h2>
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -43,7 +43,7 @@ export default function HotelList({ hotels }: HotelListProps) {
 
   return (
     <section>
-      <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-[#e3fafc]">🏨 โรงแรมแนะนำ</h2>
+      <h2 className="text-2xl font-semibold tracking-normal text-gray-900 dark:text-[#e3fafc]">🏨 โรงแรมแนะนำ</h2>
 
       <motion.div
         initial="hidden"
@@ -76,7 +76,7 @@ export default function HotelList({ hotels }: HotelListProps) {
 
               <div className="space-y-3 p-5">
                 <div>
-                  <h3 className="line-clamp-1 text-lg font-bold text-gray-900 dark:text-[#e3fafc]">
+                  <h3 className="line-clamp-1 text-lg font-semibold text-gray-900 dark:text-[#e3fafc]">
                     {name}
                   </h3>
                   <div className="mt-1 flex items-center gap-2">
@@ -91,7 +91,7 @@ export default function HotelList({ hotels }: HotelListProps) {
                   📍 {hotel.address || "-"}
                 </p>
 
-                <span className="inline-flex rounded-full bg-green-50 px-3 py-1 text-sm font-bold text-green-700 dark:bg-green-900/20 dark:text-green-300">
+                <span className="inline-flex rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-700 dark:bg-green-900/20 dark:text-green-300">
                   💰 {hotel.price || "-"}
                 </span>
 
@@ -106,7 +106,7 @@ export default function HotelList({ hotels }: HotelListProps) {
                   whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
                   whileTap={pressTap}
                   transition={springSnappy}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-blue-500 transition-colors hover:border-pink-300 hover:text-blue-700 dark:border-white/10 dark:bg-[#0f2e4f] dark:text-[#e3fafc] dark:hover:bg-[#143c66] dark:hover:border-white/20"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-blue-500 transition-colors hover:border-pink-300 hover:text-blue-700 dark:border-white/10 dark:bg-[#0f2e4f] dark:text-[#e3fafc] dark:hover:bg-[#143c66] dark:hover:border-white/20"
                 >
                   🗺️ ดูบน Google Maps
                 </motion.a>

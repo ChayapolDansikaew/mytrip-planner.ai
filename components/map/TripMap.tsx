@@ -318,7 +318,7 @@ export default function TripMap({
         <div className="flex items-center gap-2">
           <div
             className="flex h-6 w-6 items-center justify-center
-            rounded-full bg-pink-500 text-xs font-bold text-white shadow"
+            rounded-full bg-pink-500 text-xs font-semibold text-white shadow"
           >
             1
           </div>

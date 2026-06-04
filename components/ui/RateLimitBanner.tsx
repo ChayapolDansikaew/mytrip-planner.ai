@@ -23,7 +23,7 @@ export default function RateLimitBanner({
         </div>
 
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-[-0.03em] text-[#0f3a64]">
+          <h2 className="text-2xl font-semibold tracking-normal text-[#0f3a64]">
             หมดโควตาฟรีแล้ว!
           </h2>
           <p className="text-sm leading-7 text-[#0f3a64]/68">{message}</p>
@@ -53,7 +53,7 @@ export default function RateLimitBanner({
         <div className="flex flex-col gap-3">
           <Link
             href="/upgrade"
-            className="rounded-full bg-gradient-to-r from-[#ff3f78] to-[#ff9a4a] px-5 py-3 text-base font-bold text-white shadow-[0_18px_60px_rgba(255,63,120,0.25)] transition hover:-translate-y-0.5 hover:opacity-95"
+            className="rounded-full bg-gradient-to-r from-[#ff3f78] to-[#ff9a4a] px-5 py-3 text-base font-semibold text-white shadow-[0_18px_60px_rgba(255,63,120,0.25)] transition hover:-translate-y-0.5 hover:opacity-95"
           >
             💎 อัปเกรดเป็น Premium
           </Link>

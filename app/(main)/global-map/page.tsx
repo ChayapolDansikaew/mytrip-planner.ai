@@ -109,7 +109,7 @@ export default function GlobalMapPage() {
             </button>
             <span className="text-2xl">🌍</span>
             <div>
-              <h1 className="text-base font-bold text-white sm:text-lg">
+              <h1 className="text-base font-semibold text-white sm:text-lg">
                 แผนที่ทริปของฉัน
               </h1>
               <p className="text-xs text-white/50">
@@ -148,7 +148,7 @@ export default function GlobalMapPage() {
               className="absolute inset-3 sm:inset-4 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-slate-800 to-blue-900 p-8 text-center"
             >
               <span className="text-6xl">🔐</span>
-              <h2 className="text-2xl font-bold text-white">
+              <h2 className="text-2xl font-semibold text-white">
                 กรุณาเข้าสู่ระบบก่อนดูแผนที่
               </h2>
               <p className="max-w-sm text-sm text-white/60">
@@ -174,7 +174,7 @@ export default function GlobalMapPage() {
               className="absolute inset-3 sm:inset-4 flex flex-col items-center justify-center gap-5 rounded-2xl bg-gradient-to-br from-slate-800 to-blue-900 p-8 text-center"
             >
               <span className="text-6xl">🗺️</span>
-              <h2 className="text-2xl font-bold text-white">
+              <h2 className="text-2xl font-semibold text-white">
                 ยังไม่มีทริปบนแผนที่
               </h2>
               <p className="max-w-sm text-white/60">

@@ -43,7 +43,7 @@ export function BudgetSelector({ value, onChange }: BudgetSelectorProps) {
   return (
     <fieldset className="space-y-4">
       <div>
-        <legend className="text-base font-semibold tracking-[-0.02em] text-[#0f3a64] md:text-lg dark:text-[#e3fafc]">
+        <legend className="text-base font-semibold tracking-normal text-[#0f3a64] md:text-lg dark:text-[#e3fafc]">
           งบประมาณของคุณเป็นแบบไหน?
         </legend>
         <p className="mt-1 text-sm leading-6 text-[#0f3a64]/60 dark:text-[#e3fafc]/60">
@@ -72,7 +72,7 @@ export function BudgetSelector({ value, onChange }: BudgetSelectorProps) {
               <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#b9f529]/35 text-2xl transition group-hover:scale-105 dark:bg-[#b9f529]/15">
                 {option.emoji}
               </span>
-              <span className="mt-4 block text-lg font-semibold tracking-[-0.02em] text-[#0f3a64] dark:text-[#e3fafc]">
+              <span className="mt-4 block text-lg font-semibold tracking-normal text-[#0f3a64] dark:text-[#e3fafc]">
                 {option.title}
               </span>
               <span className="mt-1 block text-sm leading-6 text-[#0f3a64]/58 dark:text-[#e3fafc]/58">

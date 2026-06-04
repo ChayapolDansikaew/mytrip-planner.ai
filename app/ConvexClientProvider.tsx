@@ -22,7 +22,7 @@ export function ConvexClientProvider({ children }: { children: ReactNode }) {
     return (
       <main className="grid min-h-screen place-items-center bg-[#9de9f4] px-4 text-center text-[#0f3a64]">
         <div className="max-w-md rounded-[2rem] border border-white/70 bg-white/55 p-6 shadow-[0_30px_100px_rgba(15,58,100,0.16)] backdrop-blur-2xl">
-          <h1 className="text-2xl font-semibold tracking-[-0.04em]">
+          <h1 className="text-2xl font-semibold tracking-normal">
             ตั้งค่า Convex ยังไม่ครบ
           </h1>
           <p className="mt-3 text-sm leading-6 text-[#0f3a64]/70">

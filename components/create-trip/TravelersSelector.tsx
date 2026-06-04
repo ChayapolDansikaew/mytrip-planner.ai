@@ -48,7 +48,7 @@ export function TravelersSelector({ value, onChange }: TravelersSelectorProps) {
 
   return (
     <fieldset className="space-y-4">
-      <legend className="text-base font-semibold tracking-[-0.02em] text-[#0f3a64] md:text-lg dark:text-[#e3fafc]">
+      <legend className="text-base font-semibold tracking-normal text-[#0f3a64] md:text-lg dark:text-[#e3fafc]">
         คุณวางแผนจะเดินทางกับใคร?
       </legend>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -74,7 +74,7 @@ export function TravelersSelector({ value, onChange }: TravelersSelectorProps) {
                 {option.emoji}
               </span>
               <span>
-                <span className="block text-lg font-semibold tracking-[-0.02em] text-[#0f3a64] dark:text-[#e3fafc]">
+                <span className="block text-lg font-semibold tracking-normal text-[#0f3a64] dark:text-[#e3fafc]">
                   {option.title}
                 </span>
                 <span className="mt-1 block text-sm leading-6 text-[#0f3a64]/58 dark:text-[#e3fafc]/58">

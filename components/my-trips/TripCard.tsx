@@ -173,11 +173,11 @@ export default function TripCard({ trip }: { trip: Trip }) {
 
         {/* Card body */}
         <div className="space-y-3 p-4">
-          <h3 className="truncate text-lg font-bold tracking-[-0.025em] text-[#0f3a64] dark:text-[#e3fafc]">
+          <h3 className="truncate text-lg font-semibold tracking-normal text-[#0f3a64] dark:text-[#e3fafc]">
             {tripName}
           </h3>
 
-          <p className="flex items-center gap-1 text-sm font-bold text-[#0f3a64]/58 dark:text-[#e3fafc]/58">
+          <p className="flex items-center gap-1 text-sm font-semibold text-[#0f3a64]/58 dark:text-[#e3fafc]/58">
             <span>📍</span>
             <span className="truncate">{trip.destination}</span>
           </p>

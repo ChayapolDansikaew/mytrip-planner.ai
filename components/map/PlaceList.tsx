@@ -56,7 +56,7 @@ export default function PlaceList({
       {hotels?.length > 0 && (
         <div>
           <h3
-            className="mb-3 px-1 text-sm font-bold uppercase
+            className="mb-3 px-1 text-sm font-semibold uppercase
             tracking-wider text-gray-500 dark:text-[#e3fafc]/68"
           >
             🏨 โรงแรมแนะนำ
@@ -115,7 +115,7 @@ export default function PlaceList({
           <div className="mb-3 flex items-center gap-2 px-1">
             <span
               className={`${DAY_BADGE_COLORS[(day.day - 1) % DAY_BADGE_COLORS.length]}
-              rounded-full px-3 py-1 text-xs font-bold text-white`}
+              rounded-full px-3 py-1 text-xs font-semibold text-white`}
             >
               วันที่ {day.day}
             </span>

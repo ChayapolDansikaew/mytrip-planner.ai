@@ -10,7 +10,7 @@ export function DestinationInput({ value, onChange }: DestinationInputProps) {
     <div className="space-y-3">
       <label
         htmlFor="destination"
-        className="block text-base font-semibold tracking-[-0.02em] text-[#0f3a64] md:text-lg dark:text-[#e3fafc]"
+        className="block text-base font-semibold tracking-normal text-[#0f3a64] md:text-lg dark:text-[#e3fafc]"
       >
         คุณอยากเดินทางไปที่ไหน?
       </label>

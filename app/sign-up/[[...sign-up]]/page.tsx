@@ -9,7 +9,7 @@ export default function SignUpPage() {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl border border-white/70 bg-white/75 text-3xl shadow-[0_18px_60px_rgba(15,58,100,0.12)]">
             🌍
           </div>
-          <h1 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#0f3a64]">
+          <h1 className="mt-4 text-3xl font-semibold tracking-normal text-[#0f3a64]">
             เริ่มต้นวางแผนทริปของคุณ
           </h1>
           <p className="mt-2 text-sm leading-6 text-[#0f3a64]/65">

@@ -61,7 +61,7 @@ export default function TripMapSection({
     >
       {/* Section Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-[#e3fafc]">
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-[#e3fafc]">
           🗺️ แผนที่การเดินทาง
         </h2>
 

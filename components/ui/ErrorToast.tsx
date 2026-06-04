@@ -37,7 +37,7 @@ export default function ErrorToast({
       <button
         type="button"
         onClick={onClose}
-        className="rounded-full px-2 text-lg leading-none text-red-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+        className="rounded-full px-2 text-lg leading-normal text-red-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-300"
         aria-label="ปิดข้อความแจ้งเตือน"
       >
         ×

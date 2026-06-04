@@ -55,7 +55,7 @@ export default function MyTripsPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#ff3f78] dark:text-[#ff5a8d]">
                 My Trips
               </p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[#0f3a64] sm:text-4xl dark:text-[#e3fafc]">
+              <h1 className="mt-2 text-3xl font-semibold tracking-normal text-[#0f3a64] sm:text-4xl dark:text-[#e3fafc]">
                 🗺️ ทริปของฉัน
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-7 text-[#0f3a64]/68 sm:text-base dark:text-[#e3fafc]/68">
@@ -88,7 +88,7 @@ export default function MyTripsPage() {
               className="flex flex-col items-center justify-center rounded-[2rem] border border-white/70 bg-white/52 px-6 py-24 text-center shadow-[0_30px_100px_rgba(15,58,100,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#0a233d]/52 dark:shadow-[0_30px_100px_rgba(0,0,0,0.4)] transition-colors duration-300"
             >
               <span className="text-6xl">🔐</span>
-              <h2 className="mt-5 text-2xl font-semibold tracking-[-0.035em] text-[#0f3a64] dark:text-[#e3fafc]">
+              <h2 className="mt-5 text-2xl font-semibold tracking-normal text-[#0f3a64] dark:text-[#e3fafc]">
                 ล็อกอินเพื่อดูทริปของคุณ
               </h2>
               <p className="mt-2 max-w-md text-sm leading-7 text-[#0f3a64]/62 dark:text-[#e3fafc]/62">
@@ -141,7 +141,7 @@ export default function MyTripsPage() {
                   <Sparkles className="h-5 w-5 text-[#0f3a64] dark:text-[#e3fafc]" />
                 </motion.div>
               </div>
-              <h2 className="mt-6 text-2xl font-semibold tracking-[-0.035em] text-[#0f3a64] dark:text-[#e3fafc]">
+              <h2 className="mt-6 text-2xl font-semibold tracking-normal text-[#0f3a64] dark:text-[#e3fafc]">
                 การผจญภัยของคุณเริ่มต้นที่นี่!
               </h2>
               <p className="mt-2 max-w-sm text-sm leading-7 text-[#0f3a64]/70 dark:text-[#e3fafc]/70">

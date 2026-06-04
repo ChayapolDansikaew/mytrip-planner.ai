@@ -34,7 +34,7 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
   if (!itinerary?.length) {
     return (
       <section>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-[#e3fafc]">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-[#e3fafc]">
           🗓️ แผนการเดินทางรายวัน
         </h2>
         <motion.div
@@ -50,7 +50,7 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
 
   return (
     <section>
-      <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-[#e3fafc]">
+      <h2 className="text-2xl font-semibold tracking-normal text-gray-900 dark:text-[#e3fafc]">
         🗓️ แผนการเดินทางรายวัน
       </h2>
 
@@ -77,7 +77,7 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
               >
                 <motion.span
                   whileHover={{ scale: 1.1 }}
-                  className={`${color} rounded-full px-4 py-1.5 text-sm font-bold text-white`}
+                  className={`${color} rounded-full px-4 py-1.5 text-sm font-semibold text-white`}
                 >
                   วันที่ {dayNumber}
                 </motion.span>

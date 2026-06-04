@@ -71,7 +71,7 @@ export default function SiteHeader() {
           >
             <Compass className="h-4 w-4 text-[#ff3f78]" />
           </motion.span>
-          <span className="text-lg font-semibold tracking-[-0.03em] text-[#0f3a64] dark:text-[#e3fafc]">
+          <span className="text-lg font-semibold tracking-normal text-[#0f3a64] dark:text-[#e3fafc]">
             AI Trip Planner
           </span>
         </Link>
