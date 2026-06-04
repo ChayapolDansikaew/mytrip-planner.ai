@@ -142,11 +142,10 @@ export default function MyTripsPage() {
                 </motion.div>
               </div>
               <h2 className="mt-6 text-2xl font-semibold tracking-[-0.035em] text-[#0f3a64] dark:text-[#e3fafc]">
-                คุณยังไม่มีทริป
+                การผจญภัยของคุณเริ่มต้นที่นี่!
               </h2>
               <p className="mt-2 max-w-sm text-sm leading-7 text-[#0f3a64]/70 dark:text-[#e3fafc]/70">
-                เริ่มสร้างทริปแรกของคุณด้วย AI
-                แล้วแผนการเดินทางในฝันจะเป็นจริง!
+                บอก AI ว่าอยากไปไหน แล้วแผนเดินทางจะพร้อมในไม่กี่วินาที
               </p>
               <Link
                 href="/create-trip"

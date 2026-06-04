@@ -42,6 +42,17 @@ type CreateTripResponse = {
 
 type SaveStep = "idle" | "generating" | "saving" | "redirecting";
 
+const loadingMessages = [
+  "กำลังค้นหาร้านอาหารที่คุณต้องลอง...",
+  "กำลังเช็คสภาพอากาศปลายทาง...",
+  "กำลังเลือกโรงแรมที่คุณจะชอบ...",
+  "กำลังจัดตารางเวลาให้ลงตัว...",
+  "กำลังหาจุดถ่ายรูปสวยๆ ให้คุณ...",
+  "กำลังคำนวณงบประมาณเดินทาง...",
+  "กำลังเตรียมแผนที่การเดินทาง...",
+  "เกือบเสร็จแล้ว รอแป๊บนะ...",
+];
+
 type RateLimitError = {
   message: string;
   action: string;
@@ -78,6 +89,19 @@ export default function CreateTripPage() {
   const [rateLimitError, setRateLimitError] =
     useState<RateLimitError | null>(null);
   const [saveStep, setSaveStep] = useState<SaveStep>("idle");
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
+
+  // Rotate loading messages every 2.5s while generating
+  useEffect(() => {
+    if (saveStep !== "generating") {
+      return;
+    }
+    setLoadingMsgIndex(0); // eslint-disable-line react-hooks/set-state-in-effect
+    const interval = setInterval(() => {
+      setLoadingMsgIndex((prev) => (prev + 1) % loadingMessages.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [saveStep]);
 
   useEffect(() => {
     if (isLoaded && !user) {
@@ -365,7 +389,17 @@ export default function CreateTripPage() {
             {loading ? (
               <>
                 <span className="h-5 w-5 animate-spin rounded-full border-2 border-white/35 border-t-white" />
-                กำลังจัดการทริปของคุณ...
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={loadingMsgIndex}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25, ease: motionEase }}
+                  >
+                    {loadingMessages[loadingMsgIndex]}
+                  </motion.span>
+                </AnimatePresence>
               </>
             ) : (
               "สร้างทริปของฉัน ✨"

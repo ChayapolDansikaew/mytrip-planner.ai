@@ -27,6 +27,7 @@ export default function SiteHeader() {
   const shouldReduceMotion = useReducedMotion();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [glowKey, setGlowKey] = useState(0);
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
@@ -39,6 +40,7 @@ export default function SiteHeader() {
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
     setTheme(nextTheme);
+    setGlowKey((k) => k + 1);
     if (nextTheme === "dark") {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -103,10 +105,28 @@ export default function SiteHeader() {
         <div className="flex items-center gap-3">
           <button
             onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/80 dark:border-white/10 dark:bg-[#0a233d] text-[#0f3a64] dark:text-[#e3fafc] shadow-sm hover:bg-white dark:hover:bg-[#143c66] focus:outline-none cursor-pointer transition relative overflow-hidden"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/80 dark:border-white/10 dark:bg-[#0a233d] text-[#0f3a64] dark:text-[#e3fafc] shadow-sm hover:bg-white dark:hover:bg-[#143c66] focus:outline-none cursor-pointer transition overflow-hidden"
             aria-label={theme === "light" ? "สลับเป็นโหมดมืด" : "สลับเป็นโหมดสว่าง"}
             type="button"
           >
+            {/* Glow pulse on toggle */}
+            <AnimatePresence>
+              {glowKey > 0 && (
+                <motion.span
+                  key={glowKey}
+                  initial={{ opacity: 0.7, scale: 0.5 }}
+                  animate={{ opacity: 0, scale: 2.2 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className={`absolute inset-0 rounded-full ${
+                    theme === "dark"
+                      ? "bg-blue-400/40"
+                      : "bg-amber-300/50"
+                  }`}
+                  style={{ pointerEvents: "none" }}
+                />
+              )}
+            </AnimatePresence>
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={theme}

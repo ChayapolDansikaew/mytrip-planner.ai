@@ -57,6 +57,14 @@ const previewSteps = [
   { icon: CalendarDays, title: "แผนรายวัน", copy: "เรียงลำดับเช้า บ่าย เย็น ให้เดินทางจริงได้" },
 ];
 
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 6 && hour < 12) return "🌅 สวัสดีตอนเช้า! พร้อมวางแผนทริปไหม?";
+  if (hour >= 12 && hour < 17) return "☀️ สวัสดีตอนบ่าย! อยากไปเที่ยวที่ไหนดี?";
+  if (hour >= 17 && hour < 24) return "🌙 สวัสดีตอนค่ำ! ฝันถึงทริปถัดไปกัน";
+  return "🌃 ยังไม่นอนเหรอ? มาวางแผนทริปกัน!";
+}
+
 const destinations = [
   {
     city: "ปารีส, ฝรั่งเศส",
@@ -129,6 +137,12 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [statusTone, setStatusTone] = useState<"success" | "error">("success");
+  const [greeting, setGreeting] = useState("ผู้ช่วยวางแผนทริปส่วนตัวด้วย AI");
+
+  // Set greeting on client mount to avoid hydration mismatch
+  useEffect(() => {
+    setGreeting(getGreeting()); // eslint-disable-line react-hooks/set-state-in-effect
+  }, []);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -361,7 +375,7 @@ export default function Home() {
         <div className="flex w-full flex-col items-center text-center lg:col-span-7 xl:col-span-7 lg:items-start lg:text-left">
           <motion.div variants={fadeUp} className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/95 px-4 py-2 text-xs font-semibold tracking-[0.08em] text-[#ff3f78] shadow-[0_18px_50px_rgba(15,58,100,0.1)] dark:border-white/10 dark:bg-[#0a233d]/90 dark:text-[#ff5a8d] dark:shadow-[0_18px_50px_rgba(0,0,0,0.3)]">
             <Star className="h-3.5 w-3.5 fill-[#ff3f78] text-[#ff3f78] dark:fill-[#ff5a8d] dark:text-[#ff5a8d]" />
-            ผู้ช่วยวางแผนทริปส่วนตัวด้วย AI
+            {greeting}
           </motion.div>
 
           <motion.h1 variants={fadeUp} className="mt-8 text-5xl font-semibold leading-[1.08] tracking-[-0.045em] text-[#0f3a64] md:text-7xl lg:text-[4.5rem] xl:text-[5.2rem] dark:text-[#e3fafc]">
