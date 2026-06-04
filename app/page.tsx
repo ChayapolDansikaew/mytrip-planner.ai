@@ -27,7 +27,6 @@ import {
 
 import SiteHeader from "@/components/SiteHeader";
 import { Card } from "@/components/ui/card";
-import FloatingParticles from "@/components/ui/FloatingParticles";
 import {
   cardReveal,
   fadeUp,
@@ -361,13 +360,9 @@ export default function Home() {
         <div className="pointer-events-none fixed inset-0 z-0">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_10%,rgba(255,255,255,0.92),transparent_28%),radial-gradient(circle_at_84%_16%,rgba(185,245,41,0.38),transparent_24%),radial-gradient(circle_at_18%_84%,rgba(255,63,120,0.18),transparent_24%),linear-gradient(180deg,#c9f7ff_0%,rgba(247,252,255,0.6)_50%,rgba(255,248,237,0.4)_100%)] dark:bg-[radial-gradient(circle_at_16%_10%,rgba(5,17,33,0.92),transparent_28%),radial-gradient(circle_at_84%_16%,rgba(185,245,41,0.1),transparent_24%),radial-gradient(circle_at_18%_84%,rgba(255,63,120,0.1),transparent_24%),linear-gradient(180deg,#051121_0%,rgba(8,29,51,0.6)_50%,rgba(4,26,21,0.4)_100%)]" />
           <div className="absolute inset-x-0 top-0 h-36 bg-[linear-gradient(135deg,rgba(255,255,255,0.5)_25%,transparent_25%),linear-gradient(225deg,rgba(255,255,255,0.38)_25%,transparent_25%)] bg-[size:72px_72px] opacity-35 dark:opacity-[0.08]" />
-          <div className="floating-blob absolute -left-28 top-36 h-80 w-80 rounded-full bg-[#ff3f78]/18 dark:bg-[#ff3f78]/8 blur-3xl" />
-          <div className="floating-blob-delayed absolute -right-28 bottom-0 h-96 w-96 rounded-full bg-[#b9f529]/38 dark:bg-[#b9f529]/15 blur-3xl" />
-          <div className="floating-blob-slow absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#22d3ee]/20 dark:bg-[#22d3ee]/8 blur-3xl" />
+          <div className="floating-blob absolute -left-28 top-36 h-80 w-80 rounded-full bg-[#ff3f78]/12 dark:bg-[#ff3f78]/5 blur-3xl" />
+          <div className="floating-blob-delayed absolute -right-28 bottom-0 h-96 w-96 rounded-full bg-[#b9f529]/20 dark:bg-[#b9f529]/10 blur-3xl" />
         </div>
-
-        {/* Floating travel emoji particles */}
-        <FloatingParticles count={shouldReduceMotion ? 0 : 10} className="fixed z-[1]" />
 
       <motion.section initial={false} animate="visible" variants={stagger} className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 gap-16 px-5 pb-20 pt-20 lg:grid-cols-12 lg:items-center lg:gap-12 xl:gap-20 lg:px-8 lg:pt-28">
         
