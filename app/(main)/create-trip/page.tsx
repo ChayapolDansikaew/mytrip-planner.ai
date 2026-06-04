@@ -5,6 +5,8 @@ import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 
 import {
   BudgetSelector,
@@ -271,6 +273,13 @@ export default function CreateTripPage() {
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-[#9de9f4] px-4 py-10 text-[#0f3a64] selection:bg-[#ff3f78]/20 selection:text-[#0f3a64] sm:px-6 lg:px-8 dark:bg-[#081d33] dark:text-[#e3fafc] dark:selection:bg-[#ff3f78]/20 dark:selection:text-[#e3fafc]">
+      <Link
+        href="/"
+        className="group absolute left-4 top-4 z-50 flex items-center gap-2 rounded-full border border-white/40 bg-white/40 px-3 py-2 text-sm font-semibold text-[#0f3a64] shadow-[0_8px_20px_rgba(15,58,100,0.08)] backdrop-blur-md transition-all hover:scale-105 hover:bg-white/70 hover:shadow-[0_8px_24px_rgba(15,58,100,0.12)] sm:left-6 sm:top-6 md:left-8 md:top-8 md:px-4 md:py-2.5 md:text-base dark:border-white/10 dark:bg-[#0a233d]/40 dark:text-[#e3fafc] dark:hover:bg-[#0a233d]/70 dark:shadow-[0_8px_20px_rgba(0,0,0,0.2)]"
+      >
+        <ChevronLeft className="h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:-translate-x-1" />
+        กลับหน้าหลัก
+      </Link>
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(255,255,255,0.88),transparent_28%),radial-gradient(circle_at_84%_18%,rgba(185,245,41,0.32),transparent_24%),linear-gradient(180deg,#c9f7ff_0%,#f7fcff_48%,#fff8ed_100%)] dark:bg-[radial-gradient(circle_at_16%_12%,rgba(5,17,33,0.92),transparent_28%),radial-gradient(circle_at_84%_18%,rgba(185,245,41,0.1),transparent_24%),linear-gradient(180deg,#051121_0%,#081d33_48%,#041a15_100%)]" />
         <div className="floating-blob absolute left-[-8rem] top-28 h-72 w-72 rounded-full bg-[#ff3f78]/12 dark:bg-[#ff3f78]/5 blur-3xl" />
