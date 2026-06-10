@@ -11,6 +11,7 @@ import TripHero from "@/components/view-trip/TripHero";
 import TripMapSection from "@/components/map/TripMapSection";
 import TripPageSkeleton from "@/components/view-trip/TripPageSkeleton";
 import TripSummary from "@/components/view-trip/TripSummary";
+import TripActions from "@/components/view-trip/TripActions";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { TripData } from "@/types/trip";
@@ -84,6 +85,9 @@ export default function ViewTripPage() {
         variants={stagger}
         className="mx-auto max-w-5xl space-y-14 px-4 py-10"
       >
+        <motion.div variants={sectionReveal}>
+          <TripActions tripData={tripData} />
+        </motion.div>
         <motion.div variants={sectionReveal}>
           <TripSummary tripData={tripData} />
         </motion.div>

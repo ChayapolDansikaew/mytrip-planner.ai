@@ -647,4 +647,50 @@ select {
   display: none; /* Chrome, Safari and Opera */
 }
 
+@media print {
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
+
+  body, .dark {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Optimize card rendering for print */
+  .card-glow, .smooth-card, section, article {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Text colors overriding dark mode in print */
+  .text-white, .dark\:text-\[\#e3fafc\], .dark\:text-\[\#e3fafc\]\/68 {
+    color: #333 !important;
+  }
+  
+  .bg-slate-900, .dark\:bg-\[\#0a233d\], .dark\:bg-\[\#081d33\] {
+    background-color: transparent !important;
+  }
+
+  /* Hide common interactive elements */
+  button, nav, header {
+    display: none !important;
+  }
+
+  /* Maps often fail to print without WebGL config, hide to save ink and space */
+  .mapboxgl-map, [data-mapbox="true"] {
+    display: none !important;
+  }
+}
+
 
