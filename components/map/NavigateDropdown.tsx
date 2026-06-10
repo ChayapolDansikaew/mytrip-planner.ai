@@ -102,7 +102,7 @@ export function NavigateDropdown({
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`
-                  group/link flex flex-1 items-center justify-center gap-2
+                  group/link flex flex-1 items-center justify-center gap-2 whitespace-nowrap
                   rounded-lg border border-gray-150 bg-gray-50/80
                   text-xs font-medium text-gray-700
                   transition-all duration-200
@@ -112,16 +112,16 @@ export function NavigateDropdown({
                   ${isFullWidth ? "py-2.5 text-sm" : "py-2"}
                 `}
               >
-                <GoogleMapsIcon className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
-                Google Maps
-                <ExternalLink className="h-3 w-3 opacity-0 transition-opacity duration-150 group-hover/link:opacity-50" />
+                <GoogleMapsIcon className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400 shrink-0" />
+                <span>Google Maps</span>
+                <ExternalLink className="h-3 w-3 opacity-0 transition-opacity duration-150 group-hover/link:opacity-50 shrink-0" />
               </a>
               <a
                 href={getAppleMapsDirectionsUrl(name, coordinates)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`
-                  group/link flex flex-1 items-center justify-center gap-2
+                  group/link flex flex-1 items-center justify-center gap-2 whitespace-nowrap
                   rounded-lg border border-gray-150 bg-gray-50/80
                   text-xs font-medium text-gray-700
                   transition-all duration-200
@@ -131,9 +131,9 @@ export function NavigateDropdown({
                   ${isFullWidth ? "py-2.5 text-sm" : "py-2"}
                 `}
               >
-                <AppleIcon className="h-3.5 w-3.5 text-gray-700 dark:text-gray-300" />
-                Apple Maps
-                <ExternalLink className="h-3 w-3 opacity-0 transition-opacity duration-150 group-hover/link:opacity-50" />
+                <AppleIcon className="h-3.5 w-3.5 text-gray-700 dark:text-gray-300 shrink-0" />
+                <span>Apple Maps</span>
+                <ExternalLink className="h-3 w-3 opacity-0 transition-opacity duration-150 group-hover/link:opacity-50 shrink-0" />
               </a>
             </div>
           </motion.div>
