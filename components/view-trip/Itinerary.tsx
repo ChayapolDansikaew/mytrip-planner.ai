@@ -139,9 +139,9 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
                         </div>
 
                         <div className="mt-2 pt-1">
-                          <NavigateDropdown 
-                            name={place?.name || "-"} 
-                            coordinates={place?.coordinates} 
+                          <NavigateDropdown
+                            name={place?.name || "-"}
+                            coordinates={place?.coordinates}
                           />
                         </div>
                       </motion.div>

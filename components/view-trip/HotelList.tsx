@@ -100,11 +100,10 @@ export default function HotelList({ hotels }: HotelListProps) {
                 </p>
 
                 <div className="pt-2">
-                  <NavigateDropdown 
-                    name={name} 
-                    coordinates={hotel.coordinates} 
-                    buttonClassName="inline-flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-blue-500 transition-colors hover:bg-blue-50 hover:border-blue-200 dark:border-white/10 dark:bg-[#0f2e4f] dark:text-[#e3fafc] dark:hover:bg-[#143c66] dark:hover:border-white/20"
-                    dropdownAlign="top"
+                  <NavigateDropdown
+                    name={name}
+                    coordinates={hotel.coordinates}
+                    variant="full"
                   />
                 </div>
               </div>
