@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { getGoogleMapsDirectionsUrl, getAppleMapsDirectionsUrl } from "@/lib/maps";
 import { Navigation, ChevronDown, ExternalLink } from "lucide-react";
 
@@ -33,11 +33,31 @@ export function NavigateDropdown({
   variant = "compact",
 }: NavigateDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   const isFullWidth = variant === "full";
 
+  // Click-outside dismiss
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  const expandTransition = shouldReduceMotion
+    ? { duration: 0 }
+    : { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] as const };
+
   return (
-    <div className={isFullWidth ? "w-full" : "inline-block"}>
+    <div className={isFullWidth ? "w-full" : "inline-block"} ref={containerRef}>
       {/* Trigger button */}
       <button
         type="button"
@@ -70,10 +90,10 @@ export function NavigateDropdown({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
+            initial={shouldReduceMotion ? false : { height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            exit={shouldReduceMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+            transition={expandTransition}
             className="overflow-hidden"
           >
             <div className={`flex gap-2 ${isFullWidth ? "pt-3" : "pt-2"}`}>
