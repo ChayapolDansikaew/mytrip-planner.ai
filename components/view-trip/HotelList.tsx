@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { getMapsUrl } from "@/lib/maps";
+import { NavigateDropdown } from "@/components/map/NavigateDropdown";
 import { cardReveal, liftHover, pressTap, springSnappy, staggerSoft } from "@/lib/motion";
 import type { TripHotel } from "@/types/trip";
 
@@ -61,9 +61,9 @@ export default function HotelList({ hotels }: HotelListProps) {
               key={`${name}-${index}`}
               variants={cardVariant}
               whileHover={shouldReduceMotion ? {} : { ...liftHover, boxShadow: "0 20px 50px rgba(15,58,100,0.12)" }}
-              className="card-glow smooth-card overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-[#0a233d] dark:shadow-none"
+              className="card-glow smooth-card rounded-2xl bg-white shadow-sm dark:bg-[#0a233d] dark:shadow-none"
             >
-              <div className="flex h-40 items-center justify-center bg-gradient-to-br from-pink-400 via-cyan-400 to-lime-300 text-6xl font-black text-white gradient-animated">
+              <div className="flex h-40 items-center justify-center overflow-hidden rounded-t-2xl bg-gradient-to-br from-pink-400 via-cyan-400 to-lime-300 text-6xl font-black text-white gradient-animated">
                 <motion.span
                   initial={{ scale: 0.5, opacity: 0 }}
                   whileInView={{ scale: 1, opacity: 1 }}
@@ -99,17 +99,14 @@ export default function HotelList({ hotels }: HotelListProps) {
                   {hotel.description || "-"}
                 </p>
 
-                <motion.a
-                  href={getMapsUrl(name, hotel.coordinates)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
-                  whileTap={pressTap}
-                  transition={springSnappy}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-blue-500 transition-colors hover:border-pink-300 hover:text-blue-700 dark:border-white/10 dark:bg-[#0f2e4f] dark:text-[#e3fafc] dark:hover:bg-[#143c66] dark:hover:border-white/20"
-                >
-                  🗺️ ดูบน Google Maps
-                </motion.a>
+                <div className="pt-2">
+                  <NavigateDropdown 
+                    name={name} 
+                    coordinates={hotel.coordinates} 
+                    buttonClassName="inline-flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-blue-500 transition-colors hover:bg-blue-50 hover:border-blue-200 dark:border-white/10 dark:bg-[#0f2e4f] dark:text-[#e3fafc] dark:hover:bg-[#143c66] dark:hover:border-white/20"
+                    dropdownAlign="top"
+                  />
+                </div>
               </div>
             </motion.article>
           );

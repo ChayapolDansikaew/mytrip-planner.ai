@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { getMapsUrl } from "@/lib/maps";
+import { NavigateDropdown } from "@/components/map/NavigateDropdown";
 import { cardReveal, motionEase, slideInLeft, staggerSoft } from "@/lib/motion";
 import type { TripDay } from "@/types/trip";
 
@@ -138,15 +138,12 @@ export default function Itinerary({ itinerary }: ItineraryProps) {
                           <Chip icon="🚗" label={place?.travelTime} />
                         </div>
 
-                        <motion.a
-                          href={getMapsUrl(place?.name || "-", place?.coordinates)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          whileHover={{ x: 3 }}
-                          className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-blue-500 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                        >
-                          🗺️ ดูบน Google Maps →
-                        </motion.a>
+                        <div className="mt-2 pt-1">
+                          <NavigateDropdown 
+                            name={place?.name || "-"} 
+                            coordinates={place?.coordinates} 
+                          />
+                        </div>
                       </motion.div>
                     </motion.div>
                   ))
