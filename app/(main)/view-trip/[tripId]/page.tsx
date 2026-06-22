@@ -78,7 +78,12 @@ export default function ViewTripPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#081d33] dark:text-[#e3fafc]">
       <SiteHeader />
-      <TripHero tripData={tripData} tripId={tripId ?? ""} />
+      <TripHero
+        tripData={tripData}
+        tripId={tripId ?? ""}
+        editToken={trip.editToken}
+        ownerId={trip.userId}
+      />
       <motion.div
         initial="hidden"
         animate="visible"

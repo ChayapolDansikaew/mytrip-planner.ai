@@ -7,6 +7,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { useUser } from "@clerk/nextjs";
+import { Users, Check, Copy } from "lucide-react";
 
 import type { TripData } from "@/types/trip";
 import { motionEase, pressTap, springSnappy } from "@/lib/motion";
@@ -14,6 +16,8 @@ import { motionEase, pressTap, springSnappy } from "@/lib/motion";
 interface TripHeroProps {
   tripData: TripData;
   tripId: string;
+  editToken?: string;
+  ownerId: string;
 }
 
 
@@ -72,9 +76,21 @@ function getDestinationImage(destination: string): string | null {
   return null;
 }
 
-export default function TripHero({ tripData, tripId }: TripHeroProps) {
+export default function TripHero({
+  tripData,
+  tripId,
+  editToken,
+  ownerId,
+}: TripHeroProps) {
   const router = useRouter();
   const setTripPublicStatus = useMutation(api.trips.setTripPublicStatus);
+  const generateEditToken = useMutation(api.trips.generateTripEditToken);
+  const [showInvitePopover, setShowInvitePopover] = useState(false);
+  const [editUrlCopied, setEditUrlCopied] = useState(false);
+  const [localEditToken, setLocalEditToken] = useState<string | undefined>(editToken);
+  const { user } = useUser();
+  const isOwner = user?.id === ownerId;
+
   const [copied, setCopied] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const destination = getDisplayValue(tripData.destination);
@@ -156,18 +172,79 @@ export default function TripHero({ tripData, tripId }: TripHeroProps) {
         ← กลับ
       </motion.button>
 
-      <motion.button
-        type="button"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ ...springSnappy, delay: 0.3 }}
-        whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1 }}
-        whileTap={pressTap}
-        onClick={handleShare}
-        className="absolute right-4 top-4 z-20 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 md:right-8 md:top-6"
-      >
-        🔗 แชร์
-      </motion.button>
+      <div className="absolute right-4 top-4 z-20 flex items-center gap-2 md:right-8 md:top-6">
+        {isOwner && (
+          <div className="relative">
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.04 }}
+              onClick={async () => {
+                setShowInvitePopover(!showInvitePopover);
+                if (!localEditToken) {
+                  try {
+                    const token = await generateEditToken({ tripId: tripId as Id<"trips"> });
+                    setLocalEditToken(token);
+                  } catch (err) {
+                    console.error("Failed to generate edit token:", err);
+                  }
+                }
+              }}
+              className="flex items-center gap-2 rounded-full border border-[#ff3f78]/30 bg-[#ff3f78]/20 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all hover:bg-[#ff3f78]/40 focus-visible:outline-none"
+            >
+              <Users className="h-4 w-4 text-[#ff3f78] dark:text-[#ff5a8d]" /> ชวนเพื่อนแก้ไข
+            </motion.button>
+            
+            {/* Popover แสดงลิงก์เชิญชวน */}
+            <AnimatePresence>
+              {showInvitePopover && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-0 top-full mt-3 w-80 rounded-2xl border border-gray-200 bg-white p-4 shadow-xl z-50 dark:border-white/10 dark:bg-[#0a233d]"
+                >
+                  <h4 className="text-sm font-bold text-gray-800 dark:text-[#e3fafc] mb-2">ลิงก์ชวนเพื่อนร่วมวางแผน ✈️</h4>
+                  <p className="text-xs text-gray-500 dark:text-[#e3fafc]/70 mb-3">เพื่อนร่วมเดินทางจะสามารถเพิ่มกิจกรรม เลือกโรงแรม และวางแผนกับคุณแบบเรียลไทม์ได้ทันทีหลังจากลงทะเบียน</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={localEditToken ? `${window.location.origin}/view-trip/${tripId}?editKey=${localEditToken}` : "กำลังสร้างลิงก์..."}
+                      className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-2 py-1.5 text-xs text-gray-900 focus:outline-none dark:border-white/20 dark:bg-[#081d33] dark:text-[#e3fafc]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (localEditToken) {
+                          navigator.clipboard.writeText(`${window.location.origin}/view-trip/${tripId}?editKey=${localEditToken}`);
+                          setEditUrlCopied(true);
+                          setTimeout(() => setEditUrlCopied(false), 2000);
+                        }
+                      }}
+                      className="rounded-lg bg-[#ff3f78] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#ff6b95]"
+                    >
+                      {editUrlCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
+        <motion.button
+          type="button"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ ...springSnappy, delay: 0.3 }}
+          whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -1 }}
+          whileTap={pressTap}
+          onClick={handleShare}
+          className="rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+        >
+          🔗 แชร์
+        </motion.button>
+      </div>
 
       <AnimatePresence>
         {copied ? (
