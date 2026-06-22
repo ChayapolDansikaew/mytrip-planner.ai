@@ -43,6 +43,5 @@ export default defineSchema({
     imageUrl: v.optional(v.string()),
     updatedAt: v.number(),
   })
-    .index("by_tripId", ["tripId"])
     .index("by_tripId_userId", ["tripId", "userId"]),
 });
