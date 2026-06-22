@@ -339,6 +339,19 @@ export const likeTrip = mutation({
     const trip = await ctx.db.get(args.tripId);
     if (!trip) throw new Error("ไม่พบทริปดังกล่าว");
     
+    if (!trip.isPublic) {
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) throw new Error("ไม่มีสิทธิ์ในการดำเนินการนี้");
+      
+      if (trip.userId !== identity.subject) {
+        const collab = await ctx.db
+          .query("collaborators")
+          .withIndex("by_tripId_userId", (q) => q.eq("tripId", args.tripId).eq("userId", identity.subject))
+          .unique();
+        if (!collab) throw new Error("ไม่มีสิทธิ์ในการดำเนินการนี้");
+      }
+    }
+    
     const currentLikes = trip.likes || 0;
     await ctx.db.patch(args.tripId, {
       likes: currentLikes + 1,
@@ -393,6 +406,7 @@ export const cloneTrip = mutation({
       isFavorite: false,
       isPublic: false,
       likes: 0,
+      startDate: trip.startDate,
     });
     
     return newTripId;
