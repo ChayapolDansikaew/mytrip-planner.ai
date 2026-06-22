@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Kanit } from "next/font/google";
+import Script from "next/script";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
 
@@ -33,8 +34,10 @@ export default function RootLayout({
         className={`${kanit.variable} h-full antialiased`}
         suppressHydrationWarning
       >
-        <head>
-          <script
+        <body className={`${kanit.className} min-h-full flex flex-col`}>
+          <Script
+            id="theme-init"
+            strategy="beforeInteractive"
             dangerouslySetInnerHTML={{
               __html: `
                 try {
@@ -47,8 +50,6 @@ export default function RootLayout({
               `,
             }}
           />
-        </head>
-        <body className={`${kanit.className} min-h-full flex flex-col`}>
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </body>
       </html>
