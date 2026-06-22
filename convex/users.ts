@@ -9,6 +9,11 @@ export const createOrUpdateUser = mutation({
     clerkId: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.clerkId) {
+      throw new Error("ไม่มีสิทธิ์ในการดำเนินการนี้");
+    }
+
     const existingUser = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))

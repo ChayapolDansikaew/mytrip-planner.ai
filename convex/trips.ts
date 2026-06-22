@@ -14,6 +14,11 @@ export const createTrip = mutation({
     imageUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.userId) {
+      throw new Error("ไม่มีสิทธิ์ในการสร้างทริปนี้");
+    }
+
     const tripId = await ctx.db.insert("trips", {
       userId: args.userId,
       destination: args.destination,
@@ -135,7 +140,7 @@ export const generateTripEditToken = mutation({
       return trip.editToken;
     }
 
-    const randomToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const randomToken = crypto.randomUUID();
     await ctx.db.patch(args.tripId, {
       editToken: randomToken,
     });
@@ -216,6 +221,22 @@ export const deleteTrip = mutation({
       throw new Error("เฉพาะเจ้าของทริปเท่านั้นที่สามารถลบได้");
     }
 
+    // ลบ collaborators และ presence ที่เกี่ยวข้อง
+    const collaborators = await ctx.db
+      .query("collaborators")
+      .withIndex("by_tripId_userId", (q) => q.eq("tripId", args.tripId))
+      .collect();
+    for (const collab of collaborators) {
+      await ctx.db.delete(collab._id);
+    }
+    const presences = await ctx.db
+      .query("presence")
+      .withIndex("by_tripId_userId", (q) => q.eq("tripId", args.tripId))
+      .collect();
+    for (const p of presences) {
+      await ctx.db.delete(p._id);
+    }
+
     await ctx.db.delete(args.tripId);
   },
 });
@@ -275,10 +296,13 @@ export const toggleTripFavorite = mutation({
     tripId: v.id("trips"),
   },
   handler: async (ctx, args) => {
-    await checkEditPermission(ctx, args.tripId);
-
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("ไม่มีสิทธิ์ในการดำเนินการนี้");
     const trip = await ctx.db.get(args.tripId);
     if (!trip) throw new Error("ไม่พบทริปดังกล่าว");
+    if (trip.userId !== identity.subject) {
+      throw new Error("เฉพาะเจ้าของทริปเท่านั้นที่สามารถบันทึกเป็นทริปโปรดได้");
+    }
     
     await ctx.db.patch(args.tripId, {
       isFavorite: !trip.isFavorite,
