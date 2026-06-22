@@ -23,7 +23,26 @@ export default defineSchema({
     isPublic: v.optional(v.boolean()),
     startDate: v.optional(v.string()),
     likes: v.optional(v.number()),
+    editToken: v.optional(v.string()),
   })
     .index("by_userId", ["userId"])
     .index("by_isPublic_likes", ["isPublic", "likes"]),
+
+  collaborators: defineTable({
+    tripId: v.id("trips"),
+    userId: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_tripId_userId", ["tripId", "userId"])
+    .index("by_userId", ["userId"]),
+
+  presence: defineTable({
+    tripId: v.id("trips"),
+    userId: v.string(),
+    name: v.string(),
+    imageUrl: v.optional(v.string()),
+    updatedAt: v.number(),
+  })
+    .index("by_tripId", ["tripId"])
+    .index("by_tripId_userId", ["tripId", "userId"]),
 });
