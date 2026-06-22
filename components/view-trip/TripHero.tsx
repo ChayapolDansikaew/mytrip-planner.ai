@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -91,6 +91,23 @@ export default function TripHero({
   const [origin, setOrigin] = useState("");
   const { user } = useUser();
   const isOwner = user?.id === ownerId;
+
+  const inviteContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (inviteContainerRef.current && !inviteContainerRef.current.contains(event.target as Node)) {
+        setShowInvitePopover(false);
+      }
+    }
+    
+    if (showInvitePopover) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showInvitePopover]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -185,11 +202,13 @@ export default function TripHero({
 
       <div className="absolute right-4 top-4 z-20 flex items-center gap-2 md:right-8 md:top-6">
         {isOwner && (
-          <div className="relative">
+          <div className="relative" ref={inviteContainerRef}>
             <motion.button
               type="button"
-              whileHover={{ scale: 1.04 }}
+              whileHover={shouldReduceMotion ? {} : { scale: 1.04 }}
               whileTap={pressTap}
+              aria-haspopup="dialog"
+              aria-expanded={showInvitePopover}
               onClick={async () => {
                 setShowInvitePopover(!showInvitePopover);
                 if (!localEditToken) {
@@ -201,7 +220,7 @@ export default function TripHero({
                   }
                 }
               }}
-              className="flex items-center gap-2 rounded-full border border-[#ff3f78]/30 bg-[#ff3f78]/20 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all hover:bg-[#ff3f78]/40 focus-visible:outline-none"
+              className="flex items-center gap-2 rounded-full border border-[#ff3f78]/30 bg-[#ff3f78]/20 px-4 py-2 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all hover:bg-[#ff3f78]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2"
             >
               <Users className="h-4 w-4 text-[#ff3f78] dark:text-[#ff5a8d]" /> ชวนเพื่อนแก้ไข
             </motion.button>
@@ -213,7 +232,7 @@ export default function TripHero({
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute right-0 top-full mt-3 w-80 rounded-2xl border border-gray-200 bg-white p-4 shadow-xl z-50 dark:border-white/10 dark:bg-[#0a233d]"
+                  className="absolute right-0 top-full mt-3 w-[calc(100vw-2rem)] sm:w-80 rounded-2xl border border-gray-200 bg-white p-4 shadow-xl z-50 dark:border-white/10 dark:bg-[#0a233d]"
                 >
                   <h4 className="text-sm font-bold text-gray-800 dark:text-[#e3fafc] mb-2">ลิงก์ชวนเพื่อนร่วมวางแผน ✈️</h4>
                   <p className="text-xs text-gray-500 dark:text-[#e3fafc]/70 mb-3">เพื่อนร่วมเดินทางจะสามารถเพิ่มกิจกรรม เลือกโรงแรม และวางแผนกับคุณแบบเรียลไทม์ได้ทันทีหลังจากลงทะเบียน</p>
@@ -227,15 +246,36 @@ export default function TripHero({
                     />
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={async () => {
                         if (localEditToken && origin) {
-                          navigator.clipboard.writeText(`${origin}/view-trip/${tripId}?editKey=${localEditToken}`);
+                          const copyText = `${origin}/view-trip/${tripId}?editKey=${localEditToken}`;
+                          if (navigator.clipboard?.writeText) {
+                            try {
+                              await navigator.clipboard.writeText(copyText);
+                            } catch (err) {
+                              console.error("Failed to copy with navigator.clipboard:", err);
+                              // Fallback
+                              const tempInput = document.createElement("input");
+                              tempInput.value = copyText;
+                              document.body.appendChild(tempInput);
+                              tempInput.select();
+                              document.execCommand("copy");
+                              document.body.removeChild(tempInput);
+                            }
+                          } else {
+                            const tempInput = document.createElement("input");
+                            tempInput.value = copyText;
+                            document.body.appendChild(tempInput);
+                            tempInput.select();
+                            document.execCommand("copy");
+                            document.body.removeChild(tempInput);
+                          }
                           setEditUrlCopied(true);
                           setTimeout(() => setEditUrlCopied(false), 2000);
                         }
                       }}
                       aria-label="คัดลอกลิงก์แก้ไข"
-                      className="rounded-lg bg-[#ff3f78] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#ff6b95]"
+                      className="rounded-lg bg-[#ff3f78] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#ff6b95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500 focus-visible:ring-offset-2"
                     >
                       {editUrlCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                     </button>
