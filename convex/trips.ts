@@ -57,13 +57,9 @@ export const getUserTrips = query({
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
       .collect();
 
-    const collabTrips: Doc<"trips">[] = [];
-    for (const rec of collabRecords) {
-      const trip = await ctx.db.get(rec.tripId);
-      if (trip) {
-        collabTrips.push(trip);
-      }
-    }
+    const collabTrips = (
+      await Promise.all(collabRecords.map((rec) => ctx.db.get(rec.tripId)))
+    ).filter((t): t is Doc<"trips"> => t !== null);
 
     // รวมสองลิสต์
     const allTrips = [...ownTrips, ...collabTrips];
@@ -226,16 +222,13 @@ export const deleteTrip = mutation({
       .query("collaborators")
       .withIndex("by_tripId_userId", (q) => q.eq("tripId", args.tripId))
       .collect();
-    for (const collab of collaborators) {
-      await ctx.db.delete(collab._id);
-    }
+    await Promise.all(collaborators.map((c) => ctx.db.delete(c._id)));
+
     const presences = await ctx.db
       .query("presence")
       .withIndex("by_tripId_userId", (q) => q.eq("tripId", args.tripId))
       .collect();
-    for (const p of presences) {
-      await ctx.db.delete(p._id);
-    }
+    await Promise.all(presences.map((p) => ctx.db.delete(p._id)));
 
     await ctx.db.delete(args.tripId);
   },
@@ -401,7 +394,7 @@ export const cloneTrip = mutation({
       duration: trip.duration,
       budget: trip.budget,
       travelers: trip.travelers,
-      tripName: trip.tripName ? `${trip.tripName} (Copy)` : undefined,
+      tripName: trip.tripName ? `${trip.tripName} (คัดลอก)` : undefined,
       imageUrl: trip.imageUrl,
       isFavorite: false,
       isPublic: false,

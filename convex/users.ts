@@ -44,10 +44,29 @@ export const getUser = query({
     clerkId: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const user = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
       .unique();
+
+    if (!user) return null;
+
+    const identity = await ctx.auth.getUserIdentity();
+    const isSelf = identity && identity.subject === args.clerkId;
+    
+    if (isSelf) {
+      return user;
+    }
+    
+    // Sanitize for others
+    return {
+      _id: user._id,
+      _creationTime: user._creationTime,
+      name: user.name,
+      imageUrl: user.imageUrl,
+      clerkId: user.clerkId,
+      isPremium: user.isPremium,
+    };
   },
 });
 
@@ -56,10 +75,29 @@ export const getUserByClerkId = query({
     clerkId: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const user = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
       .unique();
+
+    if (!user) return null;
+
+    const identity = await ctx.auth.getUserIdentity();
+    const isSelf = identity && identity.subject === args.clerkId;
+    
+    if (isSelf) {
+      return user;
+    }
+    
+    // Sanitize for others
+    return {
+      _id: user._id,
+      _creationTime: user._creationTime,
+      name: user.name,
+      imageUrl: user.imageUrl,
+      clerkId: user.clerkId,
+      isPremium: user.isPremium,
+    };
   },
 });
 
