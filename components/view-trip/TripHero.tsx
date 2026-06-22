@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -88,8 +88,19 @@ export default function TripHero({
   const [showInvitePopover, setShowInvitePopover] = useState(false);
   const [editUrlCopied, setEditUrlCopied] = useState(false);
   const [localEditToken, setLocalEditToken] = useState<string | undefined>(editToken);
+  const [origin, setOrigin] = useState("");
   const { user } = useUser();
   const isOwner = user?.id === ownerId;
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+  }, []);
+
+  useEffect(() => {
+    setLocalEditToken(editToken);
+  }, [editToken]);
 
   const [copied, setCopied] = useState(false);
   const shouldReduceMotion = useReducedMotion();
@@ -178,6 +189,7 @@ export default function TripHero({
             <motion.button
               type="button"
               whileHover={{ scale: 1.04 }}
+              whileTap={pressTap}
               onClick={async () => {
                 setShowInvitePopover(!showInvitePopover);
                 if (!localEditToken) {
@@ -209,18 +221,20 @@ export default function TripHero({
                     <input
                       type="text"
                       readOnly
-                      value={localEditToken ? `${window.location.origin}/view-trip/${tripId}?editKey=${localEditToken}` : "กำลังสร้างลิงก์..."}
+                      value={localEditToken && origin ? `${origin}/view-trip/${tripId}?editKey=${localEditToken}` : "กำลังสร้างลิงก์..."}
+                      aria-label="ลิงก์สำหรับชวนเพื่อนร่วมแก้ไข"
                       className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-2 py-1.5 text-xs text-gray-900 focus:outline-none dark:border-white/20 dark:bg-[#081d33] dark:text-[#e3fafc]"
                     />
                     <button
                       type="button"
                       onClick={() => {
-                        if (localEditToken) {
-                          navigator.clipboard.writeText(`${window.location.origin}/view-trip/${tripId}?editKey=${localEditToken}`);
+                        if (localEditToken && origin) {
+                          navigator.clipboard.writeText(`${origin}/view-trip/${tripId}?editKey=${localEditToken}`);
                           setEditUrlCopied(true);
                           setTimeout(() => setEditUrlCopied(false), 2000);
                         }
                       }}
+                      aria-label="คัดลอกลิงก์แก้ไข"
                       className="rounded-lg bg-[#ff3f78] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#ff6b95]"
                     >
                       {editUrlCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
