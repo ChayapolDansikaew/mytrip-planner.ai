@@ -1,7 +1,9 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "convex/react";
 import { useParams, useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { motion, type Variants } from "framer-motion";
 
 import HotelList from "@/components/view-trip/HotelList";
@@ -36,10 +38,70 @@ export default function ViewTripPage() {
   const tripId = Array.isArray(params.tripId)
     ? params.tripId[0]
     : params.tripId;
+
+  const [editKey, setEditKey] = useState<string | undefined>(undefined);
+  const { user, isLoaded: isUserLoaded } = useUser();
+  const joinCollab = useMutation(api.trips.joinCollaborator);
+
+  useEffect(() => {
+    if (!tripId) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const keyInUrl = urlParams.get("editKey");
+    if (keyInUrl) {
+      setTimeout(() => setEditKey(keyInUrl), 0);
+      localStorage.setItem(`editKey_${tripId}`, keyInUrl);
+    } else {
+      const storedKey = localStorage.getItem(`editKey_${tripId}`);
+      if (storedKey) {
+        setTimeout(() => setEditKey(storedKey), 0);
+      }
+    }
+  }, [tripId]);
+
   const trip = useQuery(
     api.trips.getTripById,
-    tripId ? { tripId: tripId as Id<"trips"> } : "skip",
+    tripId
+      ? {
+          tripId: tripId as Id<"trips">,
+          editKey: editKey,
+        }
+      : "skip",
   );
+
+  const isCollab = useQuery(
+    api.trips.checkCollaboratorStatus,
+    tripId && user
+      ? { tripId: tripId as Id<"trips">, userId: user.id }
+      : "skip"
+  );
+
+  const isEditable = user && trip ? (trip.userId === user.id || !!isCollab) : false;
+
+  useEffect(() => {
+    if (!tripId || !isUserLoaded) return;
+
+    const currentKey = editKey || localStorage.getItem(`editKey_${tripId}`) || undefined;
+    
+    if (user && currentKey) {
+      joinCollab({
+        tripId: tripId as Id<"trips">,
+        editKey: currentKey,
+      })
+        .then(() => {
+          console.log("บันทึกสิทธิ์แก้ไขทริปเรียบร้อย");
+          if (window.location.search.includes("editKey")) {
+            const newUrl = window.location.pathname;
+            window.history.replaceState({ path: newUrl }, "", newUrl);
+          }
+        })
+        .catch((err) => {
+          console.error("Join collaboration failed:", err);
+        });
+    } else if (!user && currentKey) {
+      const currentUrl = window.location.href;
+      router.push(`/sign-up?redirect_url=${encodeURIComponent(currentUrl)}`);
+    }
+  }, [tripId, isUserLoaded, user, editKey, joinCollab, router]);
 
   if (trip === undefined) return <TripPageSkeleton />;
 
@@ -94,7 +156,7 @@ export default function ViewTripPage() {
           <TripActions tripData={tripData} />
         </motion.div>
         <motion.div variants={sectionReveal}>
-          <TripSummary tripData={tripData} />
+          <TripSummary tripData={tripData} tripId={tripId ?? ""} isEditable={isEditable} />
         </motion.div>
         <motion.div variants={sectionReveal}>
           <TripMapSection
@@ -103,10 +165,10 @@ export default function ViewTripPage() {
           />
         </motion.div>
         <motion.div variants={sectionReveal}>
-          <HotelList hotels={tripData.hotels ?? []} />
+          <HotelList hotels={tripData.hotels ?? []} tripData={tripData} tripId={tripId ?? ""} isEditable={isEditable} />
         </motion.div>
         <motion.div variants={sectionReveal}>
-          <Itinerary itinerary={tripData.itinerary ?? []} />
+          <Itinerary itinerary={tripData.itinerary ?? []} tripData={tripData} tripId={tripId ?? ""} isEditable={isEditable} />
         </motion.div>
         <motion.div
           variants={sectionReveal}

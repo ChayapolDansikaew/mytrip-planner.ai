@@ -440,3 +440,17 @@ export const getPublicTrips = query({
     return trips;
   },
 });
+
+export const checkCollaboratorStatus = query({
+  args: {
+    tripId: v.id("trips"),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const collab = await ctx.db
+      .query("collaborators")
+      .withIndex("by_tripId_userId", (q) => q.eq("tripId", args.tripId).eq("userId", args.userId))
+      .unique();
+    return !!collab;
+  },
+});

@@ -12,6 +12,7 @@ import { Users, Check, Copy } from "lucide-react";
 
 import type { TripData } from "@/types/trip";
 import { motionEase, pressTap, springSnappy } from "@/lib/motion";
+import PresenceStack from "./PresenceStack";
 
 interface TripHeroProps {
   tripData: TripData;
@@ -111,12 +112,12 @@ export default function TripHero({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setOrigin(window.location.origin);
+      setTimeout(() => setOrigin(window.location.origin), 0);
     }
   }, []);
 
   useEffect(() => {
-    setLocalEditToken(editToken);
+    setTimeout(() => setLocalEditToken(editToken), 0);
   }, [editToken]);
 
   const [copied, setCopied] = useState(false);
@@ -201,6 +202,7 @@ export default function TripHero({
       </motion.button>
 
       <div className="absolute right-4 top-4 z-20 flex items-center gap-2 md:right-8 md:top-6">
+        <PresenceStack tripId={tripId} />
         {isOwner && (
           <div className="relative" ref={inviteContainerRef}>
             <motion.button
