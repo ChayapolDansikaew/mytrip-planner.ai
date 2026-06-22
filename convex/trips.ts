@@ -447,6 +447,10 @@ export const checkCollaboratorStatus = query({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    // Gracefully handle unauthenticated requests (e.g. during token negotiation)
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return false;
+
     const collab = await ctx.db
       .query("collaborators")
       .withIndex("by_tripId_userId", (q) => q.eq("tripId", args.tripId).eq("userId", args.userId))
@@ -454,3 +458,4 @@ export const checkCollaboratorStatus = query({
     return !!collab;
   },
 });
+

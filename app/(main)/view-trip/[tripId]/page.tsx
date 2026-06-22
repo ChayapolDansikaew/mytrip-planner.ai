@@ -70,7 +70,7 @@ export default function ViewTripPage() {
 
   const isCollab = useQuery(
     api.trips.checkCollaboratorStatus,
-    tripId && user
+    tripId && user && isUserLoaded
       ? { tripId: tripId as Id<"trips">, userId: user.id }
       : "skip"
   );
