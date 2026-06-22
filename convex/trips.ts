@@ -34,6 +34,11 @@ export const getUserTrips = query({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.userId) {
+      throw new Error("ไม่มีสิทธิ์ในการเข้าถึงข้อมูลนี้");
+    }
+
     // 1. ดึงทริปที่เป็นเจ้าของ
     const ownTrips = await ctx.db
       .query("trips")
@@ -62,6 +67,7 @@ export const getUserTrips = query({
       (trip, index, self) => self.findIndex((t) => t._id === trip._id) === index
     );
     
+    uniqueTrips.sort((a, b) => b._creationTime - a._creationTime);
     return uniqueTrips;
   },
 });
@@ -149,6 +155,8 @@ export const joinCollaborator = mutation({
     const trip = await ctx.db.get(args.tripId);
     if (!trip) throw new Error("ไม่พบทริปดังกล่าว");
 
+    if (trip.userId === identity.subject) return true;
+
     if (!trip.editToken || trip.editToken !== args.editKey) {
       throw new Error("คีย์เชิญชวนไม่ถูกต้อง");
     }
@@ -175,6 +183,11 @@ export const getTodayTripCount = query({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.userId) {
+      throw new Error("ไม่มีสิทธิ์ในการเข้าถึงข้อมูลนี้");
+    }
+
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -262,8 +275,10 @@ export const toggleTripFavorite = mutation({
     tripId: v.id("trips"),
   },
   handler: async (ctx, args) => {
+    await checkEditPermission(ctx, args.tripId);
+
     const trip = await ctx.db.get(args.tripId);
-    if (!trip) throw new Error("Trip not found");
+    if (!trip) throw new Error("ไม่พบทริปดังกล่าว");
     
     await ctx.db.patch(args.tripId, {
       isFavorite: !trip.isFavorite,
@@ -279,11 +294,11 @@ export const setTripPublicStatus = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Unauthorized");
+    if (!identity) throw new Error("ไม่มีสิทธิ์ในการดำเนินการนี้");
 
     const trip = await ctx.db.get(args.tripId);
     if (!trip || trip.userId !== identity.subject) {
-      throw new Error("Unauthorized");
+      throw new Error("ไม่มีสิทธิ์ในการดำเนินการนี้");
     }
 
     await ctx.db.patch(args.tripId, {
@@ -298,7 +313,7 @@ export const likeTrip = mutation({
   },
   handler: async (ctx, args) => {
     const trip = await ctx.db.get(args.tripId);
-    if (!trip) throw new Error("Trip not found");
+    if (!trip) throw new Error("ไม่พบทริปดังกล่าว");
     
     const currentLikes = trip.likes || 0;
     await ctx.db.patch(args.tripId, {
@@ -314,9 +329,34 @@ export const cloneTrip = mutation({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.userId) {
+      throw new Error("ไม่มีสิทธิ์ในการดำเนินการนี้");
+    }
+
     const trip = await ctx.db.get(args.tripId);
-    if (!trip) throw new Error("Trip not found");
+    if (!trip) throw new Error("ไม่พบทริปดังกล่าว");
     
+    // Check clone permission: public OR owner OR collaborator
+    let hasAccess = false;
+    if (trip.isPublic) {
+      hasAccess = true;
+    } else if (trip.userId === identity.subject) {
+      hasAccess = true;
+    } else {
+      const collab = await ctx.db
+        .query("collaborators")
+        .withIndex("by_tripId_userId", (q) => q.eq("tripId", args.tripId).eq("userId", identity.subject))
+        .unique();
+      if (collab) {
+        hasAccess = true;
+      }
+    }
+
+    if (!hasAccess) {
+      throw new Error("ไม่มีสิทธิ์ในการดำเนินการนี้");
+    }
+
     const newTripId = await ctx.db.insert("trips", {
       userId: args.userId,
       destination: trip.destination,
@@ -340,6 +380,11 @@ export const getFavoriteTrips = query({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity || identity.subject !== args.userId) {
+      throw new Error("ไม่มีสิทธิ์ในการเข้าถึงข้อมูลนี้");
+    }
+
     const trips = await ctx.db
       .query("trips")
       .withIndex("by_userId", (q) => q.eq("userId", args.userId))
