@@ -14,6 +14,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Redirect legacy /view/trip/:id → /view-trip/:id
+  async redirects() {
+    return [
+      {
+        source: "/view/trip/:tripId",
+        destination: "/view-trip/:tripId",
+        permanent: true,
+      },
+    ];
+  },
   // Remove webpack config entirely — not compatible with Turbopack
   // Mapbox GL works fine without the alias in Next.js 16+
 };
