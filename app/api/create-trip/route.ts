@@ -275,10 +275,6 @@ export async function POST(req: NextRequest) {
 
     const tripData = JSON.parse(clean);
 
-    if (!destination && tripData.destination) {
-      destination = tripData.destination;
-    }
-
     const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
     if (userId) {
       const token = await getToken({ template: "convex" });
@@ -291,7 +287,7 @@ export async function POST(req: NextRequest) {
     try {
       const imageResponse = await openai.images.generate({
         model: "gpt-image-2",
-        prompt: `A beautiful professional travel photography of ${destination}, high quality, scenic view, vibrant colors`,
+        prompt: `A beautiful professional travel photography of ${destination || tripData.destination || ""}, high quality, scenic view, vibrant colors`,
         n: 1,
         size: "1024x1024",
       });
@@ -305,13 +301,12 @@ export async function POST(req: NextRequest) {
         }
         const contentType = imgRes.headers.get("content-type") || "image/png";
         const arrayBuffer = await imgRes.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
 
         const uploadUrl = await convex.mutation(api.trips.generateUploadUrl, {});
         const uploadRes = await fetch(uploadUrl, {
           method: "POST",
           headers: { "Content-Type": contentType },
-          body: buffer,
+          body: arrayBuffer,
         });
         if (!uploadRes.ok) {
           throw new Error(`Failed to upload image to Convex storage: ${uploadRes.statusText}`);
