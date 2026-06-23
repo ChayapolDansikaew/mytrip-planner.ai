@@ -4,6 +4,8 @@ import OpenAI from "openai";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 
+export const maxDuration = 60; // 60 seconds timeout limit for serverless functions
+
 import { ajAnonymous, ajFree } from "@/lib/arcjet";
 
 function getCreateTripErrorMessage(error: unknown) {
@@ -299,15 +301,16 @@ export async function POST(req: NextRequest) {
       if (tempUrl) {
         const imgRes = await fetch(tempUrl);
         if (!imgRes.ok) {
-          throw new Error(`Failed to download image from OpenAI: ${imgRes.statusText}`);
+          throw new Error(`Failed to fetch image from OpenAI: ${imgRes.statusText}`);
         }
+        const contentType = imgRes.headers.get("content-type") || "image/png";
         const arrayBuffer = await imgRes.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
         const uploadUrl = await convex.mutation(api.trips.generateUploadUrl, {});
         const uploadRes = await fetch(uploadUrl, {
           method: "POST",
-          headers: { "Content-Type": "image/png" },
+          headers: { "Content-Type": contentType },
           body: buffer,
         });
         if (!uploadRes.ok) {
