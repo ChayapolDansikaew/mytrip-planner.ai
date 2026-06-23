@@ -145,6 +145,7 @@ export default function ViewTripPage() {
         tripId={tripId ?? ""}
         editToken={trip.editToken}
         ownerId={trip.userId}
+        imageUrl={trip.imageUrl}
       />
       <motion.div
         initial="hidden"

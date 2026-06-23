@@ -19,6 +19,7 @@ interface TripHeroProps {
   tripId: string;
   editToken?: string;
   ownerId: string;
+  imageUrl?: string;
 }
 
 
@@ -82,6 +83,7 @@ export default function TripHero({
   tripId,
   editToken,
   ownerId,
+  imageUrl: dbImageUrl,
 }: TripHeroProps) {
   const router = useRouter();
   const setTripPublicStatus = useMutation(api.trips.setTripPublicStatus);
@@ -167,7 +169,7 @@ export default function TripHero({
     window.setTimeout(() => setCopied(false), 1800);
   }
 
-  const imageUrl = getDestinationImage(destination);
+  const imageUrl = dbImageUrl || getDestinationImage(destination);
 
   return (
     <section

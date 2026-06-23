@@ -297,6 +297,7 @@ export default function Home() {
       });
       const data = (await response.json().catch(() => null)) as {
         tripData?: Record<string, unknown>;
+        imageUrl?: string;
         message?: string;
         error?: string;
       } | null;
@@ -339,6 +340,7 @@ export default function Home() {
         budget,
         travelers,
         tripName,
+        imageUrl: data?.imageUrl,
       });
 
       setStatusTone("success");

@@ -35,6 +35,7 @@ type GeneratedTripData = {
 
 type CreateTripResponse = {
   tripData?: GeneratedTripData;
+  imageUrl?: string;
   error?: string;
   message?: string;
   action?: "upgrade" | "sign_in";
@@ -225,6 +226,7 @@ export default function CreateTripPage() {
           budget: formData.budget,
           travelers: formData.travelers,
           tripName,
+          imageUrl: data.imageUrl,
         });
       } catch (saveError) {
         console.error("Trip save error:", saveError);

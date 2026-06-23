@@ -124,7 +124,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
         {/* Image cover with responsive zoom and text contrast gradient */}
         <div className="relative flex h-44 items-center justify-center overflow-hidden bg-slate-900">
           <Image
-            src={getDestinationImage(trip.destination) || "/images/default_travel.png"}
+            src={trip.imageUrl || getDestinationImage(trip.destination) || "/images/default_travel.png"}
             alt={trip.destination}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
