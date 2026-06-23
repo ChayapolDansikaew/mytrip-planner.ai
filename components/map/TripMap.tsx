@@ -44,6 +44,7 @@ export default function TripMap({
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
   const popupsRef = useRef<Map<string, mapboxgl.Popup>>(new Map());
+  const placesCacheRef = useRef<Map<string, any>>(new Map()); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [mapLoaded, setMapLoaded] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -159,6 +160,46 @@ export default function TripMap({
     return allMarkers;
   }, [hotels, itinerary]);
 
+  // Load places data dynamically for popup
+  const loadPlacesDataForPopup = useCallback((marker: MapMarker, popup: mapboxgl.Popup) => {
+    const cachedData = placesCacheRef.current.get(marker.name);
+    if (cachedData) {
+      if (cachedData.error) {
+        popup.setHTML(renderPopupError(marker));
+      } else {
+        popup.setHTML(renderPopupContent(marker, cachedData));
+      }
+      return;
+    }
+
+    // Set initial loading layout
+    popup.setHTML(renderPopupLoading(marker));
+
+    const nameParam = encodeURIComponent(marker.name);
+    const latParam = marker.coordinates[1];
+    const lngParam = marker.coordinates[0];
+
+    fetch(`/api/places/details?name=${nameParam}&lat=${latParam}&lng=${lngParam}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch details");
+        return res.json();
+      })
+      .then((data) => {
+        if (data.error) {
+          placesCacheRef.current.set(marker.name, { error: true });
+          popup.setHTML(renderPopupError(marker));
+        } else {
+          placesCacheRef.current.set(marker.name, data);
+          popup.setHTML(renderPopupContent(marker, data));
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading places details:", err);
+        placesCacheRef.current.set(marker.name, { error: true });
+        popup.setHTML(renderPopupError(marker));
+      });
+  }, []);
+
   // Add markers when map is loaded + data changes
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
@@ -190,42 +231,12 @@ export default function TripMap({
       const popup = new mapboxgl.Popup({
         offset: 20,
         closeButton: true,
-        maxWidth: "260px",
+        maxWidth: "320px", // Larger size for premium details
         className: "trip-place-popup",
-      }).setHTML(`
-        <div style="padding:4px">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-            <span>${isHotel ? "🏨" : `📍 วันที่ ${marker.day}`}</span>
-            <span style="font-size:11px;color:#6b7280">
-              ${isHotel ? "โรงแรม" : "สถานที่"}
-            </span>
-          </div>
-          <div style="font-weight:700;font-size:14px;margin-bottom:4px;color:#1f2937;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
-            ${marker.name}
-          </div>
-          ${
-            marker.description
-              ? `<div style="font-size:12px;color:#6b7280;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
-              ${marker.description}
-            </div>`
-              : ""
-          }
-          ${
-            marker.extra
-              ? `<span style="display:inline-block;background:${isHotel ? "#fef3c7" : "#f0fdf4"};color:${isHotel ? "#92400e" : "#166534"};font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600">
-              ${isHotel ? "💰" : "🎟️"} ${marker.extra}
-            </span>`
-              : ""
-          }
-          <a href="https://www.google.com/maps/search/?api=1&query=${marker.coordinates[1]},${marker.coordinates[0]}"
-            target="_blank" rel="noopener noreferrer"
-            style="display:block;margin-top:8px;text-align:center;background:#ec4899;color:white;font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;text-decoration:none;transition:opacity 0.2s"
-            onmouseover="this.style.opacity='0.85'"
-            onmouseout="this.style.opacity='1'">
-            🗺️ เปิด Google Maps
-          </a>
-        </div>
-      `);
+      });
+
+      // Set initial loading layout
+      popup.setHTML(renderPopupLoading(marker));
 
       const mapboxMarker = new mapboxgl.Marker({
         element: el,
@@ -248,6 +259,9 @@ export default function TripMap({
 
         onMarkerClickRef.current?.(marker.id);
         popup.addTo(map.current!);
+
+        // Load Places details dynamically
+        loadPlacesDataForPopup(marker, popup);
       });
 
       markersRef.current.set(marker.id, mapboxMarker);
@@ -265,7 +279,7 @@ export default function TripMap({
         duration: 1500,
       });
     }
-  }, [mapLoaded, buildMarkers]);
+  }, [mapLoaded, buildMarkers, loadPlacesDataForPopup]);
 
   // Highlight active marker
   useEffect(() => {
@@ -288,13 +302,20 @@ export default function TripMap({
             zoom: 14,
             duration: 1000,
           });
+
+          // Fetch details for active marker
+          const allMarkers = buildMarkers();
+          const markerObj = allMarkers.find((m) => m.id === id);
+          if (markerObj) {
+            loadPlacesDataForPopup(markerObj, popup);
+          }
         }
       } else {
         inner.style.transform = "scale(1)";
         inner.style.zIndex = "0";
       }
     });
-  }, [activeMarkerId]);
+  }, [activeMarkerId, buildMarkers, loadPlacesDataForPopup]);
 
   return (
     <div className="relative h-full min-h-[400px] w-full">
@@ -327,4 +348,258 @@ export default function TripMap({
       </div>
     </div>
   );
+}
+
+/* ── UI-UX-Pro-Max Interactive Pop-up Render Helpers ─────────────────────────────────── */
+
+function renderStarsHtml(rating: number): string {
+  const roundedRating = Math.round(rating * 2) / 2; // round to nearest 0.5
+  let stars = "";
+  for (let i = 1; i <= 5; i++) {
+    if (i <= roundedRating) {
+      stars += `<span class="text-amber-400">★</span>`;
+    } else {
+      stars += `<span class="text-slate-300 dark:text-slate-600">★</span>`;
+    }
+  }
+  return stars;
+}
+
+function getTodayOpeningHours(weekdayText?: string[]): string {
+  if (!weekdayText || weekdayText.length === 0) return "";
+  
+  const day = new Date().getDay();
+  // Map JS day (0-6: Sun-Sat) to Google weekday_text index (usually Mon-Sun: 0-6)
+  const googleIndex = day === 0 ? 6 : day - 1;
+  const todayHour = weekdayText[googleIndex];
+  
+  if (todayHour) {
+    const parts = todayHour.split(":");
+    if (parts.length > 1) {
+      return parts.slice(1).join(":").trim();
+    }
+    return todayHour;
+  }
+  return "";
+}
+
+function renderPopupLoading(marker: MapMarker): string {
+  const isHotel = marker.type === "hotel";
+  return `
+    <div style="font-family: var(--font-kanit), sans-serif; display: flex; flex-direction: column; overflow: hidden; max-width: 296px;">
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+        <span>${isHotel ? "🏨" : `📍 วันที่ ${marker.day}`}</span>
+        <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #0ea5e9;">
+          ${isHotel ? "โรงแรมแนะนำ" : "สถานที่ท่องเที่ยว"}
+        </span>
+      </div>
+
+      <h3 style="font-size: 13.5px; font-weight: 700; margin: 0 0 8px 0; color: #1e293b; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        ${marker.name}
+      </h3>
+
+      <!-- Cover Photo Skeleton -->
+      <div class="animate-pulse" style="width: 100%; height: 110px; background-color: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+        <span style="color: #cbd5e1; font-size: 20px;">🗺️</span>
+      </div>
+
+      <!-- Info Skeleton -->
+      <div class="animate-pulse" style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="height: 10px; background-color: #e2e8f0; border-radius: 4px; width: 40%;"></div>
+        <div style="height: 10px; background-color: #e2e8f0; border-radius: 4px; width: 85%;"></div>
+        <div style="height: 10px; background-color: #e2e8f0; border-radius: 4px; width: 70%;"></div>
+      </div>
+
+      <div class="animate-pulse" style="text-align: center; font-size: 10.5px; color: #94a3b8; margin-top: 14px; font-style: italic;">
+        กำลังโหลดข้อมูลจาก Google Places...
+      </div>
+    </div>
+  `;
+}
+
+function renderPopupContent(marker: MapMarker, data: any): string { // eslint-disable-line @typescript-eslint/no-explicit-any
+  const isHotel = marker.type === "hotel";
+
+  // Image block
+  let imgHtml = "";
+  if (data.photos && data.photos.length > 0) {
+    const photoUrl = `/api/places/photo?ref=${data.photos[0].photo_reference}`;
+    imgHtml = `
+      <div style="position: relative; width: 100%; height: 110px; border-radius: 8px; overflow: hidden; margin-bottom: 10px;">
+        <img src="${photoUrl}" alt="${marker.name}" style="width: 100%; height: 100%; object-fit: cover;" />
+      </div>
+    `;
+  }
+
+  // Rating block
+  let ratingHtml = "";
+  if (data.rating) {
+    ratingHtml = `
+      <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px; margin-bottom: 6px;">
+        <span style="font-size: 12px; font-weight: 700; color: #1e293b;">${data.rating.toFixed(1)}</span>
+        <div style="display: flex; font-size: 12px; line-height: 1;">${renderStarsHtml(data.rating)}</div>
+        <span style="font-size: 10px; color: #64748b;">(${data.user_ratings_total?.toLocaleString("th-TH") || 0} รีวิว)</span>
+      </div>
+    `;
+  }
+
+  // Opening hours block
+  let hoursHtml = "";
+  if (data.opening_hours) {
+    const isOpen = data.opening_hours.open_now;
+    const todayHours = getTodayOpeningHours(data.opening_hours.weekday_text);
+    hoursHtml = `
+      <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; margin-bottom: 6px;">
+        ${
+          isOpen
+            ? `<span style="padding: 1px 6px; font-size: 9px; font-weight: 700; background-color: rgba(16, 185, 129, 0.1); color: #059669; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2);">เปิดอยู่</span>`
+            : `<span style="padding: 1px 6px; font-size: 9px; font-weight: 700; background-color: rgba(239, 68, 68, 0.1); color: #dc2626; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.2);">ปิดแล้ว</span>`
+        }
+        <span style="color: #475569;">${todayHours ? `วันนี้: ${todayHours}` : ""}</span>
+      </div>
+    `;
+  }
+
+  // Contact Info
+  let contactHtml = "";
+  if (data.formatted_phone_number || data.website) {
+    contactHtml = `
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 10.5px; color: #64748b; margin-top: 4px; margin-bottom: 8px;">
+        ${data.formatted_phone_number ? `<span>📞 ${data.formatted_phone_number}</span>` : ""}
+        ${data.website ? `<a href="${data.website}" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: none; font-weight: 600;">🌐 เว็บไซต์</a>` : ""}
+      </div>
+    `;
+  }
+
+  // Top Review block
+  let reviewHtml = "";
+  if (data.reviews && data.reviews.length > 0) {
+    const review = data.reviews[0];
+    reviewHtml = `
+      <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 2px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
+          <span style="font-size: 10px; font-weight: 700; color: #475569;">รีวิวยอดนิยม</span>
+          <span style="font-size: 9px; color: #94a3b8;">${review.relative_time_description || ""}</span>
+        </div>
+        <p style="font-size: 10.5px; color: #64748b; font-style: italic; margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+          "${review.text}"
+        </p>
+        <div style="font-size: 9px; color: #94a3b8; text-align: right; margin-top: 2px;">— ${review.author_name}</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div style="font-family: var(--font-kanit), sans-serif; display: flex; flex-direction: column; overflow: hidden; max-width: 296px;">
+      <!-- Header -->
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+        <span>${isHotel ? "🏨" : `📍 วันที่ ${marker.day}`}</span>
+        <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #0ea5e9;">
+          ${isHotel ? "โรงแรมแนะนำ" : "สถานที่ท่องเที่ยว"}
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h3 style="font-size: 13.5px; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${marker.name}">
+        ${marker.name}
+      </h3>
+
+      <!-- Cover Photo -->
+      ${imgHtml}
+
+      <!-- Rating & Reviews -->
+      ${ratingHtml}
+
+      <!-- Description / Address -->
+      ${
+        marker.description
+          ? `<div style="font-size: 11px; color: #64748b; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
+              ${marker.description}
+            </div>`
+          : ""
+      }
+
+      <!-- Open Hours -->
+      ${hoursHtml}
+
+      <!-- Contact Info -->
+      ${contactHtml}
+
+      <!-- Price / Ticket Badge -->
+      ${
+        marker.extra
+          ? `<div style="margin-bottom: 6px;">
+              <span style="display: inline-block; background-color: ${isHotel ? "rgba(245, 158, 11, 0.1)" : "rgba(16, 185, 129, 0.1)"}; color: ${isHotel ? "#b45309" : "#047857"}; font-size: 9.5px; padding: 2px 8px; border-radius: 999px; font-weight: 600;">
+                ${isHotel ? "💰" : "🎟️"} ${marker.extra}
+              </span>
+            </div>`
+          : ""
+      }
+
+      <!-- Top Review -->
+      ${reviewHtml}
+
+      <!-- Main Action: Google Maps -->
+      <a href="https://www.google.com/maps/search/?api=1&query=${marker.coordinates[1]},${marker.coordinates[0]}"
+        target="_blank" rel="noopener noreferrer"
+        style="margin-top: 10px; display: block; text-align: center; background-color: #ec4899; color: white; font-size: 11.5px; font-weight: 600; padding: 7px 12px; border-radius: 999px; text-decoration: none; transition: opacity 0.2s;"
+        onmouseover="this.style.opacity='0.85'"
+        onmouseout="this.style.opacity='1'">
+        🗺️ เปิด Google Maps
+      </a>
+    </div>
+  `;
+}
+
+function renderPopupError(marker: MapMarker): string {
+  const isHotel = marker.type === "hotel";
+  return `
+    <div style="font-family: var(--font-kanit), sans-serif; display: flex; flex-direction: column; overflow: hidden; max-width: 296px;">
+      <!-- Header -->
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+        <span>${isHotel ? "🏨" : `📍 วันที่ ${marker.day}`}</span>
+        <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #0ea5e9;">
+          ${isHotel ? "โรงแรมแนะนำ" : "สถานที่ท่องเที่ยว"}
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h3 style="font-size: 13.5px; font-weight: 700; margin: 0 0 6px 0; color: #1e293b; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        ${marker.name}
+      </h3>
+
+      <!-- Description -->
+      ${
+        marker.description
+          ? `<div style="font-size: 11px; color: #64748b; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+              ${marker.description}
+            </div>`
+          : ""
+      }
+
+      <!-- Badge -->
+      ${
+        marker.extra
+          ? `<div style="margin-bottom: 8px;">
+              <span style="display: inline-block; background-color: ${isHotel ? "rgba(245, 158, 11, 0.1)" : "rgba(16, 185, 129, 0.1)"}; color: ${isHotel ? "#b45309" : "#047857"}; font-size: 9.5px; padding: 2px 8px; border-radius: 999px; font-weight: 600;">
+                ${isHotel ? "💰" : "🎟️"} ${marker.extra}
+              </span>
+            </div>`
+          : ""
+      }
+
+      <div style="font-size: 10.5px; color: #64748b; font-style: italic; text-align: center; padding: 6px; background-color: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; margin-top: 4px;">
+        ไม่พบรายละเอียดเพิ่มเติมสำหรับสถานที่นี้
+      </div>
+
+      <!-- Google Maps Link -->
+      <a href="https://www.google.com/maps/search/?api=1&query=${marker.coordinates[1]},${marker.coordinates[0]}"
+        target="_blank" rel="noopener noreferrer"
+        style="margin-top: 12px; display: block; text-align: center; background-color: #ec4899; color: white; font-size: 11.5px; font-weight: 600; padding: 7px 12px; border-radius: 999px; text-decoration: none; transition: opacity 0.2s;"
+        onmouseover="this.style.opacity='0.85'"
+        onmouseout="this.style.opacity='1'">
+        🗺️ เปิด Google Maps
+      </a>
+    </div>
+  `;
 }
