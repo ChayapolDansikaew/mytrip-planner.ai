@@ -52,10 +52,7 @@ export async function GET(req: NextRequest) {
     // FALLBACK IF NO GOOGLE API KEY OR IF USING MOCK REFERENCE
     if (!key || ref.startsWith("mock_photo_ref_")) {
       // Calculate a stable index based on the reference string
-      let hash = 0;
-      for (let i = 0; i < ref.length; i++) {
-        hash = ref.charCodeAt(i) + ((hash << 5) - hash);
-      }
+      const hash = [...ref].reduce((acc, c) => acc + c.charCodeAt(0), 0);
       const photoIndex = Math.abs(hash) % MOCK_PHOTOS.length;
       const fallbackUrl = MOCK_PHOTOS[photoIndex];
 

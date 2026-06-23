@@ -353,16 +353,12 @@ export default function TripMap({
 /* ── UI-UX-Pro-Max Interactive Pop-up Render Helpers ─────────────────────────────────── */
 
 function renderStarsHtml(rating: number): string {
-  const roundedRating = Math.round(rating * 2) / 2; // round to nearest 0.5
-  let stars = "";
-  for (let i = 1; i <= 5; i++) {
-    if (i <= roundedRating) {
-      stars += `<span class="text-amber-400">★</span>`;
-    } else {
-      stars += `<span class="text-slate-300 dark:text-slate-600">★</span>`;
-    }
-  }
-  return stars;
+  const roundedRating = Math.round(rating);
+  return Array.from({ length: 5 }, (_, i) => 
+    i < roundedRating 
+      ? `<span class="text-amber-400">★</span>` 
+      : `<span class="text-slate-300 dark:text-slate-600">★</span>`
+  ).join("");
 }
 
 function getTodayOpeningHours(weekdayText?: string[]): string {

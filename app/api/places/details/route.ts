@@ -107,11 +107,8 @@ export async function GET(req: NextRequest) {
 
 // Generate complete mock details for a place name
 function generateMockData(name: string) {
-  // Stable hash based on name to get consistent ratings/address for the same place
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
+  // Stable hash based on name
+  const hash = [...name].reduce((acc, c) => acc + c.charCodeAt(0), 0);
   
   const ratingIndex = Math.abs(hash) % 8; // 0 to 7
   const rating = parseFloat((4.2 + (ratingIndex * 0.1)).toFixed(1)); // 4.2 to 4.9
