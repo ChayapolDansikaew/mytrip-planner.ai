@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Kanit } from "next/font/google";
 import Script from "next/script";
@@ -15,6 +15,11 @@ const kanit = Kanit({
 export const metadata: Metadata = {
   title: "AI Trip Planner | วางแผนทริปด้วย AI",
   description: "วางแผนทริปสดใสด้วย AI พร้อมแผนเที่ยวที่ละเอียด อ่านง่าย และปรับแต่งได้",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
