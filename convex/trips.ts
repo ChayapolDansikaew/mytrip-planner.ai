@@ -462,6 +462,10 @@ export const checkCollaboratorStatus = query({
 export const generateUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("ไม่มีสิทธิ์ในการดำเนินการนี้");
+    }
     return await ctx.storage.generateUploadUrl();
   },
 });
