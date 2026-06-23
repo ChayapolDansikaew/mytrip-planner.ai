@@ -31,10 +31,7 @@ export default function SiteHeader() {
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark");
-    const timer = setTimeout(() => {
-      setTheme(isDark ? "dark" : "light");
-    }, 0);
-    return () => clearTimeout(timer);
+    setTheme(isDark ? "dark" : "light"); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
 
   const toggleTheme = () => {

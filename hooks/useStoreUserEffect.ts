@@ -28,12 +28,10 @@ export function useStoreUserEffect() {
 
     if (!isSignedIn || !clerkId) {
       lastSyncedUserId.current = null;
-      queueMicrotask(() => {
-        if (isCurrent) {
-          setConvexUserId(null);
-          setIsStoringUser(false);
-        }
-      });
+      if (isCurrent) {
+        setConvexUserId(null); // eslint-disable-line react-hooks/set-state-in-effect
+        setIsStoringUser(false);
+      }
       return () => {
         isCurrent = false;
       };
@@ -44,11 +42,9 @@ export function useStoreUserEffect() {
     }
 
     lastSyncedUserId.current = clerkId;
-    queueMicrotask(() => {
-      if (isCurrent) {
-        setIsStoringUser(true);
-      }
-    });
+    if (isCurrent) {
+      setIsStoringUser(true);
+    }
 
     createOrUpdateUser({
       clerkId,

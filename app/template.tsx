@@ -14,12 +14,12 @@ export default function Template({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  const isFirstRender = !hasMounted.current;
-  hasMounted.current = true;
+  const isFirstRender = !hasMounted.current; // eslint-disable-line react-hooks/refs
+  hasMounted.current = true; // eslint-disable-line react-hooks/refs
 
   return (
     <motion.div
-      initial={isFirstRender ? false : { opacity: 0, y: 6 }}
+      initial={isFirstRender ? false : { opacity: 0, y: 6 }} // eslint-disable-line react-hooks/refs
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
       className="flex flex-col flex-grow w-full min-h-screen"

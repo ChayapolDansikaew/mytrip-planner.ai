@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { mutation } from "./_generated/server";
 
 export const createOrUpdateUser = mutation({
   args: {
@@ -39,85 +39,3 @@ export const createOrUpdateUser = mutation({
   },
 });
 
-export const getUser = query({
-  args: {
-    clerkId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
-      .unique();
-
-    if (!user) return null;
-
-    const identity = await ctx.auth.getUserIdentity();
-    const isSelf = identity && identity.subject === args.clerkId;
-    
-    if (isSelf) {
-      return user;
-    }
-    
-    // Sanitize for others
-    return {
-      _id: user._id,
-      _creationTime: user._creationTime,
-      name: user.name,
-      imageUrl: user.imageUrl,
-      clerkId: user.clerkId,
-      isPremium: user.isPremium,
-    };
-  },
-});
-
-export const getUserByClerkId = query({
-  args: {
-    clerkId: v.string(),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
-      .unique();
-
-    if (!user) return null;
-
-    const identity = await ctx.auth.getUserIdentity();
-    const isSelf = identity && identity.subject === args.clerkId;
-    
-    if (isSelf) {
-      return user;
-    }
-    
-    // Sanitize for others
-    return {
-      _id: user._id,
-      _creationTime: user._creationTime,
-      name: user.name,
-      imageUrl: user.imageUrl,
-      clerkId: user.clerkId,
-      isPremium: user.isPremium,
-    };
-  },
-});
-
-export const setUserPremium = internalMutation({
-  args: {
-    clerkId: v.string(),
-    isPremium: v.boolean(),
-  },
-  handler: async (ctx, args) => {
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
-      .unique();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    await ctx.db.patch(user._id, {
-      isPremium: args.isPremium,
-    });
-  },
-});

@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 interface RateLimitBannerProps {
   message: string;
   limit: number;
@@ -51,18 +49,12 @@ export default function RateLimitBanner({
         </div>
 
         <div className="flex flex-col gap-3">
-          <Link
-            href="/upgrade"
-            className="rounded-full bg-gradient-to-r from-[#ff3f78] to-[#ff9a4a] px-5 py-3 text-base font-semibold text-white shadow-[0_18px_60px_rgba(255,63,120,0.25)] transition hover:-translate-y-0.5 hover:opacity-95"
-          >
-            💎 อัปเกรดเป็น Premium
-          </Link>
           <button
             type="button"
             onClick={onDismiss}
-            className="text-sm font-medium text-[#0f3a64]/45 transition hover:text-[#0f3a64]/70"
+            className="w-full rounded-full bg-gradient-to-r from-[#ff3f78] to-[#ff9a4a] px-5 py-3 text-base font-semibold text-white shadow-[0_18px_60px_rgba(255,63,120,0.25)] transition hover:-translate-y-0.5 hover:opacity-95"
           >
-            รอพรุ่งนี้ (โควตารีเซ็ต {resetTime})
+            ตกลง (รีเซ็ตเวลา {resetTime})
           </button>
         </div>
       </div>

@@ -2,8 +2,7 @@
 
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-
-const motionEase = [0.22, 1, 0.36, 1] as const;
+import { motionEase } from "@/lib/motion";
 
 export default function ErrorToast({
   message,

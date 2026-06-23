@@ -48,12 +48,12 @@ export default function ViewTripPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const keyInUrl = urlParams.get("editKey");
     if (keyInUrl) {
-      setTimeout(() => setEditKey(keyInUrl), 0);
+      setEditKey(keyInUrl); // eslint-disable-line react-hooks/set-state-in-effect
       localStorage.setItem(`editKey_${tripId}`, keyInUrl);
     } else {
       const storedKey = localStorage.getItem(`editKey_${tripId}`);
       if (storedKey) {
-        setTimeout(() => setEditKey(storedKey), 0);
+        setEditKey(storedKey);
       }
     }
   }, [tripId]);
