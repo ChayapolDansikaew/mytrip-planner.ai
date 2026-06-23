@@ -1,6 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
 
 import { ajAnonymous, ajFree } from "@/lib/arcjet";
 
@@ -59,7 +61,7 @@ export async function POST(req: NextRequest) {
       throw new Error("ARCJET_KEY is missing");
     }
 
-    const { userId } = await auth();
+    const { userId, getToken } = await auth();
 
     if (!userId) {
       const decision = await ajAnonymous.protect(req, {
@@ -271,7 +273,54 @@ export async function POST(req: NextRequest) {
 
     const tripData = JSON.parse(clean);
 
-    return NextResponse.json({ tripData }, { status: 200 });
+    if (!destination && tripData.destination) {
+      destination = tripData.destination;
+    }
+
+    const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+    if (userId) {
+      const token = await getToken({ template: "convex" });
+      if (token) {
+        convex.setAuth(token);
+      }
+    }
+    let imageUrl = "";
+
+    try {
+      const imageResponse = await openai.images.generate({
+        model: "gpt-image-2",
+        prompt: `A beautiful professional travel photography of ${destination}, high quality, scenic view, vibrant colors`,
+        n: 1,
+        size: "1024x1024",
+      });
+
+      const tempUrl = imageResponse.data?.[0]?.url;
+
+      if (tempUrl) {
+        const imgRes = await fetch(tempUrl);
+        const arrayBuffer = await imgRes.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        const uploadUrl = await convex.mutation(api.trips.generateUploadUrl, {});
+        const uploadRes = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": "image/png" },
+          body: buffer,
+        });
+
+        const { storageId } = await uploadRes.json();
+        const permanentUrl = await convex.query(api.trips.getStorageUrl, { storageId });
+        
+        if (permanentUrl) {
+          imageUrl = permanentUrl;
+        }
+      }
+    } catch (imgError) {
+      console.error("Failed to generate or store image:", imgError);
+      // ไม่บล็อกการสร้างทริปหากฟังก์ชันสร้างรูปล้มเหลว
+    }
+
+    return NextResponse.json({ tripData, imageUrl }, { status: 200 });
   } catch (error) {
     console.error("Create trip API error:", error);
     return NextResponse.json(
