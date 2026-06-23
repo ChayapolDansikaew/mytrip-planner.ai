@@ -256,8 +256,25 @@ export async function POST(req: NextRequest) {
     }
 
     const openai = new OpenAI({ apiKey: openaiApiKey });
+    const chatModel = process.env.OPENAI_CHAT_MODEL || "gpt-4o-mini";
+    const imageModel = process.env.OPENAI_IMAGE_MODEL || "dall-e-3";
+
+    // Start image generation promise if destination is already known (Form mode)
+    let imagePromise = null;
+    if (destination) {
+      imagePromise = openai.images.generate({
+        model: imageModel,
+        prompt: `A beautiful professional travel photography of ${destination}, high quality, scenic view, vibrant colors`,
+        n: 1,
+        size: "1024x1024",
+      }).catch(err => {
+        console.error("Failed to generate image in parallel:", err);
+        return null;
+      });
+    }
+
     const response = await openai.chat.completions.create({
-      model: "gpt-5.4-mini",
+      model: chatModel,
       messages: [
         {
           role: "user",
@@ -284,45 +301,67 @@ export async function POST(req: NextRequest) {
     }
     let imageUrl = "";
 
-    try {
-      const imageResponse = await openai.images.generate({
-        model: "gpt-image-2",
-        prompt: `A beautiful professional travel photography of ${destination || tripData.destination || ""}, high quality, scenic view, vibrant colors`,
+    // Start image generation if we didn't start it in Form mode (Conversational mode)
+    if (!imagePromise && (destination || tripData.destination)) {
+      const imgDest = destination || tripData.destination;
+      imagePromise = openai.images.generate({
+        model: imageModel,
+        prompt: `A beautiful professional travel photography of ${imgDest}, high quality, scenic view, vibrant colors`,
         n: 1,
         size: "1024x1024",
+      }).catch(err => {
+        console.error("Failed to generate image sequentially:", err);
+        return null;
       });
-
-      const tempUrl = imageResponse.data?.[0]?.url;
-
-      if (tempUrl) {
-        const imgRes = await fetch(tempUrl);
-        if (!imgRes.ok) {
-          throw new Error(`Failed to fetch image from OpenAI: ${imgRes.statusText}`);
-        }
-        const contentType = imgRes.headers.get("content-type") || "image/png";
-        const arrayBuffer = await imgRes.arrayBuffer();
-
-        const uploadUrl = await convex.mutation(api.trips.generateUploadUrl, {});
-        const uploadRes = await fetch(uploadUrl, {
-          method: "POST",
-          headers: { "Content-Type": contentType },
-          body: arrayBuffer,
-        });
-        if (!uploadRes.ok) {
-          throw new Error(`Failed to upload image to Convex storage: ${uploadRes.statusText}`);
-        }
-
-        const { storageId } = await uploadRes.json();
-        const permanentUrl = await convex.query(api.trips.getStorageUrl, { storageId });
-        
-        if (permanentUrl) {
-          imageUrl = permanentUrl;
-        }
-      }
-    } catch (imgError) {
-      console.error("Failed to generate or store image:", imgError);
-      // ไม่บล็อกการสร้างทริปหากฟังก์ชันสร้างรูปล้มเหลว
     }
+
+    if (imagePromise) {
+      try {
+        const imageResponse = await imagePromise;
+        const tempUrl = imageResponse?.data?.[0]?.url;
+        const b64Data = imageResponse?.data?.[0]?.b64_json;
+
+        if (tempUrl || b64Data) {
+          let arrayBuffer: ArrayBuffer | null = null;
+          let contentType = "image/png";
+
+          if (tempUrl) {
+            const imgRes = await fetch(tempUrl);
+            if (!imgRes.ok) {
+              throw new Error(`Failed to fetch image from OpenAI: ${imgRes.statusText}`);
+            }
+            contentType = imgRes.headers.get("content-type") || "image/png";
+            arrayBuffer = await imgRes.arrayBuffer();
+          } else if (b64Data) {
+            const buffer = Buffer.from(b64Data, "base64");
+            arrayBuffer = buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+          }
+
+          if (arrayBuffer) {
+            const uploadUrl = await convex.mutation(api.trips.generateUploadUrl, {});
+            const uploadRes = await fetch(uploadUrl, {
+              method: "POST",
+              headers: { "Content-Type": contentType },
+              body: arrayBuffer,
+            });
+            if (!uploadRes.ok) {
+              throw new Error(`Failed to upload image to Convex storage: ${uploadRes.statusText}`);
+            }
+
+            const { storageId } = await uploadRes.json();
+            const permanentUrl = await convex.query(api.trips.getStorageUrl, { storageId });
+            
+            if (permanentUrl) {
+              imageUrl = permanentUrl;
+            }
+          }
+        }
+      } catch (imgError) {
+        console.error("Failed to generate or store image:", imgError);
+        // ไม่บล็อกการสร้างทริปหากฟังก์ชันสร้างรูปล้มเหลว
+      }
+    }
+
 
     return NextResponse.json({ tripData, imageUrl }, { status: 200 });
   } catch (error) {

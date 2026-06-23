@@ -29,6 +29,7 @@ export const ajFree = arcjet({
     shield({
       mode: "LIVE",
     }),
+
   ],
 });
 
