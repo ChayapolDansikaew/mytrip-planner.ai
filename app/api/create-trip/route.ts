@@ -298,6 +298,9 @@ export async function POST(req: NextRequest) {
 
       if (tempUrl) {
         const imgRes = await fetch(tempUrl);
+        if (!imgRes.ok) {
+          throw new Error(`Failed to download image from OpenAI: ${imgRes.statusText}`);
+        }
         const arrayBuffer = await imgRes.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
@@ -307,6 +310,9 @@ export async function POST(req: NextRequest) {
           headers: { "Content-Type": "image/png" },
           body: buffer,
         });
+        if (!uploadRes.ok) {
+          throw new Error(`Failed to upload image to Convex storage: ${uploadRes.statusText}`);
+        }
 
         const { storageId } = await uploadRes.json();
         const permanentUrl = await convex.query(api.trips.getStorageUrl, { storageId });
