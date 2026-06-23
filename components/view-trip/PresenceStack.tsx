@@ -15,7 +15,7 @@ export default function PresenceStack({ tripId }: PresenceStackProps) {
   const { user, isLoaded } = useUser();
   const updatePresence = useMutation(api.presence.updatePresence);
   const activeUsers = useQuery(api.presence.getPresence, { tripId: tripId as Id<"trips"> });
-  const [prevUsers, setPrevUsers] = useState<string[]>([]);
+  const prevUsersRef = useRef<string[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const isFirstRender = useRef(true);
 
@@ -55,9 +55,11 @@ export default function PresenceStack({ tripId }: PresenceStackProps) {
 
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      setTimeout(() => setPrevUsers(currentIds), 0);
+      prevUsersRef.current = currentIds;
       return;
     }
+
+    const prevUsers = prevUsersRef.current;
 
     // เช็คคนเข้าใหม่ (ยกเว้นตัวเอง)
     if (user?.id) {
@@ -66,18 +68,20 @@ export default function PresenceStack({ tripId }: PresenceStackProps) {
 
       if (joined.length > 0) {
         const joinerName = currentNames[joined[0]] || "เพื่อนนักเดินทาง";
-        setTimeout(() => setToast(`🔔 ${joinerName} เข้าร่วมวางแผนการเดินทางแล้ว`), 0);
+        setToast(`🔔 ${joinerName} เข้าร่วมวางแผนการเดินทางแล้ว`);
         const timer = setTimeout(() => setToast(null), 3000);
+        prevUsersRef.current = currentIds;
         return () => clearTimeout(timer);
       } else if (left.length > 0) {
-        setTimeout(() => setToast(`🚪 มีผู้ออกจากหน้าวางแผนการท่องเที่ยว`), 0);
+        setToast(`🚪 มีผู้ออกจากหน้าวางแผนการท่องเที่ยว`);
         const timer = setTimeout(() => setToast(null), 3000);
+        prevUsersRef.current = currentIds;
         return () => clearTimeout(timer);
       }
     }
 
-    setTimeout(() => setPrevUsers(currentIds), 0);
-  }, [activeUsers, user?.id, prevUsers]);
+    prevUsersRef.current = currentIds;
+  }, [activeUsers, user?.id]);
 
   if (!activeUsers || activeUsers.length <= 1) return null; // ไม่แสดงอะไรเลยถ้ามีแค่เราคนเดียว
 

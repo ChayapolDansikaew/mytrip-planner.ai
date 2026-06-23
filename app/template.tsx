@@ -1,25 +1,25 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 
 export default function Template({ children }: { children: React.ReactNode }) {
-  const shouldReduceMotion = useReducedMotion();
-  const hasMounted = useRef(false);
+  const prefersReducedMotion = useReducedMotion();
+  const [isMounted, setIsMounted] = useState(false);
 
-  // On first render (SSR + initial hydration), skip animation to prevent
-  // hydration mismatch. Framer Motion sets inline styles (opacity:0, translateY)
-  // that won't exist in the server-rendered HTML.
+  useEffect(() => {
+    setIsMounted(true); // eslint-disable-line react-hooks/set-state-in-effect
+  }, []);
+
+  const shouldReduceMotion = isMounted ? prefersReducedMotion : false;
+
   if (shouldReduceMotion) {
     return <>{children}</>;
   }
 
-  const isFirstRender = !hasMounted.current; // eslint-disable-line react-hooks/refs
-  hasMounted.current = true; // eslint-disable-line react-hooks/refs
-
   return (
     <motion.div
-      initial={isFirstRender ? false : { opacity: 0, y: 6 }} // eslint-disable-line react-hooks/refs
+      initial={isMounted ? { opacity: 0, y: 6 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
       className="flex flex-col flex-grow w-full min-h-screen"
